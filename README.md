@@ -22,16 +22,14 @@ This file is a mish-mash of content pulled from various sources. It's divided in
   * **Item** - Details
 
 ## The various sources of all this goodness
-* [Apache](http://httpd.apache.org/docs/1.3/mod/mod_speling.html)
 * [HTML5 Boilerplate](https://github.com/h5bp/html5-boilerplate)
 * [2014 Micro Blacklist](http://perishablepress.com/2014-micro-blacklist/)
 * [Crunchify](http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/)
 * [Ventureharbour](https://www.ventureharbour.com/improving-site-speed/)
 * [Ducea](http://www.ducea.com/2007/10/22/apache-tips-disable-the-http-trace-method/)
 * [wprecipes](http://www.wprecipes.com/how-to-deny-comment-posting-to-no-referrer-requests)
-* [akmur](https://github.com/akmur)/[htaccess-for-wordpress](https://github.com/akmur/htaccess-for-wordpress)
- * [6G Beta](https://perishablepress.com/6g-beta/)
- * [Hardening Wordpress](http://codex.wordpress.org/Hardening_WordPress)
- * [WpMuDev](http://premium.wpmudev.org/blog/5-simple-htaccess-tips-to-tighten-your-sites-security/)
- * [WpExplorer](http://www.wpexplorer.com/htaccess-wordpress-security/)
+* [6G Beta](https://perishablepress.com/6g-beta/)
+* [Hardening Wordpress](http://codex.wordpress.org/Hardening_WordPress)
+* [WpMuDev](http://premium.wpmudev.org/blog/5-simple-htaccess-tips-to-tighten-your-sites-security/)
+* [WpExplorer](http://www.wpexplorer.com/htaccess-wordpress-security/)
 * [Creare](https://github.com/Creare)/[WP-htaccess](https://github.com/Creare/WP-htaccess)
