@@ -6,14 +6,14 @@
 </p>
 
 An .htaccess file that I use for various Wordpress websites to improve performance, security, and functionality.
-*Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. Heavy emphasis has been placed on blocking malicious IPs and Bots.
+*Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. Heavy emphasis has been placed on blocking malicious IPs and Bots. (China is blocked entirely.) 
 
 ### Note:
-Not all sections within the file may apply to you or work on your server. Comment out by prefixing them with a # symbol or uncomment lines by removing the #.
+Not all sections within the file may apply to you or work on your server. Comment out by prefixing the line with a # symbol or uncomment a line by removing the prefixing #.
 
 :warning: Caution |
 ------------ |
-The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a featue doesn't work when using this file, comment out sections and use the process of elimination to detrmine which bit is incompatible.|
+The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a feature doesn't work when using this file, comment out sections and use the process of elimination to determine which bit is incompatible with your hosting.|
 
 <p align="center">
 <a href="https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess">
@@ -21,6 +21,9 @@ The .htaccess is a powerful file. One wrong move in the .htaccess file can make 
 </a>
 </p>
 
+If you see any errors, or have any ideas on how to improve this file, please let me know.
+
+### Overview
 This file is a mish-mash of content pulled from various sources. It's divided into a couple sections.
 
 * **Tweaks**
@@ -95,3 +98,4 @@ This file is a mish-mash of content pulled from various sources. It's divided in
 * [WpMuDev](http://premium.wpmudev.org/blog/5-simple-htaccess-tips-to-tighten-your-sites-security/)
 * [WpExplorer](http://www.wpexplorer.com/htaccess-wordpress-security/)
 * [Creare](https://github.com/Creare)/[WP-htaccess](https://github.com/Creare/WP-htaccess)
+
