@@ -8,9 +8,12 @@
 An .htaccess file that I use for various Wordpress websites to improve performance, security, and functionality.
 *Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. Heavy emphasis has been placed on blocking malicious IPs and Bots.
 
+### Note:
+Not all sections within the file may apply to you or work on your server. Comment out or uncomment lines by prefixing them with a # symbol.
+
 :warning: Caution |
 ------------ |
-The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens.|
+The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a featue doesn't work when using this file, comment out sections and use the process of elimination to detrmine which bit is incompatible.|
 
 <p align="center">
 <a href="https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess">
