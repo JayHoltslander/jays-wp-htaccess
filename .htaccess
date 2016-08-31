@@ -479,7 +479,13 @@ FileETag None
 
 
 
-
+# BLOCK WORDPRESS XMLRPC.PHP REQUESTS
+# See: https://www.digitalocean.com/community/tutorials/how-to-protect-wordpress-from-xml-rpc-attacks-on-ubuntu-14-04#method-3-manually-blocking-all-xml-rpc-traffic
+# See: https://blog.sucuri.net/2015/10/brute-force-amplification-attacks-against-wordpress-xmlrpc.html
+<Files xmlrpc.php>
+	order deny,allow
+	deny from all
+</Files>
 
 # BLOCK INDIVIDUAL IP ADDRESSES (OR USE CLOUDFLARE'S FIREWALL)
 #
