@@ -57,6 +57,7 @@ This file is a mish-mash of content pulled from various sources. It's divided in
   * **Enable Keep-Alive**
   * **Disable Etag**
 * **Security**
+  * **Block Wordpress xmlrpc.php Requests**
   * **Block Individual Ip Addresses**
   * **Strong Htaccess Protection**
   * **Remove The X-Powered-By Response Header**
@@ -80,7 +81,6 @@ This file is a mish-mash of content pulled from various sources. It's divided in
   * **Start Bad Bot Prevention**
   * **Block Specific Sites From Stealing Bandwidth By Hotlinking To Images**
   * **Abuse Http Referrer Blocking** - Blocking Referrer Domains Stops Traffic Originating From The Specified Domains
-  * **Block China** - http://www.ip2location.com/free/visitor-blocker
 * **301 Redirects**
 
 ## The various sources of all this goodness
