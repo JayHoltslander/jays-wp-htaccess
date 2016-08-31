@@ -6,7 +6,7 @@
 </p>
 
 An .htaccess file that I use for various Wordpress websites to improve performance, security, and functionality.
-*Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. Heavy emphasis has been placed on blocking malicious IPs and Bots. (China is blocked entirely.) 
+*Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. Heavy emphasis has been placed on blocking malicious IPs and Bots. 
 
 ### Note:
 Not all sections within the file may apply to you or work on your server. Comment out by prefixing the line with a # symbol or uncomment a line by removing the prefixing #.
