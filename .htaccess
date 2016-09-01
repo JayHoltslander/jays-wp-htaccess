@@ -97,9 +97,9 @@ Options -MultiViews
 
 
 
-# TURN OFF DIRECTORY INDEXING
+# TURN OFF DIRECTORY INDEXING (Can break Wordpress' URLs in some situations)
 #
-Options All -Indexes
+# Options All -Indexes
 
 
 
