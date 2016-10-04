@@ -439,11 +439,11 @@ ExpiresActive on
   <filesMatch "\.(flv|ico|pdf|avi|mov|ppt|doc|mp3|mp4|wmv|wav|gif|jpg|jpeg|png|swf)$">
     Header set Cache-Control "public"
   </filesMatch>
-  <filesMatch "\.(css)$">
+  <filesMatch "(?!^.*min\.css$)^.+?\.css$">
     Header set Cache-Control "public"
   </filesMatch>
-  <filesMatch "\.(js)$">
-    Header set Cache-Control "private"
+  <filesMatch "(?!^.*min\.js$)^.+?\.js$">
+    Header set Cache-Control "max-age=604800, private"
   </filesMatch>
   <filesMatch "\.(x?html?|php)$">
     Header set Cache-Control "private, must-revalidate"
