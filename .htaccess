@@ -275,7 +275,20 @@ AddDefaultCharset utf-8
 ########################################################################################################################
 
 
+# DISABLE ETAG - http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/
+#
+Header unset Pragma
+FileETag None
+Header unset ETag
 
+
+# VARY ENCODING - https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+#
+<IfModule mod_headers.c>
+  <FilesMatch ".(js|css|xml|gz|html|woff|woff2)$">
+    Header append Vary: Accept-Encoding
+  </FilesMatch>
+</IfModule>
 
 
 
