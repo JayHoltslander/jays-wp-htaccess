@@ -490,6 +490,22 @@ FileETag None
 ########################################################################################################################
 
 
+# WHITELIST SPECIFIC IP ADDRESSES - http://stackoverflow.com/a/38703505/751570
+#
+#<RequireAll>
+#    Require ip XX.XX.XX.XX YY.YY.YY.YY
+#</RequireAll>
+
+
+
+# BLACKLIST SPECIFIC IP ADDRESSES - https://httpd.apache.org/docs/2.4/howto/access.html
+# (OR USE CLOUDFLARE'S FIREWALL, OR ITHEMES SECURITY BANNED USERS LIST)
+#
+#<RequireAll>
+#    Require all granted
+#    Require not ip XX.XX.XX.XX YY.YY.YY.YY
+#</RequireAll>
+
 
 
 # BLOCK WORDPRESS XMLRPC.PHP REQUESTS
@@ -500,9 +516,7 @@ FileETag None
 	deny from all
 </Files>
 
-# BLOCK INDIVIDUAL IP ADDRESSES (OR USE CLOUDFLARE'S FIREWALL)
-#
-#deny from 91.200.12.79
+
 
 
 # STRONG HTACCESS PROTECTION (PROTECTS THIS FILE FROM HACKERS)
