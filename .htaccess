@@ -332,9 +332,11 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 </IfModule>
 
 # COMPRESS ALL OUTPUT LABELED WITH ONE OF THE FOLLOWING MEDIA TYPES
+# TTF Font info from: https://divibooster.com/enable-compression-for-the-divi-theme/
 #
 <IfModule mod_deflate.c>
   <IfModule mod_filter.c>
+      Addtype font/truetype .ttf
       AddOutputFilterByType DEFLATE "application/atom+xml" \
                                     "application/javascript" \
                                     "application/json" \
@@ -352,6 +354,7 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
                                     "application/xml" \
                                     "font/eot" \
                                     "font/opentype" \
+				    "font/truetype" \
                                     "image/bmp" \
                                     "image/svg+xml" \
                                     "image/vnd.microsoft.icon" \
@@ -360,6 +363,7 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
                                     "text/css" \
                                     "text/html" \
                                     "text/javascript" \
+				    "text/text" \
                                     "text/plain" \
                                     "text/vcard" \
                                     "text/vnd.rim.location.xloc" \
