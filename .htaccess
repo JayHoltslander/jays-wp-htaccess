@@ -58,14 +58,23 @@
 
 
 
-# PREVENT IMAGE HOTLINKING (REPLACE LAST URL WITH ANY IMAGE LINK YOU WANT)
-# THIS CAN PREVENT SOCIAL MEDIA SITES FROM DISPLAYING YOUR SITE'S IMAGES. USE WITH CARE
+# PREVENT IMAGE HOTLINKING FROM SPECIFIC SITES
 #
-#RewriteEngine on
-#RewriteCond %{HTTP_REFERER} !^$
-#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?yourwebsite.com [NC]
-#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?yourotherwebsite.com [NC]
-#RewriteRule \.(gif|jpe?g|png|ico|css|js|mp3|flv|swf|mp4|wav)$ http://i.imgur.com/MlQAH71.jpg [NC,R,L]
+# badsite = name of the site, which is copying images from your blog.
+# BlogSpot.com – This will prevent image hotlinking from all BlogSpot sub domains.
+#
+RewriteEngine On
+RewriteCond %{HTTP_REFERER} ^http://(.+\.)?snapemoticonschat\.xyz/ [NC,OR]
+#RewriteCond %{HTTP_REFERER} ^http://(.+\.)?badsite2\.com/ [NC,OR]
+#RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
+#RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC]
+
+# Result options
+#
+# Serve alternate content or give them a 403 Forbidden (Choose one)
+#
+#RewriteRule .*\.(jpe?g|gif|bmp|png|svg|ico|flv|swf|mp4|wav|mp3|mov|avi|mpg)$ http://placehold.it/5120x2160 [L]
+RewriteRule .*\.(jpe?g|gif|bmp|png|svg|ico|flv|swf|mp4|wav|mp3|mov|avi|mpg)$ - [F]
 
 
 
