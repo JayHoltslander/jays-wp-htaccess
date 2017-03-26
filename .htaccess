@@ -665,7 +665,14 @@ AddDefaultCharset utf-8
 
 # DENY NO REFERER REQUESTS - http://www.wprecipes.com/how-to-deny-comment-posting-to-no-referrer-requests
 #
-RewriteEngine On RewriteCond %{REQUEST_METHOD} POST RewriteCond %{REQUEST_URI} .wp-comments-post\.php* RewriteCond %{HTTP_REFERER} !.*yourblog.com.* [OR] RewriteCond %{HTTP_USER_AGENT} ^$ RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+#<IfModule mod_rewrite.c>
+#  RewriteEngine On
+#  RewriteCond %{REQUEST_METHOD} POST
+#  RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
+#  RewriteCond %{HTTP_REFERER} !.*yourblog.com.* [OR]
+#  RewriteCond %{HTTP_USER_AGENT} ^$
+#  RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+#</IfModule>
 
 
 #BLOCK BROWSER ACCESS TO LOG FILES
