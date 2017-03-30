@@ -44,12 +44,6 @@
 
 
 
-# REMOVE SERVER SIGNATURE COMPLETELY
-#
-#ServerSignature Off
-
-
-
 # BLOCK ACCESS TO DIRECTORIES WITHOUT A DEFAULT DOCUMENT
 #
 <IfModule mod_autoindex.c>
@@ -522,6 +516,14 @@ FileETag None
 ########################################################################################################################
 # ======================== SECURITY ====================================================================================
 ########################################################################################################################
+
+
+# REMOVE SERVER SIGNATURE
+# See: 
+# * https://techjourney.net/improve-apache-web-server-security-use-servertokens-and-serversignature-to-disable-header/
+# * https://www.unixmen.com/how-to-disable-server-signature-using-htaccess-or-by-editing-apache/
+#
+ServerSignature Off
 
 
 # WHITELIST SPECIFIC IP ADDRESSES - http://stackoverflow.com/a/38703505/751570
