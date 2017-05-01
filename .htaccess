@@ -517,6 +517,13 @@ FileETag None
 # ======================== SECURITY ====================================================================================
 ########################################################################################################################
 
+# BLOCK SEMRUSH BOTS FROM PERFORMING COMPETITIVE ANALYSIS
+# See: https://www.semrush.com/bot/
+#
+#User-agent: SemrushBot
+#Disallow: /
+#User-agent: SemrushBot-SA
+#Disallow: /
 
 # REMOVE SERVER SIGNATURE
 # See: 
