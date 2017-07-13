@@ -673,11 +673,13 @@ AddDefaultCharset utf-8
 
 
 # DENY NO REFERER REQUESTS - http://www.wprecipes.com/how-to-deny-comment-posting-to-no-referrer-requests
+# See also: https://codex.wordpress.org/Brute_Force_Attacks
+# Change yourblog.com to your domain. If you're using Multisite with mapped domains, you'll want to change yourblog.com to (yourblog.com|yourblog.net|yourblog4.com) and so on.
 #
 #<IfModule mod_rewrite.c>
 #  RewriteEngine On
 #  RewriteCond %{REQUEST_METHOD} POST
-#  RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
+#  RewriteCond %{REQUEST_URI} .*/(wp-comments-post|wp-login)\.php.*
 #  RewriteCond %{HTTP_REFERER} !.*yourblog.com.* [OR]
 #  RewriteCond %{HTTP_USER_AGENT} ^$
 #  RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
