@@ -54,12 +54,21 @@
 
 
 # ALLOW CROSS-ORIGIN REQUESTS.
+# See:
+# * https://stackoverflow.com/a/13871027/751570
+# * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
+# * http://enable-cors.org/
+# * http://www.w3.org/TR/cors/
 #
 # <IfModule mod_headers.c>
 #     Header set Access-Control-Allow-Origin "*"
 # </IfModule>
 
+
 # SEND THE CORS HEADER FOR IMAGES WHEN BROWSERS REQUEST IT.
+# See:
+# * https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+# * https://blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
 #
 <IfModule mod_setenvif.c>
     <IfModule mod_headers.c>
@@ -70,7 +79,9 @@
     </IfModule>
 </IfModule>
 
+
 # CROSS-ORIGIN WEB FONTS 
+# See: https://davidwalsh.name/cdn-fonts
 #
 <IfModule mod_headers.c>
     <FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
@@ -81,13 +92,22 @@
 
 
 # CUSTOM ERROR PAGES
+# See: https://perishablepress.com/custom-http-errors-via-htaccess/
 # 
-ErrorDocument 403 /403-forbidden.html
-ErrorDocument 404 /404-notfound.html
+#ErrorDocument 400 /errors/400.html
+#ErrorDocument 401 /errors/401.html
+#ErrorDocument 403 /errors/403.html
+#ErrorDocument 404 /errors/404.html
+#ErrorDocument 500 /errors/500.html
 
 
 
 # PREVENTS OVERZEALOUS 404 ERRORS FROM APACHE
+# This setting prevents Apache from returning a 404 error as the result
+# of a rewrite when the directory with the same name does not exist.
+# See: 
+# * https://httpd.apache.org/docs/current/content-negotiation.html#multiviews
+# * https://www.infomaniak.com/en/support/faq/605/redirect-and-url-rewrite-issues-multiviews-option-in-htaccess
 #
 Options -MultiViews
 
@@ -117,6 +137,7 @@ Options -MultiViews
 
 
 # ADD SUPPORT FOR SVG AND HTC
+# See: https://davidwalsh.name/serve-svg-image
 #
 AddType image/svg+xml svg svgz
 AddEncoding gzip svgz
