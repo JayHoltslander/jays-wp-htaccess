@@ -37,6 +37,16 @@
 
 
 
+# REDIRECT INCORRECT ROBOTS.TXT REQUESTS TO THE RIGHT PLACE.
+# Source: https://perishablepress.com/htaccess-cleanup/
+#
+<IfModule mod_alias.c>
+	RedirectMatch 301 (?<!^)/robots.txt$ /robots.txt
+</IfModule>
+
+
+
+
 # SHOW THE ADMIN’S EMAIL ADDRESS IN APACHE ERROR MESSAGES
 #
 #SetEnv SERVER_ADMIN email@isp.com
