@@ -212,6 +212,7 @@ AddType text/x-component .htc
 
 
 # FORCE SSL
+# SSL must actually be turned on for this to work. Cloudflare can also force all requests to SSL.
 #
 # <IfModule mod_rewrite.c>
 #    RewriteEngine On
