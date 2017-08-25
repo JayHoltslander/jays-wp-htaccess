@@ -11,7 +11,7 @@ An .htaccess file that I use for various Wordpress websites to improve performan
 ### Note:
 Not all sections within the file may apply to you or work on your server. Comment out by prefixing the line with a # symbol or uncomment a line by removing the prefixing #.
 
-:warning: Caution |
+:warning: **Caution** |
 ------------ |
 The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a feature doesn't work when using this file, comment out sections and use the process of elimination to determine which bit is incompatible with your hosting.|
 
