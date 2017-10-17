@@ -331,9 +331,11 @@ AddDefaultCharset utf-8
 
 # DISABLE ETAG - http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/
 #
-Header unset Pragma
-FileETag None
-Header unset ETag
+<ifModule mod_headers.c>
+	Header unset Pragma
+	FileETag None
+	Header unset ETag
+</ifModule>
 
 
 # VARY ENCODING - https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
