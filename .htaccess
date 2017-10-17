@@ -23,14 +23,22 @@
 #
 # Both the naked domain and www should resolve to the same URL. 
 # If you want to redirect http://www.example.com to http://example.com, you can use this:
-
+#
+#<IfModule mod_rewrite.c>
+#RewriteEngine on 
+#RewriteBase / 
 #RewriteCond %{HTTP_HOST} ^www\.example\.com$
 #RewriteRule ^/?$ "http\:\/\/example\.com\/" [R=301,L]
+#</IfModule>
 
 # If you want to redirect http://example.com to http://www.example.com, you can use this:
 #
+#<IfModule mod_rewrite.c> 
+#RewriteEngine on 
+#RewriteBase / 
 #RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
 #RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+#</IfModule>
 
 
 
