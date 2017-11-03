@@ -11,6 +11,14 @@
 
 
 
+# BEGIN MainWP
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+	RewriteRule ^wp-content/plugins/mainwp-child/(.*)$ /wp-content/plugins/THIS_PLUGIN_DOES_NOT_EXIST [QSA,L]
+</IfModule>
+# END MainWP
+
 
 
 
