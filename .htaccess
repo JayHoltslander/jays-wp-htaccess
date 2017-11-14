@@ -50,6 +50,16 @@
 
 
 
+# REDIRECT DIRECT IP ACCESS TO DOMAIN
+# Change the URL if someone accesses the website via direct IP address.
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine On
+#	RewriteBase /
+#	RewriteCond %{HTTP_HOST} ^186\.753\.090\.123$
+#	RewriteRule ^(.*)$ https://example.com/$1 [L,R=301]
+#</IfModule>
+
 
 # REDIRECT INCORRECT ROBOTS.TXT REQUESTS TO THE RIGHT PLACE.
 # Source: https://perishablepress.com/htaccess-cleanup/
