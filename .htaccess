@@ -27,6 +27,20 @@
 ########################################################################################################################
 
 
+# REDIRECT ROBOTS.TXT REQUESTS TO STAGING SERVER'S VERSION IF NOT PRODUCTION SERVER'S DOMAIN
+# Serve a different ("Do not index") version of robots.txt only when accessed on any SUBDOMAIN of "stagingserver.com"
+# Make sure file "robots-staging.txt" actually exists.
+# Source: https://serverfault.com/a/884023/396075
+#
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+	RewriteCond %{HTTP_HOST} ^(.*)?devserver(\.com)
+	RewriteRule ^robots\.txt$ robots-staging.txt [NS]
+</IfModule>
+
+
+
 # URL CANONICALIZATION
 #
 # Both the naked domain and www should resolve to the same URL. 
