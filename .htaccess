@@ -11,6 +11,14 @@
 
 
 
+########################################################################################################################
+# ========================= TWEAKS =====================================================================================
+########################################################################################################################
+
+
+
+# IF MAINWP IS INSTALLED, HIDE THE FACT.
+#
 # BEGIN MainWP
 <IfModule mod_rewrite.c>
 	RewriteEngine On
@@ -20,11 +28,6 @@
 # END MainWP
 
 
-
-
-########################################################################################################################
-# ========================= TWEAKS =====================================================================================
-########################################################################################################################
 
 
 # REDIRECT ROBOTS.TXT REQUESTS TO STAGING SERVER'S VERSION IF NOT PRODUCTION SERVER'S DOMAIN
@@ -41,26 +44,45 @@
 
 
 
+
+# REDIRECT THIS ENTIRE DOMAIN TO THE GOO.GL URL SHORTENING SERVICE (TO HAVE REBRANDED GOO.GL SHORTLINKS)
+# This allows you to redirect all traffic for your domain to goo.gl while keeping the path. Create a Goo.gl short URL and then change
+# goo.gl to your own URL like domain.com. For example: goo.gl/76235 becomes domain.com/76235. Traffic arrives at domain.com/76235 and
+# then is directed to goo.gl/76235
+# See: http://www.createdbypete.com/articles/personalise-the-google-url-shortening-service-with-your-own-domain/
+# ========== NOTE ========== 
+# This method will not work with Wordpress installed. All traffic will be redirected and Wordpress will not be seen.
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine On
+#	RewriteRule ^(.*)$ http://goo.gl/$1 [L,R=301]
+#</IfModule>
+
+
+
+
+
 # URL CANONICALIZATION
 #
 # Both the naked domain and www should resolve to the same URL. 
 # If you want to redirect http://www.example.com to http://example.com, you can use this:
 #
 #<IfModule mod_rewrite.c>
-#RewriteEngine on 
-#RewriteBase / 
-#RewriteCond %{HTTP_HOST} ^www\.example\.com$
-#RewriteRule ^/?$ "http\:\/\/example\.com\/" [R=301,L]
+#	RewriteEngine on 
+#	RewriteBase / 
+#	RewriteCond %{HTTP_HOST} ^www\.example\.com$
+#	RewriteRule ^/?$ "http\:\/\/example\.com\/" [R=301,L]
 #</IfModule>
 
 # If you want to redirect http://example.com to http://www.example.com, you can use this:
 #
 #<IfModule mod_rewrite.c> 
-#RewriteEngine on 
-#RewriteBase / 
-#RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
-#RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+#	RewriteEngine on 
+#	RewriteBase / 
+#	RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
+#	RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
 #</IfModule>
+
 
 
 
@@ -73,6 +95,8 @@
 #	RewriteCond %{HTTP_HOST} ^186\.753\.090\.123$
 #	RewriteRule ^(.*)$ https://example.com/$1 [L,R=301]
 #</IfModule>
+
+
 
 
 # REDIRECT INCORRECT ROBOTS.TXT REQUESTS TO THE RIGHT PLACE.
