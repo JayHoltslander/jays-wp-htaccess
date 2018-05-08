@@ -1,3 +1,11 @@
+# FALLBACK FOR INDEX.PHP
+# If index.php isn't found then load the file MAINT-index.html from the same directory instead.
+# Try: https://codepen.io/j_holtslander/pen/KNgbMP
+#
+DirectoryIndex index.php MAINT-index.html
+
+
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 	RewriteEngine On
