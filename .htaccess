@@ -18,6 +18,59 @@ DirectoryIndex index.php MAINT-index.html
 # END WordPress
 
 
+########################################################################################################################
+# ========================= HTTPS SSL/TLS ==============================================================================
+########################################################################################################################
+
+
+# TEMPORARILY REDIRECT HTTPS to HTTP
+# Problem with SSL? Uncomment this to enable a temporary (302) redirect to http while keeping the requested path.
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine On
+#	RewriteCond %{HTTPS} on
+#	RewriteRule (.*) http://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
+#</IfModule>
+
+
+# FORCE SSL
+# SSL must actually be turned on for this to work. Cloudflare can also force all requests to SSL.
+#
+# <IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTPS} !=on
+#    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+# </IfModule>
+
+
+# UPGRADE INSECURE RESOURCE REQUESTS
+# See: 
+# https://github.com/h5bp/server-configs-apache/pull/83/files
+#
+#<IfModule mod_headers.c>
+#    Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
+#</IfModule>
+
+
+# FORCE CLIENT-SIDE SSL REDIRECTION
+# See: 
+# https://github.com/h5bp/server-configs-apache/pull/83/files
+#
+#<IfModule mod_headers.c>
+#    Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
+#</IfModule>
+
+
+# CACHE SSL REDIRECTION
+# See: 
+# https://github.com/h5bp/server-configs-apache/pull/83/files
+#
+# (!) Remove the `env=HTTPS` optional directive if you want to force HTTP to HTTPS.
+#
+# <IfModule mod_headers.c>
+#     Header set Strict-Transport-Security "max-age=86400; includeSubDomains" env=HTTPS
+#</IfModule>
+
 
 ########################################################################################################################
 # ========================= TWEAKS =====================================================================================
@@ -293,46 +346,6 @@ AddType text/x-component .htc
 #     RewriteCond %{THE_REQUEST} ^.*/index.php  
 #     RewriteRule ^(.*)index.php$ http://%{HTTP_HOST}%{REQUEST_URI}$1 [R=301,L] 
 # </IfModule>
-
-
-
-# FORCE SSL
-# SSL must actually be turned on for this to work. Cloudflare can also force all requests to SSL.
-#
-# <IfModule mod_rewrite.c>
-#    RewriteEngine On
-#    RewriteCond %{HTTPS} !=on
-#    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-# </IfModule>
-
-
-# UPGRADE INSECURE RESOURCE REQUESTS
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
-#
-#<IfModule mod_headers.c>
-#    Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
-#</IfModule>
-
-
-# FORCE CLIENT-SIDE SSL REDIRECTION
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
-#
-#<IfModule mod_headers.c>
-#    Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
-#</IfModule>
-
-
-# CACHE SSL REDIRECTION
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
-#
-# (!) Remove the `env=HTTPS` optional directive if you want to force HTTP to HTTPS.
-#
-# <IfModule mod_headers.c>
-#     Header set Strict-Transport-Security "max-age=86400; includeSubDomains" env=HTTPS
-#</IfModule>
 
 
 # SERVE RESOURCES WITH THE PROPER MEDIA TYPES (MIME TYPES)
