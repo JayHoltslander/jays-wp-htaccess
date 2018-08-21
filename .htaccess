@@ -606,21 +606,22 @@ ExpiresActive on
 
 
 # BEGIN CACHE-CONTROL HEADERS
+# This can conflict with Cloudflare's caching.
 #
-<ifModule mod_headers.c>
-  <filesMatch "\.(flv|ico|pdf|avi|mov|ppt|doc|mp3|mp4|wmv|wav|gif|jpg|jpeg|png|swf)$">
-    Header set Cache-Control "public"
-  </filesMatch>
-  <filesMatch "(?!^.*min\.css$)^.+?\.css$">
-    Header set Cache-Control "public"
-  </filesMatch>
-  <filesMatch "(?!^.*min\.js$)^.+?\.js$">
-    Header set Cache-Control "max-age=604800, private"
-  </filesMatch>
-  <filesMatch "\.(x?html?|php)$">
-    Header set Cache-Control "private, must-revalidate"
-  </filesMatch>
-</ifModule>
+#<ifModule mod_headers.c>
+#  <filesMatch "\.(flv|ico|pdf|avi|mov|ppt|doc|mp3|mp4|wmv|wav|gif|jpg|jpeg|png|swf)$">
+#    Header set Cache-Control "public"
+#  </filesMatch>
+#  <filesMatch "\.(css)$">
+#    Header set Cache-Control "public"
+#  </filesMatch>
+#  <filesMatch "\.(js)$">
+#    Header set Cache-Control "private"
+#  </filesMatch>
+#  <filesMatch "\.(x?html?|php)$">
+#    Header set Cache-Control "private, must-revalidate"
+#  </filesMatch>
+#</ifModule>
 
 
 
