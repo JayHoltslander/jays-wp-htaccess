@@ -666,6 +666,7 @@ FileETag None
 #	
 #	# THEN YOU'RE FORBIDDEN AND ARE SERVED AN ERROR PAGE TELLING YOU SO
 #	RewriteRule ^.*$ - [L,F]
+#	ErrorDocument 403 https://youtu.be/cQ_b4_lw0Gg
 #</IfModule>
 
 
