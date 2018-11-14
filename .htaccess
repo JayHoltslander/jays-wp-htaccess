@@ -650,6 +650,25 @@ FileETag None
 ########################################################################################################################
 
 
+# REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine on
+#	RewriteBase / 
+#
+#	# IF YOU WANT INTO THE WORDPRESS ADMIN AREA...
+#	RewriteCond %{REQUEST_URI} ^/wp-admin.*
+#	
+#	# AND YOU'RE NOT ON ONE OF THESE IP ADDRESSES...
+#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
+#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
+#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
+#	
+#	# THEN YOU'RE FORBIDDEN AND ARE SERVED AN ERROR PAGE TELLING YOU SO
+#	RewriteRule ^.*$ - [L,F]
+#</IfModule>
+
+
 # REMOVE SERVER SIGNATURE
 # See: 
 # * https://techjourney.net/improve-apache-web-server-security-use-servertokens-and-serversignature-to-disable-header/
