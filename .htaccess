@@ -1,3 +1,15 @@
+# REDIRECT ALL PAGES TO ROOT
+# Emergency? Temporarily redirect all pages to the root
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine on
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteCond %{REQUEST_FILENAME} !-d
+#	RewriteRule .? / [R=302,L]
+#</IfModule>
+
+
+
 # FALLBACK FOR INDEX.PHP
 # If index.php isn't found then load the file MAINT-index.html from the same directory instead.
 # Try: https://codepen.io/j_holtslander/pen/KNgbMP
