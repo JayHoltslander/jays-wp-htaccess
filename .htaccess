@@ -439,6 +439,27 @@ AddDefaultCharset utf-8
 ########################################################################################################################
 
 
+# SUBSTITUTE WEBP IF POSSIBLE
+# IF VISITOR'S BROWSER SUPPORTS WEBP IMAGES, AND A WEBP IMAGE EXISTS NEXT TO THE JPG, SERVE THE WEBP IMAGE INSTEAD.
+# Source: https://github.com/vincentorback/WebP-images-with-htaccess
+#
+#<IfModule mod_setenvif.c>
+#  SetEnvIf Request_URI "\.(jpe?g|png)$" REQUEST_image
+#</IfModule>
+#<IfModule mod_rewrite.c>
+#  RewriteEngine On
+#  RewriteCond %{HTTP_ACCEPT} image/webp
+#  RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
+#  RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp]
+#</IfModule>
+#<IfModule mod_headers.c>
+#  Header append Vary Accept env=REQUEST_image
+#</IfModule>
+#<IfModule mod_mime.c>
+#  AddType image/webp .webp
+#</IfModule>
+
+
 # DISABLE ETAG - http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/
 #
 <ifModule mod_headers.c>
