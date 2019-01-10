@@ -13,7 +13,7 @@ Not all sections within the file may apply to you or work on your server. Commen
 
 :warning: **Caution** |
 ------------ |
-The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a feature doesn't work when using this file, comment out sections and use the process of elimination to determine which bit is incompatible with your hosting. Also note that the larger your htaccess is the more you'll increase your site's TTFB. **Trim out what you don't need!**|
+The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a feature doesn't work when using this file, comment out sections and use the process of elimination to determine which bit is incompatible with your hosting. Also note that the larger your htaccess is the more you'll increase your site's [TTFB](https://en.wikipedia.org/wiki/Time_to_first_byte). **Trim out what you don't need!**|
 
 <p align="center">
 <a href="https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess">
