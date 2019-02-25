@@ -1,3 +1,9 @@
+# Hide WP-Config.php for public
+<files wp-config.php>
+order allow,deny
+deny from all
+</files>
+
 # REDIRECT ALL PAGES TO ROOT
 # Emergency? Temporarily redirect all pages to the root
 #
@@ -7,8 +13,6 @@
 #	RewriteCond %{REQUEST_FILENAME} !-d
 #	RewriteRule .? / [R=302,L]
 #</IfModule>
-
-
 
 # FALLBACK FOR INDEX.PHP
 # If index.php isn't found then load the file MAINT-index.html from the same directory instead.
@@ -29,6 +33,21 @@ DirectoryIndex index.php MAINT-index.html
 </IfModule>
 # END WordPress
 
+# Kill PHP Execution
+<Files ~ "\.ph(?:p[345]?|t|tml)$">
+   deny from all
+</Files>
+
+# Block the include-only files.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^wp-admin/includes/ - [F,L]
+RewriteRule !^wp-includes/ - [S=3]
+RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
 
 ########################################################################################################################
 # ========================= HTTPS SSL/TLS ==============================================================================
