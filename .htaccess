@@ -38,18 +38,6 @@ DirectoryIndex index.php MAINT-index.html
    deny from all
 </Files>
 
-# Block the include-only files.
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteBase /
-RewriteRule ^wp-admin/includes/ - [F,L]
-RewriteRule !^wp-includes/ - [S=3]
-RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
-RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
-RewriteRule ^wp-includes/theme-compat/ - [F,L]
-</IfModule>
-#Note: This won't work well on Multisite, as RewriteRule ^wp-includes/[^/]+\.php$ - [F,L] would prevent the ms-files.php file from generating images. Omitting that line will allow the code to work.
-
 ########################################################################################################################
 # ========================= HTTPS SSL/TLS ==============================================================================
 ########################################################################################################################
