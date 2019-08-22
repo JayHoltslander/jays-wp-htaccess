@@ -704,6 +704,17 @@ FileETag None
 ########################################################################################################################
 
 
+# DENY EVERYONE ACCESS TO THE WORDPRESS LOGIN FROM ALL EXCEPT KNOWN/SAFE IP ADDRESSES
+#<Files wp-login.php>
+#	order deny,allow
+#	deny from all
+#	allow from <YOUR IP>
+#	allow from <CLIENT'S IP>
+#	allow from <SAFE IP>
+#</Files>
+
+
+
 # REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN
 #
 #<IfModule mod_rewrite.c>
