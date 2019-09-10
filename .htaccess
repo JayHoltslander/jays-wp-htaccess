@@ -209,6 +209,17 @@ DirectoryIndex index.php MAINT-index.html
 </IfModule>
 
 
+# FORCE FILES TO DOWNLOAD INSTEAD OF OPENING IN BROWSER
+# Source: https://css-tricks.com/snippets/htaccess/force-files-to-download-not-open-in-browser/
+#
+# AddType application/octet-stream .csv
+# AddType application/octet-stream .xls
+# AddType application/octet-stream .doc
+# AddType application/octet-stream .avi
+# AddType application/octet-stream .mpg
+# AddType application/octet-stream .mov
+# AddType application/octet-stream .pdf
+
 
 
 # ALLOW CROSS-ORIGIN REQUESTS.
