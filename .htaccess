@@ -693,10 +693,11 @@ ExpiresActive on
 # IMPROVING PERFORMANCE WITH CACHE-CONTROL: IMMUTABLE
 # SEE: https://www.keycdn.com/blog/cache-control-immutable
 #
-#<filesMatch ".(flv|ico|pdf|ppt|doc|avi|mov|mp4|mp3|wmv|wav|jpg|jpeg|png|gif|js|css|swf)$">
+#<ifModule mod_headers.c>
+#  <filesMatch ".(flv|ico|pdf|ppt|doc|avi|mov|mp4|mp3|wmv|wav|jpg|jpeg|png|gif|js|css|swf)$">
 #    Header set Cache-Control "public, max-age=31536000, immutable"
-#</filesMatch>
-
+#  </filesMatch>
+#</ifModule>
 
 
 # ENABLE KEEP-ALIVE
