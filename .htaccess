@@ -736,13 +736,16 @@ FileETag None
 
 
 
-# REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN
+
+# REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN OR WP-LOGIN
 #
 #<IfModule mod_rewrite.c>
 #	RewriteEngine on
 #	RewriteBase / 
 #
-#	# IF YOU WANT INTO THE WORDPRESS ADMIN AREA...
+#	# IF YOU WANT INTO THE WORDPRESS ADMIN AREA OR THE LOGIN...
+#       RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
+#       RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
 #	RewriteCond %{REQUEST_URI} ^/wp-admin.*
 #	
 #	# AND YOU'RE NOT ON ONE OF THESE IP ADDRESSES...
