@@ -10,6 +10,15 @@
 
 
 
+# 301 REDIRECT ALL .SHTML FILES TO .HTML
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine on
+#	RewriteRule ^(.*).shtml$ https://www.example.com/$1.html [R=301,L]
+#</IfModule>
+
+
+
 # FALLBACK FOR INDEX.PHP
 # If index.php isn't found then load the file MAINT-index.html from the same directory instead.
 # Try: https://codepen.io/j_holtslander/pen/KNgbMP
