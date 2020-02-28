@@ -756,6 +756,8 @@ FileETag None
 #	# ====== IF YOU WANT INTO THE WORDPRESS ADMIN AREA, THE LOGIN, OR TO VIEW A README... ====== 
 #	RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
 #	RewriteCond %{REQUEST_URI} ^/wp-admin.* [OR]
+#	RewriteCond %{REQUEST_URI} ^/phpmyadmin.* [OR]
+#	RewriteCond %{REQUEST_URI} ^/adminer.* [OR]
 #	RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
 #	RewriteCond %{REQUEST_URI} ^(.*)?readme\.html(.*)$ [OR]
 #	RewriteCond %{REQUEST_URI} ^(.*)?readme\.txt(.*)$
