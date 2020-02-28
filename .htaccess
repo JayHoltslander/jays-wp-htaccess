@@ -747,25 +747,29 @@ FileETag None
 
 
 # REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN OR WP-LOGIN
+# See: https://serverfault.com/a/1005015/396075
 #
 #<IfModule mod_rewrite.c>
 #	RewriteEngine on
 #	RewriteBase / 
 #
-#	# IF YOU WANT INTO THE WORDPRESS ADMIN AREA OR THE LOGIN...
-#       RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
-#       RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
-#	RewriteCond %{REQUEST_URI} ^/wp-admin.*
+#	# ====== IF YOU WANT INTO THE WORDPRESS ADMIN AREA, THE LOGIN, OR TO VIEW A README... ====== 
+#	RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
+#	RewriteCond %{REQUEST_URI} ^/wp-admin.* [OR]
+#	RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
+#	RewriteCond %{REQUEST_URI} ^(.*)?readme\.html(.*)$ [OR]
+#	RewriteCond %{REQUEST_URI} ^(.*)?readme\.txt(.*)$
 #	
-#	# AND YOU'RE NOT ON ONE OF THESE IP ADDRESSES...
+#	# ====== AND YOU'RE NOT ON ONE OF THESE IP ADDRESSES... ====== 
 #	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
 #	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
 #	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
 #	
-#	# THEN YOU'RE FORBIDDEN AND ARE SERVED AN ERROR PAGE TELLING YOU SO
+#	# ====== THEN YOU'RE FORBIDDEN AND ARE SERVED AN ERROR PAGE TELLING YOU SO ====== 
 #	RewriteRule ^.*$ - [L,F]
 #	ErrorDocument 403 https://youtu.be/cQ_b4_lw0Gg
 #</IfModule>
+
 
 
 # REMOVE SERVER SIGNATURE
