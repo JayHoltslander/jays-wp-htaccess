@@ -145,24 +145,32 @@ DirectoryIndex index.php MAINT-index.html
 
 
 # URL CANONICALIZATION
-#
 # Both the naked domain and www should resolve to the same URL. 
-# If you want to redirect http://www.example.com to http://example.com, you can use this:
 #
+# REDIRECT WWW TO NAKED DOMAIN
 #<IfModule mod_rewrite.c>
 #	RewriteEngine on 
 #	RewriteBase / 
 #	RewriteCond %{HTTP_HOST} ^www\.example\.com$
-#	RewriteRule ^/?$ "http\:\/\/example\.com\/" [R=301,L]
+#	RewriteRule ^/?$ "https\:\/\/example\.com\/" [R=301,L]
 #</IfModule>
 
-# If you want to redirect http://example.com to http://www.example.com, you can use this:
+# REDIRECT http://example.com TO https://www.example.com
 #
 #<IfModule mod_rewrite.c> 
 #	RewriteEngine on 
 #	RewriteBase / 
 #	RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
-#	RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+#	RewriteRule ^(.*)$ https://www.example.com/$1 [L,R=301]
+#</IfModule>
+
+# REDIRECT DEV. SUBDOMAIN TO WWW.
+#
+#<IfModule mod_rewrite.c> 
+#	RewriteEngine on 
+#	RewriteBase / 
+#	RewriteCond %{HTTP_HOST} ^dev.domain.com$ [NC]
+#	RewriteRule ^(.*)$ https://www.domain.com/$1 [L,R=301]
 #</IfModule>
 
 
