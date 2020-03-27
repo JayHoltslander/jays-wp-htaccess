@@ -23,7 +23,7 @@
 # If index.php isn't found then load the file MAINT-index.html from the same directory instead.
 # Try: https://codepen.io/j_holtslander/pen/KNgbMP
 #
-DirectoryIndex index.php MAINT-index.html
+DirectoryIndex index.php index.html MAINT-index.html
 
 
 
