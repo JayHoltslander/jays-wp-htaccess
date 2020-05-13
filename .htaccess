@@ -660,33 +660,33 @@ ExpiresActive on
     ExpiresByType application/x-web-app-manifest+json   "access plus 0 seconds"
     ExpiresByType text/cache-manifest                   "access plus 0 seconds"
   # Media files
-    ExpiresByType audio/ogg                             "access plus 1 month"
-    ExpiresByType image/bmp                             "access plus 1 month"
-    ExpiresByType image/gif                             "access plus 1 month"
-    ExpiresByType image/jpeg                            "access plus 1 month"
-    ExpiresByType image/jpg                            "access plus 1 month"
-    ExpiresByType image/png                             "access plus 1 month"
-    ExpiresByType image/svg+xml                         "access plus 1 month"
-    ExpiresByType image/webp                            "access plus 1 month"
-    ExpiresByType video/mp4                             "access plus 1 month"
-    ExpiresByType video/ogg                             "access plus 1 month"
-    ExpiresByType video/webm                            "access plus 1 month"
+    ExpiresByType audio/ogg                             "access plus 6 months"
+    ExpiresByType image/bmp                             "access plus 6 months"
+    ExpiresByType image/gif                             "access plus 6 months"
+    ExpiresByType image/jpeg                            "access plus 6 months"
+    ExpiresByType image/jpg                            "access plus 6 months"
+    ExpiresByType image/png                             "access plus 6 months"
+    ExpiresByType image/svg+xml                         "access plus 6 months"
+    ExpiresByType image/webp                            "access plus 6 months"
+    ExpiresByType video/mp4                             "access plus 6 months"
+    ExpiresByType video/ogg                             "access plus 6 months"
+    ExpiresByType video/webm                            "access plus 6 months"
   # Web fonts
     # Embedded OpenType (EOT)
-      ExpiresByType application/vnd.ms-fontobject         "access plus 1 month"
-      ExpiresByType font/eot                              "access plus 1 month"
+      ExpiresByType application/vnd.ms-fontobject         "access plus 6 months"
+      ExpiresByType font/eot                              "access plus 6 months"
     # OpenType
-      ExpiresByType font/opentype                         "access plus 1 month"
+      ExpiresByType font/opentype                         "access plus 6 months"
     # TrueType
-      ExpiresByType application/x-font-ttf                "access plus 1 month"
+      ExpiresByType application/x-font-ttf                "access plus 6 months"
     # Web Open Font Format (WOFF) 1.0
-      ExpiresByType application/font-woff                 "access plus 1 month"
-      ExpiresByType application/x-font-woff               "access plus 1 month"
-      ExpiresByType font/woff                             "access plus 1 month"
+      ExpiresByType application/font-woff                 "access plus 6 months"
+      ExpiresByType application/x-font-woff               "access plus 6 months"
+      ExpiresByType font/woff                             "access plus 6 months"
     # Web Open Font Format (WOFF) 2.0
-      ExpiresByType application/font-woff2                "access plus 1 month"
+      ExpiresByType application/font-woff2                "access plus 6 months"
   # Other
-    ExpiresByType image/svg+xml                         "access plus 1 month"
+    ExpiresByType image/svg+xml                         "access plus 6 months"
     ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
 </ifModule>
 
