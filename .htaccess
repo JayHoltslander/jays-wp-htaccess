@@ -332,8 +332,6 @@ AddType text/x-component .htc
 # ADD SUPPORT FOR AUGMENTED REALITY FILES
 # See: https://webkit.org/blog/8421/viewing-augmented-reality-assets-in-safari-for-ios/
 #
-# Before iOS 12.2, Safari did not recognize the official type. You had to use:
-AddType model/vnd.pixar.usd
 # All files ending in .usdz served as USD.
 AddType model/vnd.usdz+zip usdz
 
