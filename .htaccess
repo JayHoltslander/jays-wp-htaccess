@@ -112,38 +112,6 @@ DirectoryIndex index.php index.html MAINT-index.html
 
 
 
-# REDIRECT ROBOTS.TXT REQUESTS TO STAGING SERVER'S VERSION IF NOT PRODUCTION SERVER'S DOMAIN
-# Serve a different ("Do not index") version of robots.txt only when accessed on any SUBDOMAIN of "stagingserver.com"
-# Make sure file "robots-staging.txt" actually exists.
-# Source: https://serverfault.com/a/884023/396075
-#
-#<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteBase /
-#	RewriteCond %{HTTP_HOST} ^(.*)?devserver(\.com)
-#	RewriteRule ^robots\.txt$ robots-staging.txt [NS]
-#</IfModule>
-
-
-
-
-# REDIRECT THIS ENTIRE DOMAIN TO THE GOO.GL URL SHORTENING SERVICE (TO HAVE REBRANDED GOO.GL SHORTLINKS)
-# This allows you to redirect all traffic for your domain to goo.gl while keeping the path. Create a Goo.gl short URL and then change
-# goo.gl to your own URL like domain.com. For example: goo.gl/76235 becomes domain.com/76235. Traffic arrives at domain.com/76235 and
-# then is directed to goo.gl/76235
-# See: http://www.createdbypete.com/articles/personalise-the-google-url-shortening-service-with-your-own-domain/
-# ========== NOTE ========== 
-# This method will not work with Wordpress installed. All traffic will be redirected and Wordpress will not be seen.
-#
-#<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteRule ^(.*)$ http://goo.gl/$1 [L,R=301]
-#</IfModule>
-
-
-
-
-
 # URL CANONICALIZATION
 # Both the naked domain and www should resolve to the same URL. 
 #
@@ -297,19 +265,6 @@ DirectoryIndex index.php index.html MAINT-index.html
 #
 Options -MultiViews
 
-
-
-# TURN OFF DIRECTORY INDEXING (Can break Wordpress' URLs in some situations)
-#
-# Options All -Indexes
-
-
-
-# TURN OFF DIRECTORY INDEXING ALT
-#
-<IfModule mod_autoindex.c>
-  Options -Indexes
-</IfModule>
 
 
 
@@ -517,9 +472,9 @@ AddDefaultCharset utf-8
 # DISABLE ETAG - http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/
 #
 <ifModule mod_headers.c>
-	Header unset Pragma
-	FileETag None
-	Header unset ETag
+  Header unset Pragma
+  FileETag None
+  Header unset ETag
 </ifModule>
 
 
@@ -536,14 +491,14 @@ AddDefaultCharset utf-8
 # COMPRESS WITH GZIP
 #
 <ifModule mod_gzip.c>
-mod_gzip_on Yes
-mod_gzip_dechunk Yes
-mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
-mod_gzip_item_include handler ^cgi-script$
-mod_gzip_item_include mime ^text/.*
-mod_gzip_item_include mime ^application/x-javascript.*
-mod_gzip_item_exclude mime ^image/.*
-mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+  mod_gzip_on Yes
+  mod_gzip_dechunk Yes
+  mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+  mod_gzip_item_include handler ^cgi-script$
+  mod_gzip_item_include mime ^text/.*
+  mod_gzip_item_include mime ^application/x-javascript.*
+  mod_gzip_item_exclude mime ^image/.*
+  mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 </ifModule>
 
 
@@ -725,7 +680,7 @@ ExpiresActive on
 # ENABLE KEEP-ALIVE
 #
 <ifModule mod_headers.c>
-    Header set Connection keep-alive
+  Header set Connection keep-alive
 </ifModule>
 
 
@@ -999,22 +954,22 @@ RewriteRule .* - [F,L]
 # BLOCK SPECIFIC SITES FROM STEALING BANDWIDTH BY HOTLINKING TO IMAGES
 #
 <IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?discussionist\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?sodahead\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixshark\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?advanceindiana.blogspot\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?galleryhip\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?freespeechwisconsin\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?memekid\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?3edgesword.blogspot\.ca(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?neogaf\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?locationrebel\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixgood\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?pudelekf23.blogspot\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?fstdt\.com(/.*)*$ [NC,OR]
-RewriteCond %{HTTP_REFERER} ^http://(www\.)?zerohedge\.com(/.*)*$ [NC]
-RewriteRule \.(jpeg|JPEG|jpe|JPE|jpg|JPG|gif|GIF|png|PNG|mng|MNG)$ - [F]
+  RewriteEngine On
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?discussionist\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?sodahead\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixshark\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?advanceindiana.blogspot\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?galleryhip\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?freespeechwisconsin\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?memekid\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?3edgesword.blogspot\.ca(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?neogaf\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?locationrebel\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixgood\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pudelekf23.blogspot\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?fstdt\.com(/.*)*$ [NC,OR]
+  RewriteCond %{HTTP_REFERER} ^http://(www\.)?zerohedge\.com(/.*)*$ [NC]
+  RewriteRule \.(jpeg|JPEG|jpe|JPE|jpg|JPG|gif|GIF|png|PNG|mng|MNG)$ - [F]
 </IfModule>
 
 
@@ -1022,17 +977,17 @@ RewriteRule \.(jpeg|JPEG|jpe|JPE|jpg|JPG|gif|GIF|png|PNG|mng|MNG)$ - [F]
 # ABUSE HTTP REFERRER BLOCKING - Blocking referrer domains stops traffic originating from the specified domains
 #
 <IfModule mod_rewrite.c>
-RewriteCond %{HTTP_REFERER} 100dollars-seo.com\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} best-seo-offer\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} free-social-buttions\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} todaperfeita\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} www1.free-social-buttons\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} www2.free-social-buttons\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} www3.free-social-buttons\.com [NC,OR]
-RewriteCond %{HTTP_REFERER} www4.free-social-buttons\.com [NC]
-RewriteRule .* - [F,L]
+  RewriteCond %{HTTP_REFERER} 100dollars-seo.com\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} best-seo-offer\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} free-social-buttions\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} todaperfeita\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} www1.free-social-buttons\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} www2.free-social-buttons\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} www3.free-social-buttons\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} www4.free-social-buttons\.com [NC]
+  RewriteRule .* - [F,L]
 </IfModule>
 
 
@@ -1042,10 +997,8 @@ RewriteRule .* - [F,L]
 ########################################################################################################################
 # ===================== 301 REDIRECTS ==================================================================================
 ########################################################################################################################
-# It's better to use the Redirection plugin for Wordpress than define them here. Find it at: https://wordpress.org/plugins/redirection/
-
-
-
+# It's better to use the Redirection plugin for Wordpress than define them here. 
+# Find it at: https://wordpress.org/plugins/redirection/
 
 #redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
 #redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
