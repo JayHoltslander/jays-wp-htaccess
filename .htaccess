@@ -917,13 +917,27 @@ AddDefaultCharset utf-8
 </Files>
 
 
-# STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY
+# STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY - METHOD 1
 #
-#RewriteCond %{REQUEST_URI}  ^/$
-#RewriteCond %{QUERY_STRING} ^/?author=([0-9]*)
-#RewriteRule ^(.*)$ http://[domain.com]/? [L,R=301]
-#RewriteCond %{QUERY_STRING} author=\d
-#RewriteRule ^ /? [L,R=301]
+#<IfModule mod_rewrite.c>
+#  RewriteEngine On
+#  RewriteCond %{REQUEST_URI}  ^/$
+#  RewriteCond %{QUERY_STRING} ^/?author=([0-9]*)
+#  RewriteRule ^(.*)$ http://[domain.com]/? [L,R=301]
+#  RewriteCond %{QUERY_STRING} author=\d
+#  RewriteRule ^ /? [L,R=301]
+#</IfModule>
+
+
+# STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY - METHOD 2
+# See: https://www.wpbeginner.com/wp-tutorials/how-to-discourage-brute-force-by-blocking-author-scans-in-wordpress/
+#
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{QUERY_STRING} (author=\d+) [NC]
+  RewriteRule .* - [F]
+</IfModule>
 
 
 #WP HARDENING SECURITY HEADERS
