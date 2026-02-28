@@ -1,232 +1,1033 @@
-# REDIRECT ALL PAGES TO ROOT
-# Emergency? Temporarily redirect all pages to the root
+# ======================================================================================================================
+# WORDPRESS .HTACCESS - ULTIMATE EDITION (2026)
+# ======================================================================================================================
 #
-#<IfModule mod_rewrite.c>
-#	RewriteEngine on
-#	RewriteCond %{REQUEST_FILENAME} !-f
-#	RewriteCond %{REQUEST_FILENAME} !-d
-#	RewriteRule .? / [R=302,L]
-#</IfModule>
-
-
-
-# 301 REDIRECT ALL .SHTML FILES TO .HTML
+# PROJECT  : jays-wp-htaccess (improved fork)
+# ORIGINAL : https://github.com/JayHoltslander/jays-wp-htaccess
+# FORK     : https://github.com/madjeek-web/jays-wp-htaccess
+# LICENSE  : MIT
 #
-#<IfModule mod_rewrite.c>
-#	RewriteEngine on
-#	RewriteRule ^(.*).shtml$ https://www.example.com/$1.html [R=301,L]
-#</IfModule>
-
-
-
-# FALLBACK FOR INDEX.PHP
-# If index.php isn't found then load the file MAINT-index.html from the same directory instead.
-# Try: https://codepen.io/j_holtslander/pen/KNgbMP
+# WHAT IS THIS FILE?
+# ------------------
+# Apache reads this file before serving ANY page on your website.
+# Think of it as the "doorman" of your site: it decides who gets in,
+# how fast pages are served, and how securely everything is handled.
+# It lives at the ROOT of your WordPress installation (same folder as wp-config.php).
 #
+# HOW TO USE THIS FILE
+# --------------------
+# 1. Read the comments carefully before enabling/disabling anything.
+# 2. Lines starting with "#" are COMMENTS — Apache ignores them completely.
+# 3. Sections you don't need are COMMENTED OUT — remove the "#" to activate them.
+# 4. ALWAYS make a backup of your current .htaccess before replacing it!
+# 5. Test your site after each change using https://htaccess.madewithlove.com/
+#
+# QUICK SEARCH GUIDE
+# ------------------
+# Looking for something specific? Search (Ctrl+F) for:
+#   HTTPS         → Force SSL / redirect to https
+#   WWW           → Add/remove "www" from your domain
+#   WORDPRESS     → Core WordPress rewrite rules
+#   SECURITY      → Block hackers, bots, attacks
+#   PERFORMANCE   → Caching, compression, speed
+#   MIME          → File type declarations
+#   REDIRECTS     → 301/302 page redirects
+#
+# ======================================================================================================================
+
+
+
+# ======================================================================================================================
+# SECTION 1 — WORDPRESS CORE
+# ======================================================================================================================
+# These rules are REQUIRED for WordPress to work.
+# They tell Apache: "If the requested file or folder doesn't exist on disk,
+# send the request to WordPress (index.php) so it can handle it."
+# Without this block, WordPress pages return a 404 error.
+# ======================================================================================================================
+
+# DIRECTORY INDEX FALLBACK
+# Priority order: try index.php first, then index.html, then MAINT-index.html.
+# MAINT-index.html is useful during maintenance — just create that file
+# and rename it if you want a "site under maintenance" page to appear automatically.
 DirectoryIndex index.php index.html MAINT-index.html
-
-
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteBase / 
-	RewriteRule ^index\.php$ - [L]
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule . /index.php [L]
+    RewriteEngine On
+    RewriteBase /
+
+    # If the requested file IS an actual PHP file, serve it directly (skip WordPress routing).
+    RewriteRule ^index\.php$ - [L]
+
+    # If the requested path is NOT an actual file on disk...
+    RewriteCond %{REQUEST_FILENAME} !-f
+
+    # ...AND it's NOT an actual folder on disk...
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # ...then send everything to index.php so WordPress can handle the routing.
+    RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
 
+# PREVENT "MULTIVIEWS" ERRORS
+# Apache's MultiViews feature can cause 404 errors when a folder has the same name
+# as a rewrite rule. Disabling it prevents confusing redirect loops.
+# Source: https://httpd.apache.org/docs/current/content-negotiation.html#multiviews
+Options -MultiViews
 
-########################################################################################################################
-# ========================= HTTPS SSL/TLS ==============================================================================
-########################################################################################################################
 
 
-# TEMPORARILY REDIRECT HTTPS to HTTP
-# Problem with SSL? Uncomment this to enable a temporary (302) redirect to http while keeping the requested path.
+# ======================================================================================================================
+# SECTION 2 — HTTPS & SSL
+# ======================================================================================================================
+# Modern websites MUST use HTTPS. It protects your users' data, improves your
+# Google ranking, and is required by most browsers for certain features (geolocation, etc.).
+#
+# PREREQUISITE: You need an SSL certificate installed on your server first.
+# Free option: Let's Encrypt (https://letsencrypt.org/) — works with most hosts.
+# ======================================================================================================================
+
+# FORCE SSL — REDIRECT ALL HTTP TO HTTPS
+# Remove the "#" on each line to activate this block.
+# Once enabled, any visitor going to http://yoursite.com will be permanently
+# redirected (301) to https://yoursite.com.
 #
 #<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteCond %{HTTPS} on
-#	RewriteRule (.*) http://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
-#</IfModule>
-
-
-# FORCE SSL
-# SSL must actually be turned on for this to work. Cloudflare can also force all requests to SSL.
-#
-# <IfModule mod_rewrite.c>
 #    RewriteEngine On
 #    RewriteCond %{HTTPS} !=on
-#    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-# </IfModule>
+#    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+#</IfModule>
 
 
-# UPGRADE INSECURE RESOURCE REQUESTS
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
+# HSTS — HTTP STRICT TRANSPORT SECURITY
+# After forcing HTTPS, tell browsers to NEVER try HTTP again for 1 year.
+# This prevents "SSL stripping" attacks where a hacker intercepts the first request.
+#
+# IMPORTANT: Only enable this AFTER you're sure your SSL cert works perfectly.
+#            If your cert expires and HSTS is on, visitors will be locked out!
+#
+# max-age=31536000   → Remember for 1 year (in seconds)
+# includeSubDomains  → Also covers www., api., etc.
+# preload            → Ask browsers to hardcode your domain as HTTPS-only
+#                      Register at https://hstspreload.org/ to be in the browser list.
 #
 #<IfModule mod_headers.c>
-#    Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
+#    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 #</IfModule>
 
 
-# FORCE CLIENT-SIDE SSL REDIRECTION
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
+# TEMPORARY FALLBACK: REDIRECT HTTPS BACK TO HTTP
+# SSL broken? Uncomment this to temporarily remove SSL while you fix it.
+# Make sure to comment out the "Force SSL" block above first!
 #
-#<IfModule mod_headers.c>
-#    Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
-#</IfModule>
-
-
-# CACHE SSL REDIRECTION
-# See: 
-# https://github.com/h5bp/server-configs-apache/pull/83/files
-#
-# (!) Remove the `env=HTTPS` optional directive if you want to force HTTP to HTTPS.
-#
-# <IfModule mod_headers.c>
-#     Header set Strict-Transport-Security "max-age=86400; includeSubDomains" env=HTTPS
-#</IfModule>
-
-
-########################################################################################################################
-# ========================= TWEAKS =====================================================================================
-########################################################################################################################
-
-
-
-# IF MAINWP IS INSTALLED, HIDE THE FACT.
-#
-# BEGIN MainWP
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteBase /
-	RewriteRule ^wp-content/plugins/mainwp-child/(.*)$ /wp-content/plugins/THIS_PLUGIN_DOES_NOT_EXIST [QSA,L]
-</IfModule>
-# END MainWP
-
-
-
-
-# URL CANONICALIZATION
-# Both the naked domain and www should resolve to the same URL. 
-#
-# REDIRECT WWW TO NAKED DOMAIN
 #<IfModule mod_rewrite.c>
-#	RewriteEngine on 
-#	RewriteBase / 
-#	RewriteCond %{HTTP_HOST} ^www\.example\.com$
-#	RewriteRule ^/?$ "https\:\/\/example\.com\/" [R=301,L]
+#    RewriteEngine On
+#    RewriteCond %{HTTPS} on
+#    RewriteRule (.*) http://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
 #</IfModule>
 
-# REDIRECT http://example.com TO https://www.example.com
+
+# CLOUDFLARE SUPPORT — RECOGNIZE SSL SET AT PROXY LEVEL
+# If your site is behind Cloudflare (or any load balancer), Cloudflare handles
+# SSL for the visitor. Your server sees the request as HTTP, but it IS secure.
+# Uncommenting this line tells Apache to treat such requests as HTTPS.
 #
-#<IfModule mod_rewrite.c> 
-#	RewriteEngine on 
-#	RewriteBase / 
-#	RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
-#	RewriteRule ^(.*)$ https://www.example.com/$1 [L,R=301]
-#</IfModule>
+#SetEnvIf X-Forwarded-Proto https HTTPS=on
 
-# REDIRECT DEV. SUBDOMAIN TO WWW.
+
+
+# ======================================================================================================================
+# SECTION 3 — URL CANONICALIZATION (WWW vs no-WWW)
+# ======================================================================================================================
+# Your site should only be accessible at ONE canonical URL.
+# Either: https://yoursite.com (no www)
+# Or:     https://www.yoursite.com (with www)
 #
-#<IfModule mod_rewrite.c> 
-#	RewriteEngine on 
-#	RewriteBase / 
-#	RewriteCond %{HTTP_HOST} ^dev.domain.com$ [NC]
-#	RewriteRule ^(.*)$ https://www.domain.com/$1 [L,R=301]
+# Having BOTH work causes duplicate content penalties in Google.
+# Choose ONE option below and activate it. Leave the other commented out.
+# ======================================================================================================================
+
+# OPTION A — REDIRECT WWW → NO-WWW (recommended for modern sites)
+# http://www.yoursite.com → https://yoursite.com
+# Replace "yoursite.com" with your actual domain.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_HOST} ^www\.yoursite\.com$ [NC]
+#    RewriteRule ^(.*)$ https://yoursite.com/$1 [R=301,L]
 #</IfModule>
 
 
+# OPTION B — REDIRECT NO-WWW → WWW
+# http://yoursite.com → https://www.yoursite.com
+# Replace "yoursite.com" with your actual domain.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_HOST} !^www\. [NC]
+#    RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+#</IfModule>
 
 
 # REDIRECT DIRECT IP ACCESS TO DOMAIN
-# Change the URL if someone accesses the website via direct IP address.
+# If someone types your server's IP address (e.g., http://123.456.789.0),
+# redirect them to your actual domain. Prevents information leakage.
+# Replace 0.0.0.0 with your real server IP, and yoursite.com with your domain.
 #
 #<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteBase /
-#	RewriteCond %{HTTP_HOST} ^186\.753\.090\.123$
-#	RewriteRule ^(.*)$ https://example.com/$1 [L,R=301]
+#    RewriteEngine On
+#    RewriteCond %{HTTP_HOST} ^0\.0\.0\.0$
+#    RewriteRule ^(.*)$ https://yoursite.com/$1 [L,R=301]
+#</IfModule>
+
+
+# REDIRECT STAGING SUBDOMAIN TO PRODUCTION
+# If you have a staging server at staging.yoursite.com, redirect it to the live site.
+# Useful to avoid Google indexing your staging environment.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_HOST} ^staging\.yoursite\.com$ [NC]
+#    RewriteRule ^(.*)$ https://yoursite.com/$1 [L,R=301]
+#</IfModule>
+
+
+# REDIRECT ROBOTS.TXT ON STAGING TO "DO NOT INDEX" VERSION
+# Create a file called robots-staging.txt with "Disallow: /" in it.
+# This file will be served instead of robots.txt on your staging server,
+# preventing search engines from indexing your staging environment.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_HOST} ^(.*)?staging\.yoursite\.com
+#    RewriteRule ^robots\.txt$ robots-staging.txt [NS]
+#</IfModule>
+
+
+# EMERGENCY REDIRECT — SEND ALL PAGES TO HOME
+# Site on fire? Uncomment this to send ALL traffic to your homepage temporarily.
+# Uses 302 (temporary) so search engines don't update their links.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{REQUEST_FILENAME} !-f
+#    RewriteCond %{REQUEST_FILENAME} !-d
+#    RewriteRule .? / [R=302,L]
 #</IfModule>
 
 
 
-
-# REDIRECT INCORRECT ROBOTS.TXT REQUESTS TO THE RIGHT PLACE.
-# Source: https://perishablepress.com/htaccess-cleanup/
+# ======================================================================================================================
+# SECTION 4 — SECURITY HEADERS
+# ======================================================================================================================
+# These HTTP headers tell browsers HOW to handle your content securely.
+# They are sent invisibly with every page load — users don't see them,
+# but their browsers read and enforce them.
 #
-<IfModule mod_alias.c>
-	RedirectMatch 301 (?<!^)/robots.txt$ /robots.txt
+# Test your headers at: https://securityheaders.com/
+# ======================================================================================================================
+
+# X-FRAME-OPTIONS
+# Prevents your site from being loaded inside an <iframe> on another website.
+# This stops "clickjacking" attacks where a hacker hides your site under a fake UI.
+# DENY   = nobody can iframe your pages
+# SAMEORIGIN = only your own domain can iframe your pages (useful for page builders)
+#
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
 </IfModule>
 
 
-
-# REDIRECT ROBOTS.TXT REQUESTS TO STAGING SERVER'S VERSION IF NOT PRODUCTION SERVER'S DOMAIN
-# Serve a different ("Do not index") version of robots.txt only when accessed on a subdomain of "stagingserver.com"
-# Make sure file "robots-staging.txt" actually exists.
-# Source: https://serverfault.com/a/884023/396075
+# X-CONTENT-TYPE-OPTIONS
+# Tells browsers: "Trust the MIME type I declare, don't try to guess it."
+# Prevents "MIME sniffing" attacks where a browser might execute a text file as JavaScript.
 #
-#<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteBase /
-#	RewriteCond %{HTTP_HOST} ^(.*)?stagingserver(\.com)
-#	RewriteRule ^robots\.txt$ robots-staging.txt [NS]
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+
+# X-XSS-PROTECTION
+# Activates the browser's built-in XSS (Cross-Site Scripting) filter.
+# Note: Modern browsers use CSP instead, but this helps older browsers too.
+# "1; mode=block" = detect XSS and BLOCK the page (don't render it at all).
+#
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+
+# REFERRER-POLICY
+# Controls how much URL info is sent when a user clicks a link from your site to another.
+# "strict-origin-when-cross-origin" = send full URL for same-site links, just the domain
+# for cross-site links over HTTPS, and NOTHING for cross-site links over HTTP.
+# This is the modern recommended default (as of 2022+).
+#
+<IfModule mod_headers.c>
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+
+# PERMISSIONS-POLICY (formerly Feature-Policy)
+# Disables browser features your site doesn't need.
+# This prevents third-party scripts or iframes from accessing things like the camera or microphone.
+# Customize based on what your site actually uses.
+# camera=() means "nobody is allowed to use the camera API on this site"
+#
+<IfModule mod_headers.c>
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+</IfModule>
+
+
+# CONTENT-SECURITY-POLICY (CSP)
+# The most powerful security header. Tells browsers WHERE content can be loaded from.
+# This is a STRICT example — it may break things like Google Analytics or Google Fonts.
+#
+# BEGINNER TIP: Start with just "base-uri 'self'" (below) and add more rules later.
+# Use https://report-uri.com/home/generate to build your policy visually.
+#
+# base-uri 'self'  → Only your domain can be used in <base> HTML tags (prevents base tag hijacking)
+#
+<IfModule mod_headers.c>
+    Header set Content-Security-Policy "base-uri 'self';"
+</IfModule>
+
+# ADVANCED CSP EXAMPLE (commented out — customize before using)
+# Replace yoursite.com and cdn.yoursite.com with your actual domains.
+#
+#<IfModule mod_headers.c>
+#    Header always set Content-Security-Policy "default-src 'self'; \
+#      script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://www.googletagmanager.com; \
+#      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+#      img-src 'self' data: https://www.google-analytics.com; \
+#      font-src 'self' https://fonts.gstatic.com; \
+#      connect-src 'self'; \
+#      frame-ancestors 'self'; \
+#      base-uri 'self'; \
+#      form-action 'self';"
 #</IfModule>
 
 
-
-# SHOW THE ADMIN’S EMAIL ADDRESS IN APACHE ERROR MESSAGES
+# REMOVE SERVER SIGNATURE
+# By default, Apache tells hackers which version of Apache you're running.
+# Example: "Apache/2.4.41 (Ubuntu)" — this gives attackers useful info.
+# This line hides that information completely.
 #
-#SetEnv SERVER_ADMIN email@isp.com
+ServerSignature Off
+
+
+# REMOVE X-POWERED-BY HEADER
+# PHP can expose "X-Powered-By: PHP/8.2.0" in response headers.
+# Remove it to prevent version fingerprinting.
+#
+<IfModule mod_headers.c>
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
+
+
+# DISABLE HTTP TRACE METHOD
+# The HTTP TRACE method can be used in "Cross-Site Tracing" (XST) attacks.
+# No legitimate browser ever uses TRACE — blocking it is pure security gain.
+#
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} ^TRACE
+RewriteRule .* - [F]
 
 
 
+# ======================================================================================================================
+# SECTION 5 — WORDPRESS SPECIFIC SECURITY
+# ======================================================================================================================
+# WordPress is the world's most popular CMS — and therefore the most targeted.
+# These rules protect the most common attack surfaces.
+# ======================================================================================================================
 
-# BLOCK ACCESS TO DIRECTORIES WITHOUT A DEFAULT DOCUMENT
+# BLOCK ACCESS TO wp-config.php
+# This is the most sensitive file in WordPress. It contains your database
+# credentials, secret keys, and more. NOBODY should access it over the web.
+#
+<files wp-config.php>
+    order allow,deny
+    deny from all
+</files>
+
+
+# DISABLE XML-RPC
+# XML-RPC is a legacy remote access protocol in WordPress (used by old mobile apps).
+# Attackers exploit it massively for brute-force login attacks (they can try
+# thousands of passwords per request because XMLRPC can send multiple login attempts).
+# Unless you use Jetpack or the WP mobile app, you should DISABLE it.
+# Source: https://blog.sucuri.net/2015/10/brute-force-amplification-attacks-against-wordpress-xmlrpc.html
+#
+<files xmlrpc.php>
+    <IfModule mod_authz_core.c>
+        # Apache 2.4+
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        # Apache 2.2 (older servers)
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</files>
+
+
+# PROTECT THE readme.html FILE
+# WordPress includes a readme.html that reveals your exact WordPress version.
+# Hackers use this to find outdated, vulnerable sites. Block it.
+#
+<files readme.html>
+    Deny from all
+</files>
+
+
+# BLOCK ACCESS TO .htaccess ITSELF
+# This file can contain sensitive configuration. Prevent anyone from reading it.
+#
+<Files ~ "^.*\.([Hh][Tt][Aa])">
+    order allow,deny
+    deny from all
+    satisfy all
+</Files>
+
+
+# PROTECT wp-includes DIRECTORY
+# The wp-includes folder should never be accessible via a direct URL.
+# No PHP file in there should ever be run directly from a browser.
+#
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^wp-admin/includes/ - [F,L]
+    RewriteRule !^wp-includes/ - [S=3]
+    RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+    RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+    RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
+
+
+# RESTRICT WP-LOGIN AND WP-ADMIN TO KNOWN IP ADDRESSES (RECOMMENDED)
+# This is one of the most effective WordPress security measures.
+# Only people with your IP address can access the admin area.
+# Replace the example IPs with your real IP addresses.
+# Find your IP at: https://www.whatismyip.com/
+#
+# ⚠️  WARNING: If you're on a dynamic IP (changes every day), this can lock YOU out!
+#              Use a VPN with a fixed IP, or use a security plugin instead.
+#
+#<Files wp-login.php>
+#    order deny,allow
+#    deny from all
+#    allow from 203.0.113.10     # Your home IP
+#    allow from 198.51.100.25    # Your office IP
+#    allow from 192.0.2.100      # Client or agency IP
+#</Files>
+
+
+# ADVANCED WP-ADMIN + WP-LOGIN IP RESTRICTION (covers more entry points)
+# This also blocks access to readme files and phpMyAdmin.
+# Same IP restrictions apply — only listed IPs can access the admin.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine on
+#    RewriteBase /
+#
+#    # Block if trying to access sensitive admin areas...
+#    RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
+#    RewriteCond %{REQUEST_URI} ^/wp-admin.* [OR]
+#    RewriteCond %{REQUEST_URI} ^/phpmyadmin.* [OR]
+#    RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
+#    RewriteCond %{REQUEST_URI} ^(.*)?readme\.html(.*)$ [OR]
+#    RewriteCond %{REQUEST_URI} ^(.*)?readme\.txt(.*)$
+#
+#    # ...AND the visitor's IP is NOT in this list...
+#    RewriteCond %{REMOTE_ADDR} !^203\.0\.113\.10$ [NC]
+#    RewriteCond %{REMOTE_ADDR} !^198\.51\.100\.25$ [NC]
+#    RewriteCond %{REMOTE_ADDR} !^192\.0\.2\.100$ [NC]
+#
+#    # ...then return a 403 Forbidden error.
+#    RewriteRule ^.*$ - [L,F]
+#</IfModule>
+
+
+# HIDE MAINWP PLUGIN (if installed)
+# MainWP is used to manage multiple WordPress sites from one dashboard.
+# If hackers know you use MainWP, they might try to exploit it.
+# This rule serves a fake "plugin not found" path for all MainWP requests.
+#
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^wp-content/plugins/mainwp-child/(.*)$ /wp-content/plugins/THIS_PLUGIN_DOES_NOT_EXIST [QSA,L]
+</IfModule>
+
+
+# STOP USERNAME ENUMERATION
+# WordPress, by default, allows anyone to discover usernames via the URL:
+# https://yoursite.com/?author=1 → redirects to /author/admin/
+# Hackers use this to find your admin username, then brute-force the password.
+# This rule returns a 403 Forbidden when the "author" URL parameter is used.
+#
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{QUERY_STRING} (author=\d+) [NC]
+    RewriteRule .* - [F]
+</IfModule>
+
+
+# BLOCK ACCESS TO HIDDEN FILES AND DIRECTORIES
+# Files and folders starting with "." are hidden (like .git, .env, .htpasswd).
+# They should NEVER be served to a web browser.
+#
+<IfModule mod_rewrite.c>
+    RewriteCond %{SCRIPT_FILENAME} -d [OR]
+    RewriteCond %{SCRIPT_FILENAME} -f
+    RewriteRule "(^|/)\.+" - [F]
+</IfModule>
+
+
+# BLOCK ACCESS TO SENSITIVE FILE TYPES
+# These file extensions can expose source code, credentials, database dumps,
+# configuration files, or development artifacts.
+#
+<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$">
+    # Apache 2.2
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+    # Apache 2.4+
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+
+
+# BLOCK ACCESS TO LOG FILES
+# Log files can contain email addresses, user data, and server paths.
+#
+<Files ~ "\.log$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+
+# BLOCK ACCESS TO SFTP CONFIG FILE
+# Some FTP clients (like Sublime Text's SFTP plugin) save connection credentials
+# in a file called sftp-config.json. Never leave it on the server!
+#
+<files sftp-config.json>
+    order allow,deny
+    deny from all
+</files>
+
+
+# BLOCK DIRECTORY LISTING
+# Without an index file, Apache would list the contents of a directory.
+# This reveals your file structure to attackers. Always disable it.
 #
 <IfModule mod_autoindex.c>
     Options -Indexes
 </IfModule>
 
 
-# FORCE FILES TO DOWNLOAD INSTEAD OF OPENING IN BROWSER
-# Source: https://css-tricks.com/snippets/htaccess/force-files-to-download-not-open-in-browser/
+# REDIRECT ROBOTS.TXT TO CORRECT PATH
+# Prevents "404 spam" from robots accessing robots.txt in wrong subfolders.
 #
-# AddType application/octet-stream .csv
-# AddType application/octet-stream .xls
-# AddType application/octet-stream .doc
-# AddType application/octet-stream .avi
-# AddType application/octet-stream .mpg
-# AddType application/octet-stream .mov
-# AddType application/octet-stream .pdf
+<IfModule mod_alias.c>
+    RedirectMatch 301 (?<!^)/robots.txt$ /robots.txt
+</IfModule>
 
 
-
-# ALLOW CROSS-ORIGIN REQUESTS.
-# See:
-# * https://stackoverflow.com/a/13871027/751570
-# * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
-# * http://enable-cors.org/
-# * http://www.w3.org/TR/cors/
+# WHITELIST SPECIFIC IP ADDRESSES
+# Only allow access to the entire site from these IPs.
+# Use this for intranet sites, staging servers, etc.
+# Replace with real IPs.
 #
-# <IfModule mod_headers.c>
-#     Header set Access-Control-Allow-Origin "*"
-# </IfModule>
+#<RequireAll>
+#    Require ip 203.0.113.10 198.51.100.25
+#</RequireAll>
 
 
-# SEND THE CORS HEADER FOR IMAGES WHEN BROWSERS REQUEST IT.
-# See:
-# * https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
-# * https://blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
+# BLACKLIST SPECIFIC IP ADDRESSES
+# Block known attackers, scrapers, or abusive crawlers.
+# Replace with IPs you want to block.
+#
+#<RequireAll>
+#    Require all granted
+#    Require not ip 203.0.113.99 198.51.100.200
+#</RequireAll>
+
+
+# BLOCK COMMON MALICIOUS BOT QUERIES
+# These query strings are commonly used by automated exploit tools.
+# fckeditor is an old vulnerable editor; revslider had a major exploit in 2014.
+#
+<IfModule mod_rewrite.c>
+    RewriteCond %{QUERY_STRING} http\:\/\/www\.google\.com\/humans\.txt\? [NC,OR]
+    RewriteCond %{QUERY_STRING} (img|thumb|thumb_editor|thumbopen).php [NC,OR]
+    RewriteCond %{QUERY_STRING} fckeditor [NC,OR]
+    RewriteCond %{QUERY_STRING} revslider [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+
+# BLOCK SPAMMER / VULNERABILITY SCANNER REFERRERS
+# These domains are known SEO spam sites and vulnerability scanners.
+# They send fake traffic to your site to advertise themselves in your analytics.
+# Add more domains as needed.
+#
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
+    RewriteCond %{HTTP_REFERER} 100dollars-seo\.com [NC,OR]
+    RewriteCond %{HTTP_REFERER} best-seo-offer\.com [NC,OR]
+    RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
+    RewriteCond %{HTTP_REFERER} free-social-buttions\.com [NC,OR]
+    RewriteCond %{HTTP_REFERER} todaperfeita\.com [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+
+# BLOCK IMAGE HOTLINKING
+# Hotlinking = other websites displaying YOUR images by linking directly to your server.
+# This steals your bandwidth. Add offending domains to this list.
+# Replace yoursite.com with your domain. Add known hotlinkers to the RewriteCond list.
+#
+# HOW IT WORKS: If an image is requested and the HTTP Referer is NOT your own site,
+# block the request. This returns a 403 Forbidden (or you can serve a "no-hotlinking" image instead).
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_REFERER} !^$
+#    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?yoursite\.com [NC]
+#    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?google\. [NC]
+#    RewriteRule \.(jpeg|jpg|gif|png|webp|svg)$ - [F]
+#</IfModule>
+
+
+# DENY NO-REFERER COMMENT SPAM
+# Block POST requests to wp-comments-post.php or wp-login.php that have no referer.
+# Legitimate browsers always send a referer. Bots often don't.
+# Replace yoursite.com with your domain.
+#
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{REQUEST_METHOD} POST
+#    RewriteCond %{REQUEST_URI} .*/(wp-comments-post|wp-login)\.php.*
+#    RewriteCond %{HTTP_REFERER} !.*yoursite\.com.* [OR]
+#    RewriteCond %{HTTP_USER_AGENT} ^$
+#    RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+#</IfModule>
+
+
+# BLOCK ACCESS TO WORDPRESS EDITOR PLUGINS
+# Some file editor features in WordPress plugins can be entry points if misconfigured.
+#
+#<FilesMatch "^(wp-config|sftp-config|\.env|debug)">
+#    <IfModule mod_authz_core.c>
+#        Require all denied
+#    </IfModule>
+#</FilesMatch>
+
+
+
+# ======================================================================================================================
+# SECTION 6 — PERFORMANCE: COMPRESSION
+# ======================================================================================================================
+# Compressing files before sending them to browsers dramatically reduces load times.
+# A typical HTML file compresses by 60–80%. CSS/JS files compress by 70–90%.
+#
+# HOW IT WORKS: Browser sends "Accept-Encoding: gzip" header.
+# Server compresses the response before sending it.
+# Browser decompresses it transparently.
+#
+# Compression is free speed — always enable it.
+# ======================================================================================================================
+
+# FORCE COMPRESSION FOR BROKEN "ACCEPT-ENCODING" HEADERS
+# Some proxies and firewalls mangle the Accept-Encoding header.
+# This fixes broken/corrupted encoding requests before deflate runs.
+#
+<IfModule mod_deflate.c>
+    <IfModule mod_setenvif.c>
+        <IfModule mod_headers.c>
+            SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+            RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+        </IfModule>
+    </IfModule>
+</IfModule>
+
+
+# COMPRESS ALL MAJOR TEXT-BASED CONTENT TYPES WITH MOD_DEFLATE
+# mod_deflate is the standard Apache compression module (available on almost all hosts).
+# This list covers all text-based types that benefit from compression.
+# Binary files (images, videos, fonts) are already compressed — don't compress them again.
+#
+<IfModule mod_deflate.c>
+    <IfModule mod_filter.c>
+        AddOutputFilterByType DEFLATE "application/atom+xml"             \
+                                      "application/javascript"           \
+                                      "application/json"                 \
+                                      "application/ld+json"              \
+                                      "application/manifest+json"        \
+                                      "application/rdf+xml"              \
+                                      "application/rss+xml"              \
+                                      "application/schema+json"          \
+                                      "application/vnd.geo+json"         \
+                                      "application/vnd.ms-fontobject"    \
+                                      "application/wasm"                 \
+                                      "application/x-font-ttf"           \
+                                      "application/x-javascript"         \
+                                      "application/x-web-app-manifest+json" \
+                                      "application/xhtml+xml"            \
+                                      "application/xml"                  \
+                                      "font/collection"                  \
+                                      "font/eot"                         \
+                                      "font/otf"                         \
+                                      "font/ttf"                         \
+                                      "font/woff"                        \
+                                      "image/bmp"                        \
+                                      "image/svg+xml"                    \
+                                      "image/vnd.microsoft.icon"         \
+                                      "image/x-icon"                     \
+                                      "text/cache-manifest"              \
+                                      "text/calendar"                    \
+                                      "text/css"                         \
+                                      "text/html"                        \
+                                      "text/javascript"                  \
+                                      "text/markdown"                    \
+                                      "text/plain"                       \
+                                      "text/vcard"                       \
+                                      "text/vnd.rim.location.xloc"       \
+                                      "text/vtt"                         \
+                                      "text/x-component"                 \
+                                      "text/x-cross-domain-policy"       \
+                                      "text/xml"
+    </IfModule>
+    # Compress SVG files even when served as svgz (already gzip-encoded svg)
+    <IfModule mod_mime.c>
+        AddEncoding gzip svgz
+    </IfModule>
+</IfModule>
+
+
+# VARY: ACCEPT-ENCODING
+# Tells CDNs and proxy caches to store separate versions of files
+# based on whether the browser supports gzip or not.
+# Without this, a CDN might serve a compressed file to a browser that can't decode it.
+#
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|xml|gz|html|woff|woff2|svg)$">
+        Header append Vary: Accept-Encoding
+    </FilesMatch>
+</IfModule>
+
+
+
+# ======================================================================================================================
+# SECTION 7 — PERFORMANCE: BROWSER CACHING
+# ======================================================================================================================
+# Browser caching tells visitors' browsers to store a copy of your files locally.
+# On repeat visits, the browser uses its local copy instead of re-downloading from the server.
+# This makes repeat visits MUCH faster and reduces server load.
+#
+# HOW TO READ THESE VALUES:
+# "access plus 1 year"  → Cache for 1 year after the file was accessed
+# "access plus 0 seconds" → Don't cache at all (always fetch fresh)
+#
+# BEST PRACTICE (2026):
+# - HTML: short cache (it changes often)
+# - CSS/JS: 1 year (use cache-busting via version query strings, e.g., style.css?v=2.1)
+# - Images/Fonts: 6 months to 1 year (they rarely change)
+# - API/JSON data: 0 seconds (always fresh)
+# ======================================================================================================================
+
+<IfModule mod_expires.c>
+    ExpiresActive on
+
+    # Default for all file types not specified below
+    ExpiresDefault                                      "access plus 1 month"
+
+    # ---- HTML ----
+    # HTML pages should be refreshed frequently (they change with new posts/updates)
+    ExpiresByType text/html                             "access plus 1 hour"
+
+    # ---- CSS ----
+    # Cache CSS for 1 year. Use ?ver=X.X in your stylesheet URLs to bust the cache.
+    ExpiresByType text/css                              "access plus 1 year"
+
+    # ---- JavaScript ----
+    ExpiresByType application/javascript                "access plus 1 year"
+    ExpiresByType application/x-javascript              "access plus 1 year"
+    ExpiresByType text/javascript                       "access plus 1 year"
+
+    # ---- Images ----
+    # Images rarely change — cache them for 6 months.
+    ExpiresByType image/bmp                             "access plus 6 months"
+    ExpiresByType image/gif                             "access plus 6 months"
+    ExpiresByType image/jpeg                            "access plus 6 months"
+    ExpiresByType image/jpg                             "access plus 6 months"
+    ExpiresByType image/png                             "access plus 6 months"
+    ExpiresByType image/svg+xml                         "access plus 6 months"
+    ExpiresByType image/webp                            "access plus 6 months"
+    ExpiresByType image/avif                            "access plus 6 months"
+    ExpiresByType image/heic                            "access plus 6 months"
+    ExpiresByType image/heif                            "access plus 6 months"
+
+    # ---- Favicon & Icons ----
+    # Favicons essentially never change — long cache is fine.
+    ExpiresByType image/vnd.microsoft.icon              "access plus 1 year"
+    ExpiresByType image/x-icon                          "access plus 1 year"
+
+    # ---- Video ----
+    ExpiresByType video/mp4                             "access plus 6 months"
+    ExpiresByType video/ogg                             "access plus 6 months"
+    ExpiresByType video/webm                            "access plus 6 months"
+
+    # ---- Audio ----
+    ExpiresByType audio/mp4                             "access plus 6 months"
+    ExpiresByType audio/ogg                             "access plus 6 months"
+
+    # ---- Web Fonts ----
+    # Fonts never change once installed — cache them for a full year.
+    ExpiresByType font/woff                             "access plus 1 year"
+    ExpiresByType font/woff2                            "access plus 1 year"
+    ExpiresByType font/ttf                              "access plus 1 year"
+    ExpiresByType font/otf                              "access plus 1 year"
+    ExpiresByType font/collection                       "access plus 1 year"
+    ExpiresByType application/font-woff                 "access plus 1 year"
+    ExpiresByType application/font-woff2                "access plus 1 year"
+    ExpiresByType application/vnd.ms-fontobject         "access plus 1 year"
+    ExpiresByType application/x-font-ttf                "access plus 1 year"
+
+    # ---- JSON / Data Interchange ----
+    # API responses and data feeds should NOT be cached — always fetch fresh.
+    ExpiresByType application/json                      "access plus 0 seconds"
+    ExpiresByType application/ld+json                   "access plus 0 seconds"
+    ExpiresByType application/schema+json               "access plus 0 seconds"
+    ExpiresByType application/vnd.geo+json              "access plus 0 seconds"
+    ExpiresByType application/xml                       "access plus 0 seconds"
+    ExpiresByType text/xml                              "access plus 0 seconds"
+
+    # ---- Syndication Feeds ----
+    # RSS/Atom feeds change when you publish new posts — short cache.
+    ExpiresByType application/atom+xml                  "access plus 1 hour"
+    ExpiresByType application/rdf+xml                   "access plus 1 hour"
+    ExpiresByType application/rss+xml                   "access plus 1 hour"
+
+    # ---- Manifests ----
+    ExpiresByType application/manifest+json             "access plus 1 week"
+    ExpiresByType application/x-web-app-manifest+json   "access plus 0 seconds"
+    ExpiresByType text/cache-manifest                   "access plus 0 seconds"
+
+    # ---- Other ----
+    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
+
+</IfModule>
+
+
+# KEEP-ALIVE
+# Tells the browser to reuse the same TCP connection for multiple requests.
+# Without this, each file (CSS, JS, image...) opens a new connection — slow!
+# With keep-alive, the browser downloads everything over one connection.
+#
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+
+# DISABLE ETAG
+# ETags are a cache validation mechanism. They have a problem: on multi-server setups
+# (load balancers), each server generates a different ETag, which can break caching.
+# Disabling ETags and relying only on Cache-Control/Expires is the safer approach.
+# Source: https://developer.yahoo.com/performance/rules.html#etags
+#
+<IfModule mod_headers.c>
+    Header unset ETag
+    Header unset Pragma
+</IfModule>
+FileETag None
+
+
+# WEBP IMAGE SUBSTITUTION (AUTOMATIC)
+# If a visitor's browser supports WebP (most modern browsers do),
+# and a .webp version of the image exists next to the .jpg/.png file,
+# serve the WebP version automatically — no code changes needed.
+# WebP images are typically 25-35% smaller than JPEG.
+#
+# PREREQUISITE: You need to generate .webp versions of your images.
+# Tools: Squoosh (free, browser-based), cwebp CLI, or a plugin like EWWW Image Optimizer.
+# Source: https://github.com/vincentorback/WebP-images-with-htaccess
+#
+#<IfModule mod_setenvif.c>
+#    SetEnvIf Request_URI "\.(jpe?g|png)$" REQUEST_image
+#</IfModule>
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{HTTP_ACCEPT} image/webp
+#    RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
+#    RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp]
+#</IfModule>
+#<IfModule mod_headers.c>
+#    Header append Vary Accept env=REQUEST_image
+#</IfModule>
+
+
+
+# ======================================================================================================================
+# SECTION 8 — MIME TYPES
+# ======================================================================================================================
+# MIME types tell browsers HOW to interpret files.
+# Without a proper MIME type, a browser might refuse to load a file,
+# or worse, try to execute it as something it's not.
+#
+# Apache has built-in MIME types for common files, but this list adds
+# support for newer formats like WebP, AVIF, WASM, and modern fonts.
+# ======================================================================================================================
+
+<IfModule mod_mime.c>
+
+    # ---- Data Interchange ----
+    AddType application/atom+xml                        atom
+    AddType application/json                            json map topojson
+    AddType application/ld+json                         jsonld
+    AddType application/rss+xml                         rss
+    AddType application/geo+json                        geojson
+    AddType application/rdf+xml                         rdf
+    AddType application/xml                             xml
+
+    # ---- JavaScript ----
+    # Note: text/javascript is now the official standard (RFC 9239, 2022)
+    AddType text/javascript                             js mjs
+
+    # ---- WebAssembly ----
+    # WASM is compiled code that runs in the browser at near-native speed.
+    AddType application/wasm                            wasm
+
+    # ---- Manifest Files ----
+    AddType application/manifest+json                   webmanifest
+    AddType application/x-web-app-manifest+json         webapp
+    AddType text/cache-manifest                         appcache
+
+    # ---- Images ----
+    AddType image/bmp                                   bmp
+    AddType image/svg+xml                               svg svgz
+    AddType image/webp                                  webp
+    AddType image/x-icon                                cur ico
+
+    # HEIF/HEIC — Apple's modern image format (iPhone photos)
+    AddType image/heic                                  heic
+    AddType image/heif                                  heif
+    AddType image/heics                                 heics
+    AddType image/heifs                                 heifs
+
+    # AVIF — the newest, most efficient image format (2020+)
+    # Smaller than WebP, supported in all modern browsers since ~2022
+    AddType image/avif                                  avif
+    AddType image/avis                                  avis
+
+    # ---- Video ----
+    AddType video/mp4                                   f4v f4p m4v mp4
+    AddType video/ogg                                   ogv
+    AddType video/webm                                  webm
+
+    # ---- Audio ----
+    AddType audio/mp4                                   f4a f4b m4a
+    AddType audio/ogg                                   oga ogg opus
+
+    # ---- Web Fonts ----
+    # Modern font types (2018+ standards)
+    AddType font/woff                                   woff
+    AddType font/woff2                                  woff2
+    AddType font/ttf                                    ttf
+    AddType font/collection                             ttc
+    AddType font/otf                                    otf
+    # Legacy EOT (Internet Explorer — still used for very old browser support)
+    AddType application/vnd.ms-fontobject               eot
+
+    # ---- Augmented Reality (AR) ----
+    # Apple's AR format, viewable in Safari on iOS/macOS
+    AddType model/vnd.usdz+zip                          usdz
+
+    # ---- Other ----
+    AddType application/octet-stream                    safariextz
+    AddType application/x-bb-appworld                   bbaw
+    AddType application/x-chrome-extension              crx
+    AddType application/x-opera-extension               oex
+    AddType application/x-xpinstall                     xpi
+    AddType text/calendar                               ics
+    AddType text/markdown                               markdown md
+    AddType text/vcard                                  vcard vcf
+    AddType text/vnd.rim.location.xloc                  xloc
+    AddType text/vtt                                    vtt
+    AddType text/x-component                            htc
+
+</IfModule>
+
+
+
+# ======================================================================================================================
+# SECTION 9 — CHARACTER ENCODING
+# ======================================================================================================================
+# UTF-8 is the universal character encoding. It supports every language and emoji.
+# Setting this ensures text files are interpreted correctly everywhere.
+# Without it, some servers might default to ISO-8859-1 (Latin-1), breaking
+# accented characters (é, ü, ñ) and non-Latin scripts.
+# ======================================================================================================================
+
+# Set UTF-8 as the default for all text responses
+AddDefaultCharset utf-8
+
+# Also set UTF-8 explicitly for specific text-based file types
+<IfModule mod_mime.c>
+    AddCharset utf-8 .appcache \
+                     .atom     \
+                     .bbaw     \
+                     .css      \
+                     .geojson  \
+                     .htc      \
+                     .ics      \
+                     .js       \
+                     .json     \
+                     .jsonld   \
+                     .manifest \
+                     .map      \
+                     .markdown \
+                     .md       \
+                     .mjs      \
+                     .rdf      \
+                     .rss      \
+                     .topojson \
+                     .vtt      \
+                     .webapp   \
+                     .webmanifest \
+                     .xloc     \
+                     .xml
+</IfModule>
+
+
+
+# ======================================================================================================================
+# SECTION 10 — CORS (CROSS-ORIGIN RESOURCE SHARING)
+# ======================================================================================================================
+# By default, browsers block JavaScript on Site A from loading resources from Site B.
+# CORS headers allow you to explicitly permit these cross-origin requests.
+#
+# Use case: Your site loads fonts from a CDN, or shares an API with another domain.
+# ======================================================================================================================
+
+# ALLOW CORS FOR IMAGES
+# Needed for WebGL, Canvas, or any cross-origin image manipulation in JavaScript.
+# This only sets the header when the request actually comes from a different origin.
 #
 <IfModule mod_setenvif.c>
     <IfModule mod_headers.c>
-        <FilesMatch "\.(bmp|cur|gif|ico|jpe?g|png|svgz?|webp)$">
+        <FilesMatch "\.(bmp|cur|gif|ico|jpe?g|a?png|svgz?|webp|heic|heif|avif)$">
             SetEnvIf Origin ":" IS_CORS
             Header set Access-Control-Allow-Origin "*" env=IS_CORS
         </FilesMatch>
@@ -234,8 +1035,9 @@ DirectoryIndex index.php index.html MAINT-index.html
 </IfModule>
 
 
-# CROSS-ORIGIN WEB FONTS 
-# See: https://davidwalsh.name/cdn-fonts
+# ALLOW CORS FOR WEB FONTS
+# Browsers enforce CORS for fonts loaded from CDNs (e.g., Google Fonts, self-hosted CDN).
+# Without this, a browser might block your font and fall back to a system font.
 #
 <IfModule mod_headers.c>
     <FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
@@ -244,31 +1046,64 @@ DirectoryIndex index.php index.html MAINT-index.html
 </IfModule>
 
 
-
-# CUSTOM ERROR PAGES
-# See: https://perishablepress.com/custom-http-errors-via-htaccess/
-# 
-#ErrorDocument 400 /errors/400.html
-#ErrorDocument 401 /errors/401.html
-#ErrorDocument 403 /errors/403.html
-#ErrorDocument 404 /errors/404.html
-#ErrorDocument 500 /errors/500.html
-
-
-
-# PREVENTS OVERZEALOUS 404 ERRORS FROM APACHE
-# This setting prevents Apache from returning a 404 error as the result
-# of a rewrite when the directory with the same name does not exist.
-# See: 
-# * https://httpd.apache.org/docs/current/content-negotiation.html#multiviews
-# * https://www.infomaniak.com/en/support/faq/605/redirect-and-url-rewrite-issues-multiviews-option-in-htaccess
+# ALLOW ALL CROSS-ORIGIN REQUESTS (use with caution!)
+# This is too permissive for most sites — only use if you're building a public API
+# or if you KNOW you need it (e.g., a CDN serving assets to many different sites).
 #
-Options -MultiViews
+# <IfModule mod_headers.c>
+#     Header set Access-Control-Allow-Origin "*"
+# </IfModule>
 
 
 
+# ======================================================================================================================
+# SECTION 11 — FORCE FILES TO DOWNLOAD (OPTIONAL)
+# ======================================================================================================================
+# By default, browsers try to display certain file types inline (PDF, CSV, etc.).
+# If you want users to download files instead of viewing them in the browser,
+# add their extensions here.
+# ======================================================================================================================
 
-# INCREASE MAXIMUM UPLOAD FILE SIZE (OPTIONAL)
+# Uncomment to force these file types to download instead of opening in browser:
+#
+# AddType application/octet-stream .pdf
+# AddType application/octet-stream .csv
+# AddType application/octet-stream .xls
+# AddType application/octet-stream .doc
+# AddType application/octet-stream .avi
+# AddType application/octet-stream .mov
+# AddType application/octet-stream .mp4
+
+
+
+# ======================================================================================================================
+# SECTION 12 — CUSTOM ERROR PAGES
+# ======================================================================================================================
+# Customize what happens when Apache returns an error.
+# Much better than the ugly default Apache error pages.
+# Create these HTML files and place them at the paths shown.
+# ======================================================================================================================
+
+ErrorDocument 400 /errors/400.html
+ErrorDocument 401 /errors/401.html
+ErrorDocument 403 /errors/403.html
+ErrorDocument 404 /errors/404.html
+ErrorDocument 500 /errors/500.html
+
+# Simple single-file fallback if you don't have dedicated error pages:
+# ErrorDocument 404 /404.html
+
+
+
+# ======================================================================================================================
+# SECTION 13 — PHP SETTINGS (OPTIONAL)
+# ======================================================================================================================
+# Some hosting providers let you override PHP settings via .htaccess.
+# This doesn't work on all servers — if it causes a 500 error, comment it out.
+# ======================================================================================================================
+
+# INCREASE MAXIMUM FILE UPLOAD SIZE
+# Useful for WordPress themes, plugins, or media uploads larger than the default 8MB.
 #
 #php_value upload_max_filesize 64M
 #php_value post_max_size 64M
@@ -276,44 +1111,27 @@ Options -MultiViews
 #php_value max_input_time 300
 
 
-
-# ADD SUPPORT FOR SVG AND HTC
-# See: https://davidwalsh.name/serve-svg-image
+# SHOW ADMIN EMAIL IN APACHE ERROR MESSAGES
+# Only useful for debugging — don't use in production.
+# Replace with your actual email.
 #
-AddType image/svg+xml svg svgz
-AddEncoding gzip svgz
-AddType text/x-component .htc
-
-# ADD SUPPORT FOR AUGMENTED REALITY FILES
-# See: https://webkit.org/blog/8421/viewing-augmented-reality-assets-in-safari-for-ios/
-#
-# All files ending in .usdz served as USD.
-AddType model/vnd.usdz+zip usdz
-
-
-# REDIRECT ALL WORDPRESS FEEDS TO FEEDBURNER
-#
-# <IfModule mod_alias.c>
-#   RedirectMatch 301 /feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-#   RedirectMatch 301 /comments/feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-# </IfModule>
+#SetEnv SERVER_ADMIN admin@yoursite.com
 
 
 
-# BLOCK ACCESS TO ANY SOURCE FILES
-#
-<FilesMatch "(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</FilesMatch>
+# ======================================================================================================================
+# SECTION 14 — LEGACY BROWSER COMPATIBILITY
+# ======================================================================================================================
+# ======================================================================================================================
 
-
-
-# FORCE INTERNET EXPLORER 8/9/10 TO RENDER PAGES IN THE HIGHEST MODE
+# FORCE INTERNET EXPLORER TO USE EDGE MODE
+# Tells Internet Explorer (if anyone still uses it) to render pages in its best mode
+# rather than "compatibility view" which emulates old IE versions.
+# Note: IE is retired as of 2022, but this doesn't hurt anything.
 #
 <IfModule mod_headers.c>
     Header set X-UA-Compatible "IE=edge"
+    # But don't send this header for non-HTML files (it's irrelevant for them)
     <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
         Header unset X-UA-Compatible
     </FilesMatch>
@@ -321,700 +1139,58 @@ AddType model/vnd.usdz+zip usdz
 
 
 
-# CHANGE URL
+# ======================================================================================================================
+# SECTION 15 — 301 PERMANENT REDIRECTS
+# ======================================================================================================================
+# Use 301 redirects when you rename or move pages.
+# This tells search engines: "This page has permanently moved to a new URL.
+# Transfer all its SEO ranking to the new page."
 #
-# Option 1: Add www - http://domain > http://www.domain
-
-# <IfModule mod_rewrite.c>
-#     Options +FollowSymlinks #Not supported by some hosting
-#     ## If you wish to redirect to a https:// simply substitute http: with https:
-#     RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
-#     RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-#     ## Redirect away from /index.php to clear path
-#     RewriteCond %{THE_REQUEST} ^.*/index.php  
-#     RewriteRule ^(.*)index.php$ http://www.%{HTTP_HOST}%{REQUEST_URI}$1 [R=301,L] 
-# </IfModule>
-
-# Option 2: Strip www - http://www.domain > http://domain
-
-# <IfModule mod_rewrite.c>
-#     Options +FollowSymlinks #Not supported by some hosting
-#     ## If you wish to redirect to a https:// simply substitute http: with https:
-#     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-#     RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
-#     ## Redirect away from /index.php to clear path
-#     RewriteCond %{THE_REQUEST} ^.*/index.php  
-#     RewriteRule ^(.*)index.php$ http://%{HTTP_HOST}%{REQUEST_URI}$1 [R=301,L] 
-# </IfModule>
-
-
-# SERVE RESOURCES WITH THE PROPER MEDIA TYPES (MIME TYPES)
+# ⚠️ USE WITH CAUTION: 301 redirects are cached by browsers for a long time.
+#    A mistake here can be hard to undo.
 #
-<IfModule mod_mime.c>
-  # Data interchange
-    AddType application/atom+xml                        atom
-    AddType application/json                            json map topojson
-    AddType application/ld+json                         jsonld
-    AddType application/rss+xml                         rss
-    AddType application/vnd.geo+json                    geojson
-    AddType application/xml                             rdf xml
-  # JavaScript
-    AddType application/javascript                      js
-  # Manifest files
-    AddType application/manifest+json                   webmanifest
-    AddType application/x-web-app-manifest+json         webapp
-    AddType text/cache-manifest                         appcache
-  # Media files
-    AddType audio/mp4                                   f4a f4b m4a
-    AddType audio/ogg                                   oga ogg opus
-    AddType image/bmp                                   bmp
-    AddType image/svg+xml                               svg svgz
-    AddType image/webp                                  webp
-    AddType video/mp4                                   f4v f4p m4v mp4
-    AddType video/ogg                                   ogv
-    AddType video/webm                                  webm
-    AddType video/x-flv                                 flv
-    AddType image/x-icon                                cur ico
-  # Web fonts
-    AddType application/font-woff                       woff
-    AddType application/font-woff2                      woff2
-    AddType application/vnd.ms-fontobject               eot
-    AddType application/x-font-ttf                      ttc ttf
-    AddType font/opentype                               otf
-  # Other
-    AddType application/octet-stream                    safariextz
-    AddType application/x-bb-appworld                   bbaw
-    AddType application/x-chrome-extension              crx
-    AddType application/x-opera-extension               oex
-    AddType application/x-xpinstall                     xpi
-    AddType text/vcard                                  vcard vcf
-    AddType text/vnd.rim.location.xloc                  xloc
-    AddType text/vtt                                    vtt
-    AddType text/x-component                            htc
-</IfModule>
+# 💡 RECOMMENDATION: For WordPress, use the free "Redirection" plugin instead:
+#    https://wordpress.org/plugins/redirection/
+#    It's safer, has a UI, handles edge cases, and logs broken links for you.
+# ======================================================================================================================
 
-
-
-# Character encodings as utf-8
+# SYNTAX: Redirect 301 /old-path https://yoursite.com/new-path
 #
-AddDefaultCharset utf-8
-<IfModule mod_mime.c>
-    AddCharset utf-8 .atom \
-                     .bbaw \
-                     .css \
-                     .geojson \
-                     .js \
-                     .json \
-                     .jsonld \
-                     .manifest \
-                     .rdf \
-                     .rss \
-                     .topojson \
-                     .vtt \
-                     .webapp \
-                     .webmanifest \
-                     .xloc \
-                     .xml
-</IfModule>
+#Redirect 301 /old-page/ https://yoursite.com/new-page/
+#Redirect 301 /old-post-slug https://yoursite.com/new-post-slug
+#Redirect 301 /category/old-name/ https://yoursite.com/category/new-name/
 
 
-
-
-
-
-########################################################################################################################
-# ======================= PERFORMANCE ==================================================================================
-########################################################################################################################
-
-
-# SUBSTITUTE WEBP IF POSSIBLE
-# IF VISITOR'S BROWSER SUPPORTS WEBP IMAGES, AND A WEBP IMAGE EXISTS NEXT TO THE JPG, SERVE THE WEBP IMAGE INSTEAD.
-# Source: https://github.com/vincentorback/WebP-images-with-htaccess
-#
-#<IfModule mod_setenvif.c>
-#  SetEnvIf Request_URI "\.(jpe?g|png)$" REQUEST_image
-#</IfModule>
-#<IfModule mod_rewrite.c>
-#  RewriteEngine On
-#  RewriteCond %{HTTP_ACCEPT} image/webp
-#  RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
-#  RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp]
-#</IfModule>
-#<IfModule mod_headers.c>
-#  Header append Vary Accept env=REQUEST_image
-#</IfModule>
-#<IfModule mod_mime.c>
-#  AddType image/webp .webp
-#</IfModule>
-
-
-
-
-# WEBP SUBSTITUTION CODE FOR THE "EWWW IMAGE OPTIMIZER" PLUGIN
-# Used with: https://en-ca.wordpress.org/plugins/ewww-image-optimizer/
+# REDIRECT .SHTML TO .HTML (for migrating from old ASP/SSI websites)
 #
 #<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteCond %{HTTP_ACCEPT} image/webp
-#	RewriteCond %{REQUEST_FILENAME} (.*)\.(jpe?g|png)$
-#	RewriteCond %{REQUEST_FILENAME}\.webp -f
-#	RewriteCond %{QUERY_STRING} !type=original
-#	RewriteRule (.+)\.(jpe?g|png)$ %{REQUEST_FILENAME}.webp [T=image/webp,E=accept:1,L]
+#    RewriteEngine on
+#    RewriteRule ^(.*).shtml$ https://yoursite.com/$1.html [R=301,L]
 #</IfModule>
-#<IfModule mod_headers.c>
-#	Header append Vary Accept env=REDIRECT_accept
-#</IfModule>
-#AddType image/webp .webp
 
 
-
-
-# DISABLE ETAG - http://crunchify.com/how-to-speed-up-wordpress-leveraging-browser-caching-via-htaccess/
+# REDIRECT ALL WORDPRESS FEEDS TO FEEDBURNER (if you use it)
+# Feedburner is largely dead (discontinued by Google), but left here for legacy setups.
 #
-<ifModule mod_headers.c>
-  Header unset Pragma
-  FileETag None
-  Header unset ETag
-</ifModule>
-
-
-# VARY ENCODING - https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
-#
-<IfModule mod_headers.c>
-  <FilesMatch ".(js|css|xml|gz|html|woff|woff2)$">
-    Header append Vary: Accept-Encoding
-  </FilesMatch>
-</IfModule>
-
-
-
-# COMPRESS WITH GZIP
-#
-<ifModule mod_gzip.c>
-  mod_gzip_on Yes
-  mod_gzip_dechunk Yes
-  mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
-  mod_gzip_item_include handler ^cgi-script$
-  mod_gzip_item_include mime ^text/.*
-  mod_gzip_item_include mime ^application/x-javascript.*
-  mod_gzip_item_exclude mime ^image/.*
-  mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
-</ifModule>
-
-
-
-# USE MOD_DEFLATE IF MOD_PAGESPEED (BELOW) ISN'T INSTALLED
-#
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml application/xml application/xhtml+xml text/css text/javascript application/javascript application/x-javascript
-  BrowserMatch ^Mozilla/4 gzip-only-text/html 
-  BrowserMatch ^Mozilla/4\.0[678] no-gzip 
-  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html 
-  SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary 
-  Header append Vary User-Agent env=!dont-vary 
-</IfModule>
-
-
-
-# FORCE COMPRESSION FOR MANGLED `ACCEPT-ENCODING` REQUEST HEADERS
-#
-<IfModule mod_deflate.c>
-  <IfModule mod_setenvif.c>
-      <IfModule mod_headers.c>
-          SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
-          RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
-      </IfModule>
-  </IfModule>
-</IfModule>
-
-# COMPRESS ALL OUTPUT LABELED WITH ONE OF THE FOLLOWING MEDIA TYPES
-# TTF Font info from: https://divibooster.com/enable-compression-for-the-divi-theme/
-#
-<IfModule mod_deflate.c>
-  <IfModule mod_filter.c>
-      Addtype font/truetype .ttf
-      AddOutputFilterByType DEFLATE "application/atom+xml" \
-                                    "application/javascript" \
-                                    "application/json" \
-                                    "application/ld+json" \
-                                    "application/manifest+json" \
-                                    "application/rdf+xml" \
-                                    "application/rss+xml" \
-                                    "application/schema+json" \
-                                    "application/vnd.geo+json" \
-                                    "application/vnd.ms-fontobject" \
-                                    "application/x-font-ttf" \
-                                    "application/x-javascript" \
-                                    "application/x-web-app-manifest+json" \
-                                    "application/xhtml+xml" \
-                                    "application/xml" \
-                                    "font/eot" \
-                                    "font/opentype" \
-				    "font/truetype" \
-                                    "image/bmp" \
-                                    "image/svg+xml" \
-                                    "image/vnd.microsoft.icon" \
-                                    "image/x-icon" \
-                                    "text/cache-manifest" \
-                                    "text/css" \
-                                    "text/html" \
-                                    "text/javascript" \
-				    "text/text" \
-                                    "text/plain" \
-                                    "text/vcard" \
-                                    "text/vnd.rim.location.xloc" \
-                                    "text/vtt" \
-                                    "text/x-component" \
-                                    "text/x-cross-domain-policy" \
-                                    "text/xml"
-  </IfModule>
-  <IfModule mod_mime.c>
-      AddEncoding gzip              svgz
-  </IfModule>
-</IfModule>
-
-
-# USE GOOGLE'S MOD_PAGESPEED IF IT'S INSTALLED ON SERVER (DO NOT USE THIS IF IT IS NOT INSTALLED)
-#
-#<IfModule pagespeed_module>
-#  ModPagespeed on
-#  ModPagespeedEnableFilters
-#  extend_cache,combine_css,combine_javascript,collapse_whitespace,move_css_to_head
-#</IfModule>>
-
-
-
-# BEGIN EXPIRE HEADERS
-#
-<ifModule mod_expires.c>
-ExpiresActive on
-    ExpiresDefault                                      "access plus 1 month"
-  # CSS
-    ExpiresByType text/css                              "access plus 1 year"
-  # Data interchange
-    ExpiresByType application/atom+xml                  "access plus 1 hour"
-    ExpiresByType application/rdf+xml                   "access plus 1 hour"
-    ExpiresByType application/rss+xml                   "access plus 1 hour"
-    ExpiresByType application/json                      "access plus 0 seconds"
-    ExpiresByType application/ld+json                   "access plus 0 seconds"
-    ExpiresByType application/schema+json               "access plus 0 seconds"
-    ExpiresByType application/vnd.geo+json              "access plus 0 seconds"
-    ExpiresByType application/xml                       "access plus 0 seconds"
-    ExpiresByType text/xml                              "access plus 0 seconds"
-  # Favicon (cannot be renamed!) and cursor images
-    ExpiresByType image/vnd.microsoft.icon              "access plus 1 week"
-    ExpiresByType image/x-icon                          "access plus 1 week"
-  # HTML
-    ExpiresByType text/html                             "access plus 1 week"
-  # JavaScript
-    ExpiresByType application/javascript                "access plus 1 year"
-    ExpiresByType application/x-javascript              "access plus 1 year"
-    ExpiresByType text/javascript                       "access plus 1 year"
-  # Manifest files
-    ExpiresByType application/manifest+json             "access plus 1 week"
-    ExpiresByType application/x-web-app-manifest+json   "access plus 0 seconds"
-    ExpiresByType text/cache-manifest                   "access plus 0 seconds"
-  # Media files
-    ExpiresByType audio/ogg                             "access plus 6 months"
-    ExpiresByType image/bmp                             "access plus 6 months"
-    ExpiresByType image/gif                             "access plus 6 months"
-    ExpiresByType image/jpeg                            "access plus 6 months"
-    ExpiresByType image/jpg                            "access plus 6 months"
-    ExpiresByType image/png                             "access plus 6 months"
-    ExpiresByType image/svg+xml                         "access plus 6 months"
-    ExpiresByType image/webp                            "access plus 6 months"
-    ExpiresByType video/mp4                             "access plus 6 months"
-    ExpiresByType video/ogg                             "access plus 6 months"
-    ExpiresByType video/webm                            "access plus 6 months"
-  # Web fonts
-    # Embedded OpenType (EOT)
-      ExpiresByType application/vnd.ms-fontobject         "access plus 6 months"
-      ExpiresByType font/eot                              "access plus 6 months"
-    # OpenType
-      ExpiresByType font/opentype                         "access plus 6 months"
-    # TrueType
-      ExpiresByType application/x-font-ttf                "access plus 6 months"
-    # Web Open Font Format (WOFF) 1.0
-      ExpiresByType application/font-woff                 "access plus 6 months"
-      ExpiresByType application/x-font-woff               "access plus 6 months"
-      ExpiresByType font/woff                             "access plus 6 months"
-    # Web Open Font Format (WOFF) 2.0
-      ExpiresByType application/font-woff2                "access plus 6 months"
-  # Other
-    ExpiresByType image/svg+xml                         "access plus 6 months"
-    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
-</ifModule>
-
-
-
-# BEGIN CACHE-CONTROL HEADERS
-# This can conflict with Cloudflare's caching.
-#
-#<ifModule mod_headers.c>
-#  <filesMatch "\.(flv|ico|pdf|avi|mov|ppt|doc|mp3|mp4|wmv|wav|gif|jpg|jpeg|png|swf)$">
-#    Header set Cache-Control "public"
-#  </filesMatch>
-#  <filesMatch "\.(css)$">
-#    Header set Cache-Control "public"
-#  </filesMatch>
-#  <filesMatch "\.(js)$">
-#    Header set Cache-Control "private"
-#  </filesMatch>
-#  <filesMatch "\.(x?html?|php)$">
-#    Header set Cache-Control "private, must-revalidate"
-#  </filesMatch>
-#</ifModule>
-
-
-
-# IMPROVING PERFORMANCE WITH CACHE-CONTROL: IMMUTABLE
-# SEE: https://www.keycdn.com/blog/cache-control-immutable
-#
-#<ifModule mod_headers.c>
-#  <filesMatch ".(flv|ico|pdf|ppt|doc|avi|mov|mp4|mp3|wmv|wav|jpg|jpeg|png|gif|js|css|swf)$">
-#    Header set Cache-Control "public, max-age=31536000, immutable"
-#  </filesMatch>
-#</ifModule>
-
-
-# ENABLE KEEP-ALIVE
-#
-<ifModule mod_headers.c>
-  Header set Connection keep-alive
-</ifModule>
-
-
-
-# DISABLE ETAG
-#
-<IfModule mod_headers.c>
-  Header unset Pragma
-  Header unset ETag
-</IfModule>
-FileETag None
-
-
-
-
-
-########################################################################################################################
-# ======================== SECURITY ====================================================================================
-########################################################################################################################
-
-
-# DENY EVERYONE ACCESS TO THE WORDPRESS LOGIN FROM ALL EXCEPT KNOWN/SAFE IP ADDRESSES
-#<Files wp-login.php>
-#	order deny,allow
-#	deny from all
-#	allow from <YOUR IP>
-#	allow from <CLIENT'S IP>
-#	allow from <SAFE IP>
-#</Files>
-
-
-
-
-# REDIRECT UNAUTHORIZED IP ADDRESSES THAT TRY TO ACCESS WP-ADMIN OR WP-LOGIN
-# See: https://serverfault.com/a/1005015/396075
-#
-#<IfModule mod_rewrite.c>
-#	RewriteEngine on
-#	RewriteBase / 
-#
-#	# ====== IF YOU WANT INTO THE WORDPRESS ADMIN AREA, THE LOGIN, OR TO VIEW A README... ====== 
-#	RewriteCond %{REQUEST_URI} ^(.*)?wp-admin$ [OR]
-#	RewriteCond %{REQUEST_URI} ^/wp-admin.* [OR]
-#	RewriteCond %{REQUEST_URI} ^/phpmyadmin.* [OR]
-#	RewriteCond %{REQUEST_URI} ^/adminer.* [OR]
-#	RewriteCond %{REQUEST_URI} ^(.*)?wp-login\.php(.*)$ [OR]
-#	RewriteCond %{REQUEST_URI} ^(.*)?readme\.html(.*)$ [OR]
-#	RewriteCond %{REQUEST_URI} ^(.*)?readme\.txt(.*)$
-#	
-#	# ====== AND YOU'RE NOT ON ONE OF THESE IP ADDRESSES... ====== 
-#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
-#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
-#	RewriteCond %{REMOTE_ADDR} !^XX\.XX\.XX\.XXX [NC]
-#	
-#	# ====== THEN YOU'RE FORBIDDEN AND ARE SERVED AN ERROR PAGE TELLING YOU SO ====== 
-#	RewriteRule ^.*$ - [L,F]
-#	ErrorDocument 403 https://youtu.be/cQ_b4_lw0Gg
+#<IfModule mod_alias.c>
+#    RedirectMatch 301 /feed/(atom|rdf|rss|rss2)/?$ https://feedburner.com/yourfeed/
 #</IfModule>
 
 
 
-# REMOVE SERVER SIGNATURE
-# See: 
-# * https://techjourney.net/improve-apache-web-server-security-use-servertokens-and-serversignature-to-disable-header/
-# * https://www.unixmen.com/how-to-disable-server-signature-using-htaccess-or-by-editing-apache/
+# ======================================================================================================================
+# END OF FILE
+# ======================================================================================================================
 #
-ServerSignature Off
-
-
-# WHITELIST SPECIFIC IP ADDRESSES - http://stackoverflow.com/a/38703505/751570
+# NEXT STEPS & USEFUL RESOURCES:
+# --------------------------------
+# Test your headers:       https://securityheaders.com/
+# Test your SSL:           https://www.ssllabs.com/ssltest/
+# Test your cache:         https://www.webpagetest.org/
+# Test HSTS preload:       https://hstspreload.org/
+# Build your CSP:          https://report-uri.com/home/generate
+# Debug .htaccess rules:   https://htaccess.madewithlove.com/
+# Perishable Press tricks: https://perishablepress.com/htaccess-cleanup/
+# h5bp server configs:     https://github.com/h5bp/server-configs-apache
 #
-#<RequireAll>
-#    Require ip XX.XX.XX.XX YY.YY.YY.YY
-#</RequireAll>
-
-
-
-# BLACKLIST SPECIFIC IP ADDRESSES - https://httpd.apache.org/docs/2.4/howto/access.html
-# (OR USE CLOUDFLARE'S FIREWALL, OR ITHEMES SECURITY BANNED USERS LIST)
-#
-#<RequireAll>
-#    Require all granted
-#    Require not ip XX.XX.XX.XX YY.YY.YY.YY
-#</RequireAll>
-
-
-
-# DISABLE XML-RPC
-# See: https://www.digitalocean.com/community/tutorials/how-to-protect-wordpress-from-xml-rpc-attacks-on-ubuntu-14-04#method-3-manually-blocking-all-xml-rpc-traffic
-# See: https://blog.sucuri.net/2015/10/brute-force-amplification-attacks-against-wordpress-xmlrpc.html
-#
-<files xmlrpc.php>
-  <IfModule mod_authz_core.c>
-    Require all denied
-  </IfModule>
-  <IfModule !mod_authz_core.c>
-    Order allow,deny
-    Deny from all
-  </IfModule>
-</files>
-
-
-
-
-# STRONG HTACCESS PROTECTION (PROTECTS THIS FILE FROM HACKERS)
-#
-<Files ~ "^.*\.([Hh][Tt][Aa])">
-  order allow,deny
-  deny from all
-  satisfy all
-</Files>
-
-
-
-# REMOVE THE `X-POWERED-BY` RESPONSE HEADER
-#
-<IfModule mod_headers.c>
-    Header unset X-Powered-By
-</IfModule>
-
-
-
-# RECOGNIZE SSL WHEN SET AT A LOAD BALANCER/PROXY LEVEL (FOR CLOUDFLARE)
-#
-#SetEnvIf X-Forwarded-Proto https HTTPS=on
-
-
-# PREVENT WORDPRESS VERSION EXPOSURE IN README.HTML
-#
-<files readme.html>
-  Deny from all
-</files>
-
-
-# DISABLE HTTP TRACE
-RewriteEngine On
-RewriteCond %{REQUEST_METHOD} ^TRACE
-RewriteRule .* - [F]
-
-
-# BLOCK ACCESS TO HIDDEN FILES & DIRECTORIES
-#
-<IfModule mod_rewrite.c>
-  RewriteCond %{SCRIPT_FILENAME} -d [OR]
-  RewriteCond %{SCRIPT_FILENAME} -f
-  RewriteRule "(^|/)\." - [F]
-</IfModule>
-
-
-
-# BLOCK ACCESS TO FILES THAT CAN EXPOSE SENSITIVE INFORMATION
-#
-<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|psd|sh|sql|sw[op])|~)$">
-
-    # Apache < 2.3
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-        Satisfy All
-    </IfModule>
-
-    # Apache ≥ 2.3
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-
-</FilesMatch>
-
-
-
-# DISABLE ACCESS TO WORDPRESS WP-CONFIG FILE
-#
-<files wp-config.php>
-  order allow,deny
-  deny from all
-</files>
-
-
-# DISABLE ACCESS TO SFTP-CONFIG.JSON
-#
-<files sftp-config.json>
-  order allow,deny
-  deny from all
-</files>
-
-
-# DISABLE ACCESS TO INCLUDES.
-#
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^wp-admin/includes/ - [F,L]
-  RewriteRule !^wp-includes/ - [S=3]
-  RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
-  RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
-  RewriteRule ^wp-includes/theme-compat/ - [F,L]
-</IfModule>
-
-
-# PASS THE DEFAULT CHARACTER SET
-#
-AddDefaultCharset utf-8
-
-
-# REDIRECT SPAMMER ATTACKS TO BOGUS SITE
-#
-<IfModule mod_rewrite.c>
-  RewriteCond %{QUERY_STRING} q=user/register
-  RewriteRule ^/?$ http://www.nixbla.com/ [R=301,L]
-  RewriteCond %{QUERY_STRING} q=node/add
-  RewriteRule ^/?$ http://www.nixbla.com/ [R=301,L]
-</IfModule>
-
-
-# DENY NO REFERER REQUESTS - http://www.wprecipes.com/how-to-deny-comment-posting-to-no-referrer-requests
-# See also: https://codex.wordpress.org/Brute_Force_Attacks
-# Change yourblog.com to your domain. If you're using Multisite with mapped domains, you'll want to change yourblog.com to (yourblog.com|yourblog.net|yourblog4.com) and so on.
-#
-#<IfModule mod_rewrite.c>
-#  RewriteEngine On
-#  RewriteCond %{REQUEST_METHOD} POST
-#  RewriteCond %{REQUEST_URI} .*/(wp-comments-post|wp-login)\.php.*
-#  RewriteCond %{HTTP_REFERER} !.*yourblog.com.* [OR]
-#  RewriteCond %{HTTP_USER_AGENT} ^$
-#  RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
-#</IfModule>
-
-
-#BLOCK BROWSER ACCESS TO LOG FILES
-#
-<Files  ~ "\.log$">
-  Order allow,deny
-  Deny from all
-</Files>
-
-
-# STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY - METHOD 1
-#
-#<IfModule mod_rewrite.c>
-#  RewriteEngine On
-#  RewriteCond %{REQUEST_URI}  ^/$
-#  RewriteCond %{QUERY_STRING} ^/?author=([0-9]*)
-#  RewriteRule ^(.*)$ http://[domain.com]/? [L,R=301]
-#  RewriteCond %{QUERY_STRING} author=\d
-#  RewriteRule ^ /? [L,R=301]
-#</IfModule>
-
-
-# STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY - METHOD 2
-# See: https://www.wpbeginner.com/wp-tutorials/how-to-discourage-brute-force-by-blocking-author-scans-in-wordpress/
-#
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteCond %{QUERY_STRING} (author=\d+) [NC]
-  RewriteRule .* - [F]
-</IfModule>
-
-
-#WP HARDENING SECURITY HEADERS
-#
-<ifModule mod_headers.c>
-  Header set X-XSS-Protection "1; mode=block"
-  Header always append X-Frame-Options SAMEORIGIN
-  Header set X-Content-Type-Options: "nosniff"
-</ifModule>
-
-
-# BLOCK COMMON MALICIOUS BOT QUERIES
-#
-<IfModule mod_rewrite.c>
-  RewriteCond %{QUERY_STRING} http\:\/\/www\.google\.com\/humans\.txt\? [NC,OR]
-  RewriteCond %{QUERY_STRING} (img|thumb|thumb_editor|thumbopen).php [NC,OR]
-  RewriteCond %{QUERY_STRING} fckeditor [NC]
-  RewriteCond %{QUERY_STRING} revslider [NC]
-  RewriteRule .* - [F,L]
-</IfModule>
-
-<IfModule mod_rewrite.c>
-RewriteCond %{QUERY_STRING} http\:\/\/www\.google\.com\/humans\.txt\? [NC]
-RewriteRule .* - [F,L]
-</IfModule>
-
-
-# BLOCK SPECIFIC SITES FROM STEALING BANDWIDTH BY HOTLINKING TO IMAGES
-#
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?discussionist\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?sodahead\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixshark\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?advanceindiana.blogspot\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?galleryhip\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?freespeechwisconsin\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?memekid\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?3edgesword.blogspot\.ca(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?neogaf\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?locationrebel\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixgood\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?pudelekf23.blogspot\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?fstdt\.com(/.*)*$ [NC,OR]
-  RewriteCond %{HTTP_REFERER} ^http://(www\.)?zerohedge\.com(/.*)*$ [NC]
-  RewriteRule \.(jpeg|JPEG|jpe|JPE|jpg|JPG|gif|GIF|png|PNG|mng|MNG)$ - [F]
-</IfModule>
-
-
-
-# ABUSE HTTP REFERRER BLOCKING - Blocking referrer domains stops traffic originating from the specified domains
-#
-<IfModule mod_rewrite.c>
-  RewriteCond %{HTTP_REFERER} 100dollars-seo.com\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} best-seo-offer\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} free-social-buttions\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} todaperfeita\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} www1.free-social-buttons\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} www2.free-social-buttons\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} www3.free-social-buttons\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} www4.free-social-buttons\.com [NC]
-  RewriteRule .* - [F,L]
-</IfModule>
-
-
-
-
-
-########################################################################################################################
-# ===================== 301 REDIRECTS ==================================================================================
-########################################################################################################################
-# It's better to use the Redirection plugin for Wordpress than define them here. 
-# Find it at: https://wordpress.org/plugins/redirection/
-
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
+# ======================================================================================================================
