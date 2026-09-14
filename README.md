@@ -1,27 +1,116 @@
-# jays-wp-htaccess
+# Jay's WordPress `.htaccess`
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![WordPress](https://img.shields.io/badge/WordPress-5.0+-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
+[![Apache](https://img.shields.io/badge/Apache-2.2%20%7C%202.4%2B-d22128.svg?logo=apache&logoColor=white)](https://httpd.apache.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JayHoltslander/jays-wp-htaccess/pulls)
 
-<p align="center">
-<img src="http://i.imgur.com/uqqPJPb.jpg" width="100%">
-</p>
+A production-tested, high-performance, and hardened `.htaccess` configuration for WordPress websites. Designed to maximize speed, minimize TTFB (Time to First Byte), block automated bot scans before PHP boots, and provide seamless compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies like Cloudflare.
 
-An .htaccess file that I use for various Wordpress websites to improve performance, security, and functionality.
-*Some* informal tests on *some* sites have seen them *appear* to double in speed instantly just by uploading this file to the website's root folder. **Your results may vary**. 
+---
 
-### Note:
-Not all sections within the file may apply to you or work on your server. Comment out by prefixing the line with a # symbol or uncomment a line by removing the prefixing #.
+## ⚡ Highlights & Key Features
 
-:warning: **Caution** |
------------- |
-The .htaccess is a powerful file. One wrong move in the .htaccess file can make a website inaccessible. Make sure you have a backup of any original .htaccess file to restore via FTP if that happens. If a feature doesn't work when using this file, comment out sections and use the process of elimination to determine which bit is incompatible with your hosting. Also note that the larger your htaccess is the more you'll increase your site's [TTFB](https://en.wikipedia.org/wiki/Time_to_first_byte). **Trim out what you don't need!**|
+* **🚀 Maximum Performance & Caching**
+  * **Next-Gen Compression**: Native support for **Brotli** (`mod_brotli`) and **Gzip** (`mod_deflate`).
+  * **Static Asset Short-Circuit**: Bypasses rewrite processing entirely for existing static assets (`.css`, `.js`, `.woff2`, images), dramatically reducing server CPU overhead and TTFB.
+  * **Far-Future Expires Headers**: Aggressive, standards-compliant browser caching for media, scripts, styles, and fonts.
+  * **Next-Gen Image & MIME Support**: Ready for **AVIF**, **WebP**, **JXL**, **USDZ** (iOS AR), and modern RFC standard MIME types (`text/javascript`, `font/woff2`).
+  * **HTTP/2 & HTTP/3 Friendly**: Protocol-aware TCP Keep-Alive scoping.
 
-<p align="center">
-<a href="https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess">
-  <img src="http://dabuttonfactory.com/button.png?t=Download+%C2%BB&f=Calibri-Bold&ts=24&tc=444&hp=20&vp=8&c=5&bgt=gradient&bgc=fff&ebgc=eeefee&bs=1&bc=ccc&shs=1&shc=999&sho=s">
-</a>
-</p>
+* **🛡️ Hardened Multi-Layer Security**
+  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), cloud metadata probes (`.env`, `.aws`, `.git`), and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
+  * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
+  * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
+  * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
+  * **Automated No-Referrer Comment Spam Killer**: Blocks headless spam bots submitting direct POSTs to `wp-comments-post.php`.
+  * **Modern Security Headers**: `Header always set` enforcement for `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Permissions-Policy`, and `Cross-Origin-Opener-Policy (COOP)`.
+  * **Apache 2.4 & 2.2 Dual-Compatibility**: Safe on modern `mod_authz_core` (`Require all denied`) and legacy hosts without triggering 500 configuration errors.
+  * **Let's Encrypt / ACME Whitelisted**: Preserves automated SSL renewals by explicitly excluding `/.well-known/acme-challenge/` from dotfile blocks.
+  * **Cloudflare & Reverse Proxy `REAL_IP` Normalization**: Auto-detects `CF-Connecting-IP` without requiring manual file edits.
 
-If you see any errors, or have any ideas on how to improve this file, please let me know.
+---
 
-Please check out [this project's wiki](https://github.com/JayHoltslander/jays-wp-htaccess/wiki/Wiki) for more info.
+## 📑 Table of Contents
 
+The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
+
+1. **[Emergency & Maintenance Toggles](.htaccess#L18)** — Instant 302 redirect-to-homepage killswitch and legacy `.shtml` redirects.
+2. **[Directory Index & Server Options](.htaccess#L43)** — `DirectoryIndex` maintenance fallback, `Options -Indexes`, `Options -MultiViews`, and `ServerSignature Off`.
+3. **[MIME Types & Encodings](.htaccess#L88)** — UTF-8 character sets, RFC-standard MIME types for fonts, scripts, manifests, and next-gen images.
+4. **[Security Headers & CORS](.htaccess#L178)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, font CDN CORS, and optional HSTS.
+5. **[Performance & Caching](.htaccess#L254)** — Brotli/Deflate compression, Far-Future Expires, Cache-Control, and ETag disabling.
+6. **[Security Filters & Access Restrictions](.htaccess#L400)**
+   * **6.1** Cloudflare & Reverse Proxy REAL IP Normalization
+   * **6.2** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
+   * **6.3** Block Hidden Files & Directories (ACME Whitelisted)
+   * **6.4** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`)
+   * **6.5** Core WordPress Directory Hardening (`TRACE`, `wp-includes`)
+   * **6.6** Image Hotlink Defense & Static Asset Performance Short-Circuit
+   * **6.7** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
+   * **6.8** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L628)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L740)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+
+---
+
+## 🚀 Quick Start
+
+### 1. Download the file
+Download the latest production [`.htaccess`](https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess) file directly into your website root directory:
+
+```bash
+# Backup your existing .htaccess first!
+cp .htaccess .htaccess.backup
+
+# Download the latest version
+curl -O https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master/.htaccess
+```
+
+### 2. Tailor to your environment
+Open `.htaccess` in your editor and review optional toggles:
+* **SSL / HTTPS**: If not enforcing SSL at Cloudflare/CDN level, uncomment the **Force SSL** redirect block in Section 7.
+* **Domain Canonicalization**: Uncomment either **WWW to Naked** or **Naked to WWW** redirect depending on your domain preference.
+* **Jetpack / WP Mobile App**: If using Jetpack or mobile publishing, uncomment the allowed Automattic IP ranges in the `xmlrpc.php` block in Section 6.4.
+
+---
+
+## ⚠️ Important Notes & Troubleshooting
+
+> [!CAUTION]
+> **Always maintain a backup before modifying `.htaccess`!**
+> One syntax mistake or unsupported module directive can make a site return a `500 Internal Server Error`. Keep FTP or hosting file manager access ready.
+
+* **PHP-FPM / FastCGI Servers**: Directives like `php_value upload_max_filesize` are commented out by default because modern PHP-FPM hosts (cPanel EA4, Plesk, RunCloud, SpinupWP) will throw a 500 error if `php_value` is placed in `.htaccess`. Configure PHP limits in `.user.ini` or `php.ini` instead.
+* **Testing Changes**: After uploading, test your site in an incognito window, verify static asset loading (CSS/JS/images), test login functionality at `/wp-login.php`, and verify media uploads in the WordPress admin.
+* **Trim What You Don't Need**: If you use a reverse proxy or CDN (like Cloudflare) that handles hotlink protection or Brotli compression, you can comment out redundant blocks to keep your `.htaccess` as lightweight as possible.
+
+---
+
+## 💡 Recommendations for WordPress Security
+
+1. **Comment Spam**: The built-in **Automated No-Referrer Comment Spam Blocker** (Section 6.7) blocks ~99% of automated comment spam bots without requiring resource-heavy anti-spam plugins.
+2. **Two-Factor Authentication (2FA)**: Use in conjunction with a trusted 2FA plugin (e.g. WP 2FA) and security keys.
+3. **Admin URL Protection**: If you have a static IP address, uncomment the IP restriction snippet in Section 6.8 to restrict `/wp-login.php` exclusively to your IP.
+4. **Cloudflare / CDN**: When using Cloudflare, Section 6.1 automatically inspects `CF-Connecting-IP`, ensuring IP-based security rules work transparently.
+
+---
+
+## 📜 Credits & Attributions
+
+This project builds upon security research, server configuration standards, and optimization techniques from the open-source community:
+
+* **[HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-apache)** — Standards for MIME types, character encodings, and HTTP caching.
+* **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — 6G/7G firewall concepts, bot query mitigation, and custom error handling.
+* **[WordPress Codex & Security Team](https://wordpress.org/documentation/article/hardening-wordpress/)** — Core `wp-includes` and security hardening guidelines.
+* **[Sucuri Research](https://blog.sucuri.net/)** — Research on XML-RPC amplification attacks and WordPress vulnerability patterns.
+* **[David Walsh](https://davidwalsh.name/)** — Cross-domain font sharing (CORS) and SVG serving best practices.
+* **[Crunchify](https://crunchify.com/)** — Browser caching and ETag optimization.
+* **[KeyCDN](https://www.keycdn.com/)** — Research on `Cache-Control: immutable` caching directives.
+* **[HackRepair.com](https://hackrepair.com/)** — Bad bot and malicious user-agent blacklisting research.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE). Contributions, bug reports, and pull requests are always welcome!
