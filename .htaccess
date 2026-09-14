@@ -330,14 +330,13 @@ AddDefaultCharset utf-8
 </IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
-# UPGRADE INSECURE RESOURCE REQUESTS (CONTENT SECURITY POLICY - OPTIONAL)
+# UPGRADE INSECURE RESOURCE REQUESTS (CONTENT SECURITY POLICY)
 # ----------------------------------------------------------------------------------------------------------------------
 # Instructs browsers to automatically upgrade all insecure HTTP asset requests (images, scripts, styles) to HTTPS.
 # See: https://github.com/h5bp/server-configs-apache/pull/83/files
-#
-#<IfModule mod_headers.c>
-#	Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
-#</IfModule>
+<IfModule mod_headers.c>
+	Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
+</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
 # HTTP STRICT TRANSPORT SECURITY (HSTS - OPTIONAL)
@@ -992,9 +991,9 @@ FileETag None
 # RECOGNIZE SSL TERMINATED AT LOAD BALANCER / REVERSE PROXY (CLOUDFLARE)
 # ----------------------------------------------------------------------------------------------------------------------
 # Ensures Apache recognizes requests as HTTPS when SSL termination occurs upstream at Cloudflare or a load balancer.
-#<IfModule mod_setenvif.c>
-#	SetEnvIf X-Forwarded-Proto https HTTPS=on
-#</IfModule>
+<IfModule mod_setenvif.c>
+	SetEnvIf X-Forwarded-Proto https HTTPS=on
+</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
 # TEMPORARILY REDIRECT HTTPS TO HTTP (TROUBLESHOOTING ONLY)
