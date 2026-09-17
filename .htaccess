@@ -1,6 +1,6 @@
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.1.0
+# Version:      2.2.0
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -702,10 +702,15 @@ FileETag None
 	RewriteRule .* - [F,L]
 
 	# 8. Block Direct PHP Execution Inside Uploads Directory (Neutralizes Backdoor & Web Shell Upload Exploits)
-	RewriteRule ^wp-content/uploads/.*(?i)\.(php[0-9]?|phtml|phar|pl|py|cgi)$ - [F,L]
+	RewriteRule ^wp-content/uploads/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
 
 	# 9. Block Direct PHP Execution Inside Themes Directory (Template files should only be executed by WordPress core)
-	RewriteRule ^wp-content/themes/.*(?i)\.php$ - [F,L]
+	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
+
+	# 9b. Block Direct PHP Execution Inside Plugins Directory (OPTIONAL)
+	# (!) CAUTION: Many plugins (e.g. WooCommerce payment webhooks, PayPal IPN, captcha generators) require direct PHP
+	# execution. Only uncomment if you have thoroughly tested your site's checkout flows and AJAX integrations.
+	# RewriteRule ^wp-content/plugins/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
 
 	# 10. Block WordPress REST API User Enumeration Scans (/wp-json/wp/v2/users)
 	RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users [NC]
@@ -835,6 +840,13 @@ FileETag None
 	RewriteEngine On
 	RewriteCond %{REQUEST_METHOD} ^TRACE
 	RewriteRule .* - [F]
+</IfModule>
+
+# Block Direct Access to WordPress Installer (wp-admin/install.php)
+# Once WordPress is installed, install.php is never legitimately needed.
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteRule ^wp-admin/install\.php$ - [F,L,NC]
 </IfModule>
 
 # Restrict Direct Access to WP-Includes PHP Files
@@ -982,6 +994,26 @@ FileETag None
 #	RewriteCond %{REQUEST_URI} ^/(wp-admin|phpmyadmin|adminer|readme\.(html|txt)) [NC]
 #	RewriteCond %{ENV:REAL_IP} !^(192\.168\.1\.100|203\.0\.113\.1)$
 #	RewriteRule ^.*$ - [F,L]
+#</IfModule>
+
+# Ban Specific Abusive IP Addresses (Apache 2.4 / 2.2 Dual-Compatible & Reverse-Proxy Safe)
+#<IfModule mod_setenvif.c>
+#	SetEnvIf REMOTE_ADDR "^198\.51\.100\.1$" DenyAccess
+#	SetEnvIf X-Forwarded-For "^198\.51\.100\.1$" DenyAccess
+#	SetEnvIf X-Cluster-Client-IP "^198\.51\.100\.1$" DenyAccess
+#</IfModule>
+#<IfModule mod_authz_core.c>
+#	<RequireAll>
+#		Require all granted
+#		Require not env DenyAccess
+#		Require not ip 198.51.100.1
+#	</RequireAll>
+#</IfModule>
+#<IfModule !mod_authz_core.c>
+#	Order allow,deny
+#	Allow from all
+#	Deny from env=DenyAccess
+#	Deny from 198.51.100.1
 #</IfModule>
 
 
