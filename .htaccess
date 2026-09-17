@@ -1,6 +1,8 @@
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Source: https://github.com/JayHoltslander/jays-wp-htaccess
+# Version:      2.1.0
+# Released:     2026-09-17
+# Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
 # harden security, and provide deep compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies.
