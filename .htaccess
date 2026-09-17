@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.3.0
+# Version:      2.4.0
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -93,6 +93,12 @@ DirectoryIndex index.php index.html MAINT-index.html
 # * https://httpd.apache.org/docs/current/content-negotiation.html#multiviews
 # * https://www.infomaniak.com/en/support/faq/605/redirect-and-url-rewrite-issues-multiviews-option-in-htaccess
 Options -MultiViews
+
+# ----------------------------------------------------------------------------------------------------------------------
+# DISABLE SERVER-SIDE INCLUDES (SSI) & CGI SCRIPT EXECUTION
+# ----------------------------------------------------------------------------------------------------------------------
+# Hardens the environment by disabling legacy Server-Side Includes (.shtml) and direct CGI execution (.cgi, .pl).
+Options -ExecCGI -Includes
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -283,6 +289,14 @@ AddDefaultCharset utf-8
 	# Isolates the top-level browsing context, preventing cross-origin popups/windows from manipulating the window object.
 	# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
 	Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+
+	# ------------------------------------------------------------------------------------------------------------------
+	# PROACTIVE BROWSER DNS PREFETCHING (X-DNS-Prefetch-Control: on)
+	# ------------------------------------------------------------------------------------------------------------------
+	# Instructs modern browsers to proactively pre-resolve DNS lookups for external links, CDNs, and resources,
+	# significantly reducing latency when visitors click outbound links or load cross-domain assets.
+	# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
+	Header always set X-DNS-Prefetch-Control "on"
 
 	# ------------------------------------------------------------------------------------------------------------------
 	# REMOVE SERVER SOFTWARE & PINGBACK IDENTIFICATION HEADERS
@@ -705,8 +719,8 @@ FileETag None
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang) [NC]
 	RewriteRule .* - [F,L]
 
-	# 8. Block Direct PHP Execution Inside Uploads Directory (Neutralizes Backdoor & Web Shell Upload Exploits)
-	RewriteRule ^wp-content/uploads/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
+	# 8. Block Direct PHP Execution in Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
+	RewriteRule ^wp-content/(uploads|languages|upgrade)/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
 
 	# 9. Block Direct PHP Execution Inside Themes Directory (Template files should only be executed by WordPress core)
 	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
@@ -850,10 +864,10 @@ FileETag None
 # 6.5 CORE WORDPRESS DIRECTORY HARDENING
 # ----------------------------------------------------------------------------------------------------------------------
 
-# Disable HTTP TRACE Method (Prevents Cross-Site Tracing / XST Attacks)
+# Disable HTTP TRACE and TRACK Methods (Prevents Cross-Site Tracing / XST Attacks)
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteCond %{REQUEST_METHOD} ^TRACE
+	RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
 	RewriteRule .* - [F]
 </IfModule>
 
