@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.4.0
+# Version:      2.5.0
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -291,6 +291,14 @@ AddDefaultCharset utf-8
 	Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
 
 	# ------------------------------------------------------------------------------------------------------------------
+	# CROSS-ORIGIN RESOURCE POLICY (CORP)
+	# ------------------------------------------------------------------------------------------------------------------
+	# Protects sensitive documents, REST API responses, and user data from cross-origin leaks and Spectre-style reads.
+	# Static assets (fonts, images) are explicitly set to cross-origin in their respective blocks below.
+	# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy
+	Header always set Cross-Origin-Resource-Policy "same-origin"
+
+	# ------------------------------------------------------------------------------------------------------------------
 	# PROACTIVE BROWSER DNS PREFETCHING (X-DNS-Prefetch-Control: on)
 	# ------------------------------------------------------------------------------------------------------------------
 	# Instructs modern browsers to proactively pre-resolve DNS lookups for external links, CDNs, and resources,
@@ -319,9 +327,9 @@ AddDefaultCharset utf-8
 #</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
-# SEND CORS HEADERS FOR IMAGES WHEN BROWSERS EXPLICITLY REQUEST IT
+# SEND CORS & CORP HEADERS FOR IMAGES
 # ----------------------------------------------------------------------------------------------------------------------
-# Needed when drawing cross-origin images to HTML5 <canvas> elements without tainting the canvas.
+# Needed when drawing cross-origin images to HTML5 <canvas> elements without tainting the canvas, and permits CDN sharing.
 # See:
 # * https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
 # * https://blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
@@ -330,6 +338,7 @@ AddDefaultCharset utf-8
 		<FilesMatch "\.(avifs?|bmp|cur|gif|ico|jpe?g|jxl|png|svgz?|webp)$">
 			SetEnvIf Origin ":" IS_CORS
 			Header set Access-Control-Allow-Origin "*" env=IS_CORS
+			Header set Cross-Origin-Resource-Policy "cross-origin"
 		</FilesMatch>
 	</IfModule>
 </IfModule>
@@ -343,6 +352,7 @@ AddDefaultCharset utf-8
 <IfModule mod_headers.c>
 	<FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
 		Header set Access-Control-Allow-Origin "*"
+		Header set Cross-Origin-Resource-Policy "cross-origin"
 	</FilesMatch>
 </IfModule>
 
@@ -599,6 +609,17 @@ AddDefaultCharset utf-8
 	<IfModule !mod_http2.c>
 		Header set Connection keep-alive
 	</IfModule>
+</IfModule>
+
+# ----------------------------------------------------------------------------------------------------------------------
+# MEDIA BYTE-RANGE STREAMING (ACCEPT-RANGES)
+# ----------------------------------------------------------------------------------------------------------------------
+# Informs mobile and modern browsers (iOS Safari, Chrome) that media files support byte-range requests,
+# allowing smooth scrubbing and seeking in audio and video players without buffering from byte 0.
+<IfModule mod_headers.c>
+	<FilesMatch "\.(m4[av]|mp[34]|mpe?g|ogg|opus|wav|webm)$">
+		Header set Accept-Ranges bytes
+	</FilesMatch>
 </IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
