@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.5.0
+# Version:      2.6.0
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -722,16 +722,24 @@ FileETag None
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, etc.)
 	RewriteRule (^|/)(\.env.*|\.git.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 
-	# 3. Block Developer Manifests & Lockfiles (composer.json, package.json, webpack.config.js)
+	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, terraform)
 	RewriteRule ^(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|tsconfig\.json|webpack\.config\.js)$ - [F,L,NC]
+	RewriteRule (firebase-adminsdk|service-account|serviceAccountKey|credentials|secrets)\.(json|ya?ml)$ - [F,L,NC]
+	RewriteRule (server|localhost|privatekey|private-key|host|key)\.(key|pem)$ - [F,L,NC]
+	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile|docker-compose\.ya?ml)$ - [F,L,NC]
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Note: If your site legitimately serves downloadable .zip / .tar / .gz archives, remove those extensions from the list below.
 	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp|tar|gz|tgz|zip|rar)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
 
-	# 5. Block Known Web Shells & Vulnerability Scanner Script Names (c99, r57, alfa, wso, b374k, adminer)
+	# 5. Block Known Web Shells, Diagnostic Files & Framework RCE Probes (c99, terminal-xhr, inngest, phpinfo)
 	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|adminer.*\.php|phpmyadmin.*\.php) - [F,L,NC]
+	RewriteRule (terminal-xhr\.php|api/fs/exec|read-document|api/templates/preview|api/designer/v1/file-content|proc/self/environ|api/inngest) - [F,L,NC]
+	RewriteRule (info|phpinfo)\.php$ - [F,L,NC]
+
+	# 5b. Block GraphQL Introspection Probes (OPTIONAL - Do NOT enable if using WPGraphQL)
+	# RewriteRule ^graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, VPNs, Remote Desktop, and Actuator Probes (actuator, swagger-ui, solr, RDWeb)
 	RewriteRule ^(dana-na|remote/|logon/LogonPoint|RDWeb|vpn/|wsman|autodiscover|solr|console/|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs) - [F,L,NC]
