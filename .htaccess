@@ -678,8 +678,8 @@ FileETag None
 	# 1. Block Probes for Non-WordPress Executable & Legacy Framework Extensions
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf)$ - [F,L,NC]
 
-	# 2. Block Environment, Config, and Cloud Metadata Probes (.env, .git, .aws, .dockercfg, web.config)
-	RewriteRule (\.env|\.git|\.svn|\.dockercfg|\.aws|\.kube|web\.config)$ - [F,L,NC]
+	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, etc.)
+	RewriteRule (^|/)(\.env.*|\.git.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests & Lockfiles (composer.json, package.json, webpack.config.js)
 	RewriteRule ^(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|tsconfig\.json|webpack\.config\.js)$ - [F,L,NC]
