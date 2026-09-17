@@ -1,6 +1,7 @@
+# BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.2.2
+# Version:      2.3.0
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -1157,6 +1158,8 @@ FileETag None
 # Find it at: https://wordpress.org/plugins/redirection/
 #
 #redirect 301 /old-page-url.html https://www.example.com/new-page-url
+
+# END Jays WordPress .htaccess
 
 
 # ======================================================================================================================
