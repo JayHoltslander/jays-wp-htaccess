@@ -1,6 +1,6 @@
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.2.1
+# Version:      2.2.2
 # Released:     2026-09-17
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -458,6 +458,9 @@ AddDefaultCharset utf-8
 			SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
 			RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
 		</IfModule>
+
+		# Skip compression and prevent redundant Vary headers for already-compressed binary media
+		SetEnvIfNoCase Request_URI \.(?:avifs?|avi|bz2|divx|doc|docx|exe|flv|gif|gz|gzip|ico|jpe?g|jxl|m4a|mid|midi|mov|mp3|mp4|mpe?g|ogg|otf|pdf|png|ppt|pptx|ra|ram|rar|svgz|swf|tar|tgz|ttf|wav|webm|webp|wma|wmv|woff2?|xls|xlsx|zip)$ no-gzip dont-vary
 	</IfModule>
 </IfModule>
 
