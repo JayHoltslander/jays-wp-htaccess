@@ -13,8 +13,8 @@ Every single change or commit that modifies `.htaccess` **MUST** bump the versio
 ```
 
 ### Versioning Rules:
-- **Patch (`X.Y.Z+1`):** Small rule tweaks, regex fixes, documentation clarifications, or minor directive additions.
-- **Minor (`X.Y+1.0`):** New security categories, new feature blocks, or significant rule enhancements.
+- **Patch (`X.Y.Z+1`):** Expanding existing signature lists (e.g. adding new bot User-Agents, exploit paths, file/directory probe names, diagnostic aliases, or credential extensions), regex bugfixes, small directive tweaks, or documentation updates.
+- **Minor (`X.Y+1.0`):** Adding brand-new security sections/categories, new functional modules (e.g. CORS/CORP, Brotli, marker systems), or major architectural directive additions.
 - **Major (`X+1.0.0`):** Breaking structural overhauls, fundamental reorganization, or core architecture changes.
 
 ---
