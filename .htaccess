@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.9.0
+# Version:      2.10.0
 # Released:     2026-09-21
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -298,6 +298,13 @@ AddDefaultCharset utf-8
 	Header always set X-DNS-Prefetch-Control "on"
 
 	# ------------------------------------------------------------------------------------------------------------------
+	# CROSS-DOMAIN POLICY RESTRICTION (X-Permitted-Cross-Domain-Policies: none)
+	# ------------------------------------------------------------------------------------------------------------------
+	# Prevents clients like Adobe Acrobat (PDF reader) and Flash from loading cross-domain data policies from this domain.
+	# See: https://owasp.org/www-project-secure-headers/#x-permitted-cross-domain-policies
+	Header always set X-Permitted-Cross-Domain-Policies "none"
+
+	# ------------------------------------------------------------------------------------------------------------------
 	# REMOVE SERVER SOFTWARE & PINGBACK IDENTIFICATION HEADERS
 	# ------------------------------------------------------------------------------------------------------------------
 	# Unsets X-Powered-By (leaks PHP/server versions) and X-Pingback across both 'always' and 'onsuccess' tables (PHP-FPM safe).
@@ -571,14 +578,15 @@ AddDefaultCharset utf-8
 #</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
-# IMMUTABLE CACHE-CONTROL FOR VERSIONED STATIC ASSETS (OPTIONAL)
+# IMMUTABLE CACHE-CONTROL FOR VERSIONED STATIC ASSETS & MEDIA (OPTIONAL)
 # ----------------------------------------------------------------------------------------------------------------------
-# Tells browsers that the asset content will NEVER change during its lifetime, preventing browsers from making
-# conditional 304 re-validation requests on reload.
+# Informs modern browsers (Chrome, Safari, Firefox) that the asset content will NEVER change during its lifetime.
+# Browsers will instantly serve the file from local cache without sending conditional 304 re-validation requests on reload.
+# Safe for WordPress uploads and cache-busted CSS/JS/fonts (e.g. style.css?ver=1.2.3 or hashed assets).
 # See: https://www.keycdn.com/blog/cache-control-immutable
 #
 #<IfModule mod_headers.c>
-#	<FilesMatch "\.(avi|css|doc|gif|heic|heif|ico|jpe?g|js|mjs|mov|mp3|mp4|pdf|png|ppt|wav|webm|webp|wmv|woff2?)$">
+#	<FilesMatch "\.(avifs?|bmp|css|cur|doc|eot|gif|heic|heif|ico|jpe?g|js|jxl|mjs|mov|mp3|mp4|ogg|otf|pdf|png|ppt|svgz?|ttf|usdz|vtt|wav|webm|webp|wmv|woff2?)$">
 #		Header set Cache-Control "public, max-age=31536000, immutable"
 #	</FilesMatch>
 #</IfModule>
@@ -899,8 +907,8 @@ FileETag None
 	</IfModule>
 </Files>
 
-# Disable Trackbacks & Pingbacks Endpoint (Mitigates Legacy Trackback Spam & Amplification Attacks)
-<Files "wp-trackback.php">
+# Disable Trackbacks, Pingbacks & Legacy Blogroll Endpoints (Mitigates Legacy Spam & Probe Floods)
+<FilesMatch "^(wp-trackback|wp-links-opml)\.php$">
 	<IfModule mod_authz_core.c>
 		Require all denied
 	</IfModule>
@@ -908,7 +916,7 @@ FileETag None
 		Order allow,deny
 		Deny from all
 	</IfModule>
-</Files>
+</FilesMatch>
 
 
 # ----------------------------------------------------------------------------------------------------------------------
