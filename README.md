@@ -19,7 +19,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
   * **HTTP/2 & HTTP/3 Friendly**: Protocol-aware TCP Keep-Alive scoping.
 
 * **🛡️ Hardened Multi-Layer Security**
-  * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by Perishable Press protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
+  * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
   * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), cloud metadata probes (`.env`, `.aws`, `.git`), and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
@@ -103,7 +103,7 @@ Open `.htaccess` in your editor and review optional toggles:
 This project builds upon security research, server configuration standards, and optimization techniques from the open-source community:
 
 * **[HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-apache)** — Standards for MIME types, character encodings, and HTTP caching.
-* **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — 8G Firewall v1.5, nG blacklist concepts, bot query mitigation, and custom error handling.
+* **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — [8G Firewall v1.5](https://perishablepress.com/8g-firewall/), nG blacklist concepts, bot query mitigation, and custom error handling.
 * **[WordPress Codex & Security Team](https://wordpress.org/documentation/article/hardening-wordpress/)** — Core `wp-includes` and security hardening guidelines.
 * **[Sucuri Research](https://blog.sucuri.net/)** — Research on XML-RPC amplification attacks and WordPress vulnerability patterns.
 * **[David Walsh](https://davidwalsh.name/)** — Cross-domain font sharing (CORS) and SVG serving best practices.
