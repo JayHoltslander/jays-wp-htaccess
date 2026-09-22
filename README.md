@@ -20,12 +20,13 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
 
 * **🛡️ Hardened Multi-Layer Security**
   * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
-  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), cloud metadata probes (`.env`, `.aws`, `.git`), and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
+  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), SSH/SSL private keys, and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
   * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
   * **Automated No-Referrer Comment Spam Killer**: Blocks headless spam bots submitting direct POSTs to `wp-comments-post.php`.
-  * **Modern Security Headers**: `Header always set` enforcement for `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Permissions-Policy`, and `Cross-Origin-Opener-Policy (COOP)`.
+  * **Legacy Attack Surface Reduction**: Blocks XML-RPC brute-force amplification (`xmlrpc.php`) and legacy trackback/pingback spam (`wp-trackback.php`).
+  * **Modern Security Headers**: `Header always set` enforcement for `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Permissions-Policy` (sensor & FLoC/Topics restriction), and `Cross-Origin-Opener-Policy (COOP)`.
   * **Apache 2.4 & 2.2 Dual-Compatibility**: Safe on modern `mod_authz_core` (`Require all denied`) and legacy hosts without triggering 500 configuration errors.
   * **Let's Encrypt / ACME Whitelisted**: Preserves automated SSL renewals by explicitly excluding `/.well-known/acme-challenge/` from dotfile blocks.
   * **Cloudflare & Reverse Proxy `REAL_IP` Normalization**: Auto-detects `CF-Connecting-IP` without requiring manual file edits.
@@ -41,19 +42,19 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 3. **[MIME Types & Encodings](.htaccess#L137)** — UTF-8 character sets, RFC-standard MIME types for fonts, scripts, manifests, and modern images (AVIF, WebP, JXL, HEIC/HEIF).
 4. **[Security Headers & CORS](.htaccess#L232)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, font CDN CORS, and optional HSTS.
 5. **[Performance & Caching](.htaccess#L377)** — Brotli/Deflate compression, Far-Future Expires, Cache-Control, and ETag disabling.
-6. **[Security Filters & Access Restrictions](.htaccess#L667)**
+6. **[Security Filters & Access Restrictions](.htaccess#L673)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit (Bypasses Deep Rewrite Scans for Existing Static Files)
    * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
    * **6.4** Block Hidden Files & Directories (ACME / SSL Whitelisted)
-   * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`)
+   * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`)
    * **6.6** Core WordPress Directory Hardening (`install.php`, `wp-includes`)
    * **6.7** Image Hotlinking Defense (Optional)
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1262)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1392)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1280)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1410)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 

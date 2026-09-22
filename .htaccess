@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.8.1
+# Version:      2.9.0
 # Released:     2026-09-21
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -272,7 +272,7 @@ AddDefaultCharset utf-8
 	# ------------------------------------------------------------------------------------------------------------------
 	# Restricts unauthorized third-party scripts and embedded iframes from accessing device sensors and hardware APIs.
 	# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
-	Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+	Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=()"
 
 	# ------------------------------------------------------------------------------------------------------------------
 	# CROSS-ORIGIN OPENER POLICY (COOP)
@@ -617,19 +617,25 @@ AddDefaultCharset utf-8
 FileETag None
 
 # ----------------------------------------------------------------------------------------------------------------------
-# SERVE WEBP IMAGES INSTEAD OF JPG/PNG IF SUPPORTED (OPTIONAL)
+# SERVE AVIF / WEBP IMAGES INSTEAD OF JPG/PNG IF SUPPORTED (OPTIONAL)
 # ----------------------------------------------------------------------------------------------------------------------
-# If the visitor's browser sends an Accept: image/webp header and an image.jpg.webp file exists, serve WebP dynamically.
-# Source: https://github.com/vincentorback/WebP-images-with-htaccess
+# Dynamically serves .avif or .webp variants of images if the client browser supports them and the optimized file exists.
 #
 #<IfModule mod_setenvif.c>
 #	SetEnvIf Request_URI "\.(jpe?g|png)$" REQUEST_image
 #</IfModule>
 #<IfModule mod_rewrite.c>
 #	RewriteEngine On
+#
+#	# 1. Check for AVIF support and file existence
+#	RewriteCond %{HTTP_ACCEPT} image/avif
+#	RewriteCond %{DOCUMENT_ROOT}/$1.avif -f
+#	RewriteRule (.+)\.(jpe?g|png)$ $1.avif [T=image/avif,E=accept:1,L]
+#
+#	# 2. Check for WebP support and file existence
 #	RewriteCond %{HTTP_ACCEPT} image/webp
 #	RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
-#	RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp]
+#	RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp,E=accept:1,L]
 #</IfModule>
 #<IfModule mod_headers.c>
 #	Header append Vary Accept env=REQUEST_image
@@ -719,18 +725,19 @@ FileETag None
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys)
 	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
 	RewriteRule (firebase-adminsdk|service-account|serviceAccountKey|credentials|secrets|gcp-credentials|gcp-key|gcp-sa|google-credentials|google-key|firebase-key|keyfile|sa|application_default_credentials)\.(json|ya?ml)$ - [F,L,NC]
-	RewriteRule (server|localhost|privatekey|private-key|host|key)\.(key|pem)$ - [F,L,NC]
+	RewriteRule (server|localhost|privatekey|private-key|host|key|id_rsa|id_ecdsa|id_ed25519)\.(key|pem|pub)$ - [F,L,NC]
 	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile|docker-compose\.ya?ml)$ - [F,L,NC]
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
 	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp)$ - [F,L,NC]
 	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
+	RewriteRule ^wp-content/(updraft|ai1wm-backups|wp-snapshots|backups|backupbuddy_backups)/.*\.(zip|tar|gz|tgz|sql|wpress|enc)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
@@ -889,6 +896,17 @@ FileETag None
 		Order allow,deny
 		Deny from all
 		# Allow from 192.0.64.0/18
+	</IfModule>
+</Files>
+
+# Disable Trackbacks & Pingbacks Endpoint (Mitigates Legacy Trackback Spam & Amplification Attacks)
+<Files "wp-trackback.php">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
 	</IfModule>
 </Files>
 
