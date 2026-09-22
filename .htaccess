@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.8.0
+# Version:      2.8.1
 # Released:     2026-09-21
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -693,11 +693,11 @@ FileETag None
 # 6.2 STATIC ASSET PERFORMANCE SHORT-CIRCUIT (BYPASS DEEP REWRITE SCANS)
 # ----------------------------------------------------------------------------------------------------------------------
 # If an actual static file exists on disk, stop rewrite evaluation immediately with [L].
-# This ensures static requests (CSS, JS, fonts, images) bypass all exploit scanner rules below, saving CPU and TTFB.
+# In-memory regex check is evaluated first to avoid kernel filesystem stat() calls on dynamic page requests.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
+	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|jxl|js|json|map|mjs|mp4|ogg|otf|png|svgz?|ttf|usdz|vtt|webmanifest|webp|woff2?)$ [NC]
 	RewriteCond %{REQUEST_FILENAME} -f
-	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|js|json|mjs|mp4|ogg|otf|png|svgz?|ttf|webp|woff2?)$ [NC]
 	RewriteRule ^ - [L]
 </IfModule>
 
