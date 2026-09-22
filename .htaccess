@@ -20,7 +20,7 @@
 #    6.2 Advanced Early-Drop Protection (Zero-PHP Overhead Scanner Mitigation)
 #    6.3 Block Access to Hidden Files & Directories (ACME / SSL Whitelisted)
 #    6.4 File Access Protections (Apache 2.4/2.2 Dual-Compatible: .ht*, wp-config, debug.log, xmlrpc)
-#    6.5 Core WordPress Directory Hardening (TRACE, wp-includes)
+#    6.5 Core WordPress Directory Hardening (install.php, wp-includes)
 #    6.6 Hotlinking Defense & Static Asset Performance Short-Circuit
 #    6.7 Bot, Enumeration & Spam Query Filtering (Dynamic Requests Only)
 #    6.8 8G Firewall v1.5 (Perishable Press Server-Level WAF)
@@ -894,13 +894,6 @@ FileETag None
 # 6.5 CORE WORDPRESS DIRECTORY HARDENING
 # ----------------------------------------------------------------------------------------------------------------------
 
-# Disable HTTP TRACE and TRACK Methods (Prevents Cross-Site Tracing / XST Attacks)
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
-	RewriteRule .* - [F]
-</IfModule>
-
 # Block Direct Access to WordPress Installer (wp-admin/install.php)
 # Once WordPress is installed, install.php is never legitimately needed.
 <IfModule mod_rewrite.c>
@@ -1002,15 +995,11 @@ FileETag None
 	RewriteRule .* - [F,L]
 </IfModule>
 
-# Abuse HTTP Referrer Blocking (Blocks Scraper & Referrer Spam Networks)
+# Abuse HTTP Referrer Blocking (Blocks Additional Scraper & Referrer Spam Networks)
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteCond %{HTTP_REFERER} 100dollars-seo\.com [NC,OR]
-	RewriteCond %{HTTP_REFERER} best-seo-offer\.com [NC,OR]
 	RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
 	RewriteCond %{HTTP_REFERER} free-social-buttons\.com [NC,OR]
-	RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
-	RewriteCond %{HTTP_REFERER} todaperfeita\.com [NC,OR]
 	RewriteCond %{HTTP_REFERER} www[0-9]?\.free-social-buttons\.com [NC]
 	RewriteRule .* - [F,L]
 </IfModule>

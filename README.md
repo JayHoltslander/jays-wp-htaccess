@@ -46,7 +46,7 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.2** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
    * **6.3** Block Hidden Files & Directories (ACME Whitelisted)
    * **6.4** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`)
-   * **6.5** Core WordPress Directory Hardening (`TRACE`, `wp-includes`)
+   * **6.5** Core WordPress Directory Hardening (`install.php`, `wp-includes`)
    * **6.6** Image Hotlink Defense & Static Asset Performance Short-Circuit
    * **6.7** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.8** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
