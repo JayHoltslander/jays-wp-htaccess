@@ -19,6 +19,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
   * **HTTP/2 & HTTP/3 Friendly**: Protocol-aware TCP Keep-Alive scoping.
 
 * **🛡️ Hardened Multi-Layer Security**
+  * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by Perishable Press protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
   * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), cloud metadata probes (`.env`, `.aws`, `.git`), and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
@@ -48,7 +49,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.5** Core WordPress Directory Hardening (`TRACE`, `wp-includes`)
    * **6.6** Image Hotlink Defense & Static Asset Performance Short-Circuit
    * **6.7** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
-   * **6.8** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
+   * **6.8** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
+   * **6.9** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
 7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L628)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
 8. **[WordPress Front Controller](.htaccess#L740)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
@@ -91,7 +93,7 @@ Open `.htaccess` in your editor and review optional toggles:
 
 1. **Comment Spam**: The built-in **Automated No-Referrer Comment Spam Blocker** (Section 6.7) blocks ~99% of automated comment spam bots without requiring resource-heavy anti-spam plugins.
 2. **Two-Factor Authentication (2FA)**: Use in conjunction with a trusted 2FA plugin (e.g. WP 2FA) and security keys.
-3. **Admin URL Protection**: If you have a static IP address, uncomment the IP restriction snippet in Section 6.8 to restrict `/wp-login.php` exclusively to your IP.
+3. **Admin URL Protection**: If you have a static IP address, uncomment the IP restriction snippet in Section 6.9 to restrict `/wp-login.php` exclusively to your IP.
 4. **Cloudflare / CDN**: When using Cloudflare, Section 6.1 automatically inspects `CF-Connecting-IP`, ensuring IP-based security rules work transparently.
 
 ---
@@ -101,7 +103,7 @@ Open `.htaccess` in your editor and review optional toggles:
 This project builds upon security research, server configuration standards, and optimization techniques from the open-source community:
 
 * **[HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-apache)** — Standards for MIME types, character encodings, and HTTP caching.
-* **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — 6G/7G firewall concepts, bot query mitigation, and custom error handling.
+* **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — 8G Firewall v1.5, nG blacklist concepts, bot query mitigation, and custom error handling.
 * **[WordPress Codex & Security Team](https://wordpress.org/documentation/article/hardening-wordpress/)** — Core `wp-includes` and security hardening guidelines.
 * **[Sucuri Research](https://blog.sucuri.net/)** — Research on XML-RPC amplification attacks and WordPress vulnerability patterns.
 * **[David Walsh](https://davidwalsh.name/)** — Cross-domain font sharing (CORS) and SVG serving best practices.
