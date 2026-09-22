@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.7.0
+# Version:      2.8.0
 # Released:     2026-09-21
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -16,15 +16,16 @@
 # 4. SECURITY HEADERS & CORS CONTROLS
 # 5. PERFORMANCE, COMPRESSION & CACHING
 # 6. SECURITY FILTERS & ACCESS RESTRICTIONS
-#    6.1 Cloudflare & Reverse Proxy REAL IP Normalization
-#    6.2 Advanced Early-Drop Protection (Zero-PHP Overhead Scanner Mitigation)
-#    6.3 Block Access to Hidden Files & Directories (ACME / SSL Whitelisted)
-#    6.4 File Access Protections (Apache 2.4/2.2 Dual-Compatible: .ht*, wp-config, debug.log, xmlrpc)
-#    6.5 Core WordPress Directory Hardening (install.php, wp-includes)
-#    6.6 Hotlinking Defense & Static Asset Performance Short-Circuit
-#    6.7 Bot, Enumeration & Spam Query Filtering (Dynamic Requests Only)
-#    6.8 8G Firewall v1.5 (Perishable Press Server-Level WAF)
-#    6.9 IP-Based Access Control Examples
+#    6.1 Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
+#    6.2 Static Asset Performance Short-Circuit (Bypass Deep Rewrite Scans)
+#    6.3 Advanced Early-Drop Protection (Zero-PHP Overhead Scanner Mitigation)
+#    6.4 Block Access to Hidden Files & Directories (ACME / SSL Whitelisted)
+#    6.5 File Access Protections (Apache 2.4/2.2 Dual-Compatible: .ht*, wp-config, debug.log, xmlrpc)
+#    6.6 Core WordPress Directory Hardening (install.php, wp-includes)
+#    6.7 Image Hotlinking Defense (Optional)
+#    6.8 Bot, Enumeration & Spam Query Filtering (Dynamic Requests Only)
+#    6.9 8G Firewall v1.5 (Perishable Press Server-Level WAF)
+#    6.10 IP-Based Access Control & Rate Limiting Examples
 # 7. URL CANONICALIZATION, HTTPS & REDIRECTS
 # 8. WORDPRESS FRONT CONTROLLER (Must remain at the very end of the file)
 # ======================================================================================================================
@@ -147,7 +148,6 @@ AddDefaultCharset utf-8
 	# Character Encodings for Specific File Extensions
 	# See: https://www.w3.org/International/articles/http-charset/
 	AddCharset utf-8 .atom \
-	                 .bbaw \
 	                 .css \
 	                 .geojson \
 	                 .js \
@@ -159,9 +159,7 @@ AddDefaultCharset utf-8
 	                 .rss \
 	                 .topojson \
 	                 .vtt \
-	                 .webapp \
 	                 .webmanifest \
-	                 .xloc \
 	                 .xml
 
 	# Data Interchange Formats
@@ -179,15 +177,15 @@ AddDefaultCharset utf-8
 	# Web Application Manifest Files
 	# See: https://w3c.github.io/manifest/
 	AddType application/manifest+json                   webmanifest
-	AddType application/x-web-app-manifest+json         webapp
-	AddType text/cache-manifest                         appcache
 
-	# Media Files & Next-Generation Image Formats (AVIF, WebP, JXL)
+	# Media Files & Modern Image Formats (AVIF, WebP, JXL, HEIC/HEIF)
 	# See: https://calendar.perfplanet.com/2020/avif-has-landed/
 	AddType audio/mp4                                   f4a f4b m4a
 	AddType audio/ogg                                   oga ogg opus
 	AddType image/avif                                  avif avifs
 	AddType image/bmp                                   bmp
+	AddType image/heic                                  heic
+	AddType image/heif                                  heif
 	AddType image/jxl                                   jxl
 	AddType image/svg+xml                               svg svgz
 	AddType image/webp                                  webp
@@ -195,7 +193,6 @@ AddDefaultCharset utf-8
 	AddType video/mp4                                   f4v f4p m4v mp4
 	AddType video/ogg                                   ogv
 	AddType video/webm                                  webm
-	AddType video/x-flv                                 flv
 
 	# Web Fonts (RFC 8081 Standard: font/*)
 	# See: https://datatracker.ietf.org/doc/html/rfc8081
@@ -210,16 +207,9 @@ AddDefaultCharset utf-8
 	# See: https://webkit.org/blog/8421/viewing-augmented-reality-assets-in-safari-for-ios/
 	AddType model/vnd.usdz+zip                          usdz
 
-	# Browser Extensions & Miscellaneous
-	AddType application/octet-stream                    safariextz
-	AddType application/x-bb-appworld                   bbaw
-	AddType application/x-chrome-extension              crx
-	AddType application/x-opera-extension               oex
-	AddType application/x-xpinstall                     xpi
+	# Miscellaneous Document & Caption Types
 	AddType text/vcard                                  vcard vcf
-	AddType text/vnd.rim.location.xloc                  xloc
 	AddType text/vtt                                    vtt
-	AddType text/x-component                            htc
 
 	# Gzip Encoding for Pre-Compressed SVGZ Images
 	# See: https://davidwalsh.name/serve-svg-image
@@ -258,7 +248,7 @@ AddDefaultCharset utf-8
 	# Prevents external malicious websites from embedding your site inside an <iframe>, protecting users from UI redressing
 	# and clickjacking attacks.
 	# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-	Header always append X-Frame-Options SAMEORIGIN
+	Header always set X-Frame-Options "SAMEORIGIN"
 
 	# ------------------------------------------------------------------------------------------------------------------
 	# DISABLE LEGACY XSS AUDITOR (X-XSS-Protection: 0)
@@ -310,8 +300,10 @@ AddDefaultCharset utf-8
 	# ------------------------------------------------------------------------------------------------------------------
 	# REMOVE SERVER SOFTWARE & PINGBACK IDENTIFICATION HEADERS
 	# ------------------------------------------------------------------------------------------------------------------
-	# Unsets the X-Powered-By header (leaks PHP/server versions) and X-Pingback (advertises XML-RPC pingback features).
+	# Unsets X-Powered-By (leaks PHP/server versions) and X-Pingback across both 'always' and 'onsuccess' tables (PHP-FPM safe).
+	Header always unset X-Powered-By
 	Header unset X-Powered-By
+	Header always unset X-Pingback
 	Header unset X-Pingback
 </IfModule>
 
@@ -336,10 +328,11 @@ AddDefaultCharset utf-8
 # * https://blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
 <IfModule mod_setenvif.c>
 	<IfModule mod_headers.c>
-		<FilesMatch "\.(avifs?|bmp|cur|gif|ico|jpe?g|jxl|png|svgz?|webp)$">
+		<FilesMatch "\.(avifs?|bmp|cur|gif|heic|heif|ico|jpe?g|jxl|png|svgz?|webp)$">
 			SetEnvIf Origin ":" IS_CORS
-			Header set Access-Control-Allow-Origin "*" env=IS_CORS
-			Header set Cross-Origin-Resource-Policy "cross-origin"
+			Header always set Access-Control-Allow-Origin "*" env=IS_CORS
+			Header always set Cross-Origin-Resource-Policy "cross-origin"
+			Header append Vary "Origin" env=IS_CORS
 		</FilesMatch>
 	</IfModule>
 </IfModule>
@@ -352,8 +345,8 @@ AddDefaultCharset utf-8
 # See: https://davidwalsh.name/cdn-fonts
 <IfModule mod_headers.c>
 	<FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
-		Header set Access-Control-Allow-Origin "*"
-		Header set Cross-Origin-Resource-Policy "cross-origin"
+		Header always set Access-Control-Allow-Origin "*"
+		Header always set Cross-Origin-Resource-Policy "cross-origin"
 	</FilesMatch>
 </IfModule>
 
@@ -403,7 +396,6 @@ AddDefaultCharset utf-8
 		application/vnd.ms-fontobject \
 		application/x-font-ttf \
 		application/x-javascript \
-		application/x-web-app-manifest+json \
 		application/xhtml+xml \
 		application/xml \
 		font/collection \
@@ -411,21 +403,16 @@ AddDefaultCharset utf-8
 		font/opentype \
 		font/otf \
 		font/ttf \
-		font/woff \
-		font/woff2 \
 		image/bmp \
 		image/svg+xml \
 		image/vnd.microsoft.icon \
 		image/x-icon \
-		text/cache-manifest \
 		text/css \
 		text/html \
 		text/javascript \
 		text/plain \
 		text/vcard \
-		text/vnd.rim.location.xloc \
 		text/vtt \
-		text/x-component \
 		text/x-cross-domain-policy \
 		text/xml
 </IfModule>
@@ -451,7 +438,6 @@ AddDefaultCharset utf-8
 			application/vnd.ms-fontobject \
 			application/x-font-ttf \
 			application/x-javascript \
-			application/x-web-app-manifest+json \
 			application/xhtml+xml \
 			application/xml \
 			font/collection \
@@ -459,21 +445,16 @@ AddDefaultCharset utf-8
 			font/opentype \
 			font/otf \
 			font/ttf \
-			font/woff \
-			font/woff2 \
 			image/bmp \
 			image/svg+xml \
 			image/vnd.microsoft.icon \
 			image/x-icon \
-			text/cache-manifest \
 			text/css \
 			text/html \
 			text/javascript \
 			text/plain \
 			text/vcard \
-			text/vnd.rim.location.xloc \
 			text/vtt \
-			text/x-component \
 			text/x-cross-domain-policy \
 			text/xml
 	</IfModule>
@@ -486,7 +467,7 @@ AddDefaultCharset utf-8
 		</IfModule>
 
 		# Skip compression and prevent redundant Vary headers for already-compressed binary media
-		SetEnvIfNoCase Request_URI \.(?:avifs?|avi|bz2|divx|doc|docx|exe|flv|gif|gz|gzip|ico|jpe?g|jxl|m4a|mid|midi|mov|mp3|mp4|mpe?g|ogg|otf|pdf|png|ppt|pptx|ra|ram|rar|svgz|swf|tar|tgz|ttf|wav|webm|webp|wma|wmv|woff2?|xls|xlsx|zip)$ no-gzip dont-vary
+		SetEnvIfNoCase Request_URI \.(?:avifs?|avi|bz2|divx|doc|docx|exe|gif|gz|gzip|heic|heif|ico|jpe?g|jxl|m4a|mid|midi|mov|mp3|mp4|mpe?g|ogg|otf|pdf|png|ppt|pptx|ra|ram|rar|svgz|tar|tgz|ttf|wav|webm|webp|wma|wmv|woff2?|xls|xlsx|zip)$ no-gzip dont-vary
 	</IfModule>
 </IfModule>
 
@@ -495,9 +476,10 @@ AddDefaultCharset utf-8
 # ----------------------------------------------------------------------------------------------------------------------
 # Informs intermediate caches and CDNs (e.g. Cloudflare, Varnish, proxies) that two versions of the asset exist:
 # a compressed version and an uncompressed version, preventing cached uncompressed responses from being served to clients.
+# Scoped strictly to compressible text assets (excluding already-compressed fonts/archives to prevent cache fragmentation).
 # See: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
 <IfModule mod_headers.c>
-	<FilesMatch "\.(css|gz|html|js|mjs|svg|xml|woff|woff2)$">
+	<FilesMatch "\.(css|html|js|mjs|svg|xml)$">
 		Header append Vary "Accept-Encoding"
 	</FilesMatch>
 </IfModule>
@@ -577,7 +559,7 @@ AddDefaultCharset utf-8
 # Fine-grained Cache-Control directives. Can be adjusted if mod_expires is unavailable.
 #
 #<IfModule mod_headers.c>
-#	<FilesMatch "\.(avi|doc|flv|gif|ico|jpe?g|mp3|mp4|mov|pdf|png|ppt|swf|wav|wmv)$">
+#	<FilesMatch "\.(avi|doc|gif|heic|heif|ico|jpe?g|mp3|mp4|mov|pdf|png|ppt|wav|webm|webp|wmv)$">
 #		Header set Cache-Control "max-age=2592000, public"
 #	</FilesMatch>
 #	<FilesMatch "\.(css|js|mjs)$">
@@ -596,7 +578,7 @@ AddDefaultCharset utf-8
 # See: https://www.keycdn.com/blog/cache-control-immutable
 #
 #<IfModule mod_headers.c>
-#	<FilesMatch "\.(avi|css|doc|flv|gif|ico|jpe?g|js|mjs|mov|mp3|mp4|pdf|png|ppt|swf|wav|wmv|woff2?)$">
+#	<FilesMatch "\.(avi|css|doc|gif|heic|heif|ico|jpe?g|js|mjs|mov|mp3|mp4|pdf|png|ppt|wav|webm|webp|wmv|woff2?)$">
 #		Header set Cache-Control "public, max-age=31536000, immutable"
 #	</FilesMatch>
 #</IfModule>
@@ -686,11 +668,14 @@ FileETag None
 # ======================================================================================================================
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.1 CLOUDFLARE & REVERSE PROXY REAL IP NORMALIZATION
+# 6.1 REVERSE PROXY & CLOUDFLARE NORMALIZATION (REAL_IP & HTTPS)
 # ----------------------------------------------------------------------------------------------------------------------
-# When a site sits behind Cloudflare or a reverse proxy, %{REMOTE_ADDR} reflects the proxy's IP rather than the visitor.
-# This rule dynamically detects Cloudflare's CF-Connecting-IP header and normalizes the client IP into %{ENV:REAL_IP}.
-# If no proxy header is detected, it automatically falls back to %{REMOTE_ADDR}.
+# Normalizes client IP and SSL state when operating behind Cloudflare, reverse proxies, or load balancers.
+<IfModule mod_setenvif.c>
+	# Detect upstream HTTPS termination (Cloudflare, AWS ALB, Nginx)
+	SetEnvIfNoCase X-Forwarded-Proto https HTTPS=on
+	SetEnvIfNoCase X-Forwarded-SSL on HTTPS=on
+</IfModule>
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
@@ -705,7 +690,20 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.2 ADVANCED EARLY-DROP PROTECTION: BLOCK SCANNERS & EXPLOIT PROBES
+# 6.2 STATIC ASSET PERFORMANCE SHORT-CIRCUIT (BYPASS DEEP REWRITE SCANS)
+# ----------------------------------------------------------------------------------------------------------------------
+# If an actual static file exists on disk, stop rewrite evaluation immediately with [L].
+# This ensures static requests (CSS, JS, fonts, images) bypass all exploit scanner rules below, saving CPU and TTFB.
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} -f
+	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|js|json|mjs|mp4|ogg|otf|png|svgz?|ttf|webp|woff2?)$ [NC]
+	RewriteRule ^ - [L]
+</IfModule>
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# 6.3 ADVANCED EARLY-DROP PROTECTION: BLOCK SCANNERS & EXPLOIT PROBES
 # ----------------------------------------------------------------------------------------------------------------------
 # Drops known automated vulnerability scans, shell probes, and exploit payloads immediately at the Apache web server layer
 # with 403 Forbidden [F,L] before PHP or the WordPress database initializes, saving CPU and database connections.
@@ -713,8 +711,8 @@ FileETag None
 	RewriteEngine On
 	RewriteBase /
 
-	# 0. Restrict HTTP Methods: Block Unusual / Potentially Dangerous Request Methods (Permits standard REST methods)
-	RewriteCond %{REQUEST_METHOD} !^(GET|POST|HEAD|PUT|DELETE|OPTIONS)$ [NC]
+	# 0. Restrict HTTP Methods: Block Unusual / Potentially Dangerous Request Methods (Permits standard WP REST methods)
+	RewriteCond %{REQUEST_METHOD} !^(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH)$ [NC]
 	RewriteRule .* - [F,L]
 
 	# 1. Block Probes for Non-WordPress Executable & Legacy Framework Extensions
@@ -724,15 +722,18 @@ FileETag None
 	RewriteRule (^|/)(\.env.*|\.git.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys)
-	RewriteRule ^(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|tsconfig\.json|webpack\.config\.js)$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
 	RewriteRule (firebase-adminsdk|service-account|serviceAccountKey|credentials|secrets|gcp-credentials|gcp-key|gcp-sa|google-credentials|google-key|firebase-key|keyfile|sa|application_default_credentials)\.(json|ya?ml)$ - [F,L,NC]
 	RewriteRule (server|localhost|privatekey|private-key|host|key)\.(key|pem)$ - [F,L,NC]
 	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile|docker-compose\.ya?ml)$ - [F,L,NC]
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
-	# Note: If your site legitimately serves downloadable .zip / .tar / .gz archives, remove those extensions from the list below.
-	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp|tar|gz|tgz|zip|rar)$ - [F,L,NC]
+	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
+	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp)$ - [F,L,NC]
+	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
+	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
+	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
 	# 5. Block Known Web Shells, Diagnostic Files & Framework RCE Probes (c99, terminal-xhr, inngest, phpinfo)
 	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|adminer.*\.php|phpmyadmin.*\.php) - [F,L,NC]
@@ -743,14 +744,15 @@ FileETag None
 	# RewriteRule ^graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, Framework Profilers, VPNs, and Remote Desktop (telescope, profiler, actuator, ecp, RDWeb)
-	RewriteRule ^(dana-na|remote/|logon/LogonPoint|RDWeb|vpn/|wsman|autodiscover|ews|ecp|solr|console/|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|@vite/|trace\.axd) - [F,L,NC]
+	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote/jobs/ or /vpn/reviews/)
+	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|@vite/|trace\.axd) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang) [NC]
 	RewriteRule .* - [F,L]
 
 	# 8. Block Direct PHP Execution in Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
-	RewriteRule ^wp-content/(uploads|languages|upgrade)/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
+	RewriteRule ^wp-content/(uploads|blogs\.dir|languages|upgrade)/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
 
 	# 9. Block Direct PHP Execution Inside Themes Directory (Template files should only be executed by WordPress core)
 	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
@@ -761,7 +763,10 @@ FileETag None
 	# RewriteRule ^wp-content/plugins/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
 
 	# 10. Block WordPress REST API User Enumeration Scans (/wp-json/wp/v2/users)
-	RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users [NC]
+	# Excludes /wp-json/wp/v2/users/me so authenticated user profile lookups succeed
+	RewriteCond %{REQUEST_URI} !^/wp-json/wp/v2/users/me [NC]
+	RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users(/|$) [NC,OR]
+	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)wp(/|%2f)v2(/|%2f)users(/|%2f|&|$) [NC]
 	RewriteCond %{QUERY_STRING} !context=edit [NC]
 	RewriteRule .* - [F,L]
 
@@ -772,27 +777,25 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.3 BLOCK ACCESS TO HIDDEN FILES & DIRECTORIES
+# 6.4 BLOCK ACCESS TO HIDDEN FILES & DIRECTORIES
 # ----------------------------------------------------------------------------------------------------------------------
 # Blocks access to dotfiles and hidden folders (e.g. .git, .env) while explicitly preserving access to
 # /.well-known/acme-challenge/ so automated Let's Encrypt / Certbot SSL certificate renewals function properly.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteCond %{REQUEST_URI} !^/\.well-known/
-	RewriteCond %{SCRIPT_FILENAME} -d [OR]
-	RewriteCond %{SCRIPT_FILENAME} -f
-	RewriteRule "(^|/)\." - [F]
+	RewriteRule "(^|/)\." - [F,L]
 </IfModule>
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.4 FILE ACCESS PROTECTIONS (APACHE 2.4 & 2.2 DUAL-COMPATIBLE)
+# 6.5 FILE ACCESS PROTECTIONS (APACHE 2.4 & 2.2 DUAL-COMPATIBLE)
 # ----------------------------------------------------------------------------------------------------------------------
 # Uses dual <IfModule mod_authz_core.c> (Apache 2.4 'Require all denied') and fallback (!mod_authz_core.c 'Deny from all')
 # to prevent HTTP 500 errors across both legacy and modern hosting environments.
 
-# Protect this .htaccess file and other .ht* files (.htpasswd)
-<FilesMatch "^.*\.([Hh][Tt][Aa]|[Hh][Tt][Pp][Aa][Ss][Ss][Ww][Dd])">
+# Protect this .htaccess file and other .ht* files (.htpasswd, .htgroup)
+<FilesMatch "^\.([Hh][Tt])">
 	<IfModule mod_authz_core.c>
 		Require all denied
 	</IfModule>
@@ -860,7 +863,7 @@ FileETag None
 </Files>
 
 # Prevent WordPress Version Exposure via Readme / License Files
-<FilesMatch "^(readme|license|licence)\.(html|txt)$">
+<FilesMatch "(?i)^(readme|license|licence)\.(html|txt|md)$">
 	<IfModule mod_authz_core.c>
 		Require all denied
 	</IfModule>
@@ -891,7 +894,7 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.5 CORE WORDPRESS DIRECTORY HARDENING
+# 6.6 CORE WORDPRESS DIRECTORY HARDENING
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Block Direct Access to WordPress Installer (wp-admin/install.php)
@@ -915,51 +918,31 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.6 HOTLINKING DEFENSE & STATIC ASSET PERFORMANCE SHORT-CIRCUIT
+# 6.7 IMAGE HOTLINKING DEFENSE (OPTIONAL)
 # ----------------------------------------------------------------------------------------------------------------------
-
-# Block Specific Scraper Sites from Stealing Bandwidth by Hotlinking to Images
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?discussionist\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?sodahead\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixshark\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?advanceindiana\.blogspot\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?galleryhip\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?freespeechwisconsin\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?memekid\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?3edgesword\.blogspot\.ca(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?neogaf\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?locationrebel\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixgood\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?pudelekf23\.blogspot\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?fstdt\.com(/.*)*$ [NC,OR]
-	RewriteCond %{HTTP_REFERER} ^http://(www\.)?zerohedge\.com(/.*)*$ [NC]
-	RewriteRule \.(gif|jpe?g|mng|png|webp|avif)$ - [NC,F]
-</IfModule>
-
-# PERFORMANCE: SHORT-CIRCUIT EXISTING STATIC ASSETS (BYPASS DEEP REWRITE SCANS)
-# If an actual static file exists on disk, stop rewrite evaluation immediately with [L].
-# This ensures static requests (CSS, JS, fonts, images) do not waste CPU cycles evaluating dynamic query string rules.
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteCond %{REQUEST_FILENAME} -f
-	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|ico|jpe?g|js|json|mjs|mp4|ogg|otf|png|svgz?|ttf|webp|woff2?)$ [NC]
-	RewriteRule ^ - [L]
-</IfModule>
+# Prevents external websites from stealing server bandwidth by directly embedding your media files in their pages.
+# Permits empty referrers (direct navigation, privacy extensions) and requests originating from your own domain.
+#
+#<IfModule mod_rewrite.c>
+#	RewriteEngine On
+#	RewriteCond %{HTTP_REFERER} !^$
+#	RewriteCond %{HTTP_REFERER} !^https?://(www\.)?example\.com [NC]
+#	RewriteRule \.(avif|gif|heic|heif|jpe?g|png|webp)$ - [NC,F,L]
+#</IfModule>
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.7 BOT, ENUMERATION & SPAM QUERY FILTERING (RUNS ON DYNAMIC REQUESTS ONLY)
+# 6.8 BOT, ENUMERATION & SPAM QUERY FILTERING (RUNS ON DYNAMIC REQUESTS ONLY)
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Stop WordPress Username Enumeration Scans (?author=1)
-# Scoped to front-end requests to preserve legitimate admin author filtering inside /wp-admin/edit.php
+# Scoped to front-end pages; excludes /wp-admin and /wp-json to preserve admin and REST API author queries
 # See: https://www.wpbeginner.com/wp-tutorials/how-to-discourage-brute-force-by-blocking-author-scans-in-wordpress/
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
-	RewriteCond %{REQUEST_URI} !^/wp-admin
+	RewriteCond %{REQUEST_URI} !^/wp-admin [NC]
+	RewriteCond %{REQUEST_URI} !^/wp-json [NC]
 	RewriteCond %{QUERY_STRING} (author=\d+) [NC]
 	RewriteRule .* - [F,L]
 </IfModule>
@@ -968,9 +951,9 @@ FileETag None
 # Drops common database extraction patterns (UNION SELECT, BENCHMARK, SLEEP, null bytes, /etc/passwd traversal).
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteCond %{QUERY_STRING} (concat|union.*select|information_schema|benchmark|sleep\([0-9]+\)|load_file|cast\(|md5\(|benchmark\() [NC,OR]
+	RewriteCond %{QUERY_STRING} (concat|union.*select|information_schema|benchmark|sleep\([0-9]+\)|load_file|cast\(|md5\() [NC,OR]
 	RewriteCond %{QUERY_STRING} (%00|%2500|\0) [NC,OR]
-	RewriteCond %{QUERY_STRING} (=(\/|\\)\.\.(\/|\\)|\.ini|\/etc\/(passwd|shadow|hosts)) [NC]
+	RewriteCond %{QUERY_STRING} (=(\/|\\)\.\.(\/|\\)|(boot|win)\.ini|\/etc\/(passwd|shadow|hosts)) [NC]
 	RewriteRule .* - [F,L]
 </IfModule>
 
@@ -999,8 +982,7 @@ FileETag None
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteCond %{HTTP_REFERER} buttons-for-your-website\.com [NC,OR]
-	RewriteCond %{HTTP_REFERER} free-social-buttons\.com [NC,OR]
-	RewriteCond %{HTTP_REFERER} www[0-9]?\.free-social-buttons\.com [NC]
+	RewriteCond %{HTTP_REFERER} free-social-buttons\.com [NC]
 	RewriteRule .* - [F,L]
 </IfModule>
 
@@ -1013,7 +995,7 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.8 8G FIREWALL (PERISHABLE PRESS)
+# 6.9 8G FIREWALL (PERISHABLE PRESS)
 # ----------------------------------------------------------------------------------------------------------------------
 # 8G FIREWALL v1.5 20250927
 # https://perishablepress.com/8g-firewall/
@@ -1222,7 +1204,7 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.9 RATE LIMITING & IP-BASED ACCESS CONTROL (OPTIONAL)
+# 6.10 RATE LIMITING & IP-BASED ACCESS CONTROL (OPTIONAL)
 # ----------------------------------------------------------------------------------------------------------------------
 # Uses %{ENV:REAL_IP} so rules function transparently on both direct hosting and behind Cloudflare / reverse proxies.
 
@@ -1245,9 +1227,11 @@ FileETag None
 #</IfModule>
 
 # Redirect Unauthorized IP Addresses Trying to Access Sensitive Areas
+# Note: wp-admin/admin-(ajax|post).php MUST be exempted to prevent breaking frontend forms, cart updates, and dynamic interactions
 #<IfModule mod_rewrite.c>
 #	RewriteEngine On
 #	RewriteBase /
+#	RewriteCond %{REQUEST_URI} !^/wp-admin/admin-(ajax|post)\.php [NC]
 #	RewriteCond %{REQUEST_URI} ^/(wp-admin|phpmyadmin|adminer|readme\.(html|txt)) [NC]
 #	RewriteCond %{ENV:REAL_IP} !^(192\.168\.1\.100|203\.0\.113\.1)$
 #	RewriteRule ^.*$ - [F,L]
@@ -1282,8 +1266,10 @@ FileETag None
 # RECOGNIZE SSL TERMINATED AT LOAD BALANCER / REVERSE PROXY (CLOUDFLARE)
 # ----------------------------------------------------------------------------------------------------------------------
 # Ensures Apache recognizes requests as HTTPS when SSL termination occurs upstream at Cloudflare or a load balancer.
+# (Also defined in Section 6.1 to guarantee early environment normalization)
 <IfModule mod_setenvif.c>
-	SetEnvIf X-Forwarded-Proto https HTTPS=on
+	SetEnvIfNoCase X-Forwarded-Proto https HTTPS=on
+	SetEnvIfNoCase X-Forwarded-SSL on HTTPS=on
 </IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -1301,10 +1287,14 @@ FileETag None
 # FORCE SSL / HTTPS REDIRECTION (OPTIONAL)
 # ----------------------------------------------------------------------------------------------------------------------
 # Redirects all incoming HTTP traffic to HTTPS (Port 443).
+# Reverse-proxy safe: checks both direct TCP SSL and upstream proxy headers (Cloudflare, ALB) to prevent infinite redirect loops.
 #
 #<IfModule mod_rewrite.c>
 #	RewriteEngine On
 #	RewriteCond %{HTTPS} !=on
+#	RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+#	RewriteCond %{ENV:HTTPS} !=on
+#	RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
 #	RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 #</IfModule>
 
@@ -1366,16 +1356,10 @@ FileETag None
 #</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
-# REDIRECT WORDPRESS FEEDS TO FEEDBURNER (OPTIONAL)
+# HIDE MAINWP CHILD PLUGIN
 # ----------------------------------------------------------------------------------------------------------------------
-#<IfModule mod_alias.c>
-#	RedirectMatch 301 /feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-#	RedirectMatch 301 /comments/feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-#</IfModule>
-
-# ----------------------------------------------------------------------------------------------------------------------
-# HIDE MAINWP CHILD PLUGIN (OPTIONAL)
-# ----------------------------------------------------------------------------------------------------------------------
+# Obscures the presence of MainWP Child plugin from external probes and scanners by returning a 404 rewrite
+# for direct plugin asset requests, while preserving remote dashboard management via internal WordPress hooks.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
