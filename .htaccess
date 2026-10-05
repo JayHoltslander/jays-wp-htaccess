@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.0
-# Released:     2026-09-21
+# Version:      2.10.1
+# Released:     2026-10-05
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -741,6 +741,9 @@ FileETag None
 	RewriteRule (server|localhost|privatekey|private-key|host|key|id_rsa|id_ecdsa|id_ed25519)\.(key|pem|pub)$ - [F,L,NC]
 	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile|docker-compose\.ya?ml)$ - [F,L,NC]
 
+	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
+	RewriteRule (^|/)(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$ - [F,L,NC]
+
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
 	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp)$ - [F,L,NC]
@@ -877,14 +880,15 @@ FileETag None
 	</IfModule>
 </Files>
 
-# Prevent WordPress Version Exposure via Readme / License Files
-<FilesMatch "(?i)^(readme|license|licence)\.(html|txt|md)$">
+# Prevent WordPress Version Exposure via Readme, License & Core Documentation Files
+<FilesMatch "(?i)^(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$">
 	<IfModule mod_authz_core.c>
 		Require all denied
 	</IfModule>
 	<IfModule !mod_authz_core.c>
 		Order allow,deny
 		Deny from all
+		Satisfy All
 	</IfModule>
 </FilesMatch>
 
@@ -1258,7 +1262,7 @@ FileETag None
 #	RewriteEngine On
 #	RewriteBase /
 #	RewriteCond %{REQUEST_URI} !^/wp-admin/admin-(ajax|post)\.php [NC]
-#	RewriteCond %{REQUEST_URI} ^/(wp-admin|phpmyadmin|adminer|readme\.(html|txt)) [NC]
+#	RewriteCond %{REQUEST_URI} ^/(wp-admin|phpmyadmin|adminer|(readme|license)\.(html|txt)) [NC]
 #	RewriteCond %{ENV:REAL_IP} !^(192\.168\.1\.100|203\.0\.113\.1)$
 #	RewriteRule ^.*$ - [F,L]
 #</IfModule>

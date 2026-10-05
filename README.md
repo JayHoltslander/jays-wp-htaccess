@@ -20,7 +20,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
 
 * **🛡️ Hardened Multi-Layer Security**
   * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
-  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), SSH/SSL private keys, and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
+  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), documentation/readme fingerprinting files (`readme.html`, `license.txt`, `changelog.txt`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), SSH/SSL private keys, and non-WP executables (`.jsp`, `.asp`, `.exe`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
   * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
@@ -53,8 +53,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1288)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1418)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1292)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1422)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
