@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.2
+# Version:      2.10.3
 # Released:     2026-10-14
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -177,6 +177,10 @@ AddDefaultCharset utf-8
 	# Web Application Manifest Files
 	# See: https://w3c.github.io/manifest/
 	AddType application/manifest+json                   webmanifest
+
+	# WebAssembly (Wasm) Binary Modules
+	# See: https://webassembly.github.io/spec/core/intro/introduction.html
+	AddType application/wasm                            wasm
 
 	# Media Files & Modern Image Formats (AVIF, WebP, JXL, HEIC/HEIF)
 	# See: https://calendar.perfplanet.com/2020/avif-has-landed/
@@ -710,7 +714,7 @@ FileETag None
 # In-memory regex check is evaluated first to avoid kernel filesystem stat() calls on dynamic page requests.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|jxl|js|json|map|mjs|mp4|ogg|otf|png|svgz?|ttf|usdz|vtt|webmanifest|webp|woff2?)$ [NC]
+	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|jxl|js|json|map|mjs|mp4|ogg|otf|png|svgz?|ttf|usdz|vtt|wasm|webmanifest|webp|woff2?)$ [NC]
 	RewriteCond %{REQUEST_FILENAME} -f
 	RewriteRule ^ - [L]
 </IfModule>

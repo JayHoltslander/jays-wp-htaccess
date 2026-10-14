@@ -15,7 +15,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
   * **Next-Gen Compression**: Native support for **Brotli** (`mod_brotli`) and **Gzip** (`mod_deflate`).
   * **Static Asset Short-Circuit**: Bypasses rewrite processing entirely for existing static assets (`.css`, `.js`, `.woff2`, images), dramatically reducing server CPU overhead and TTFB.
   * **Far-Future Expires Headers**: Aggressive, standards-compliant browser caching for media, scripts, styles, and fonts.
-  * **Next-Gen Image & MIME Support**: Ready for **AVIF**, **WebP**, **JXL**, **USDZ** (iOS AR), and modern RFC standard MIME types (`text/javascript`, `font/woff2`).
+  * **Next-Gen Image & MIME Support**: Ready for **AVIF**, **WebP**, **JXL**, **WebAssembly** (`application/wasm`), **USDZ** (iOS AR), and modern RFC standard MIME types (`text/javascript`, `font/woff2`).
   * **HTTP/2 & HTTP/3 Friendly**: Protocol-aware TCP Keep-Alive scoping.
 
 * **🛡️ Hardened Multi-Layer Security**
@@ -40,9 +40,9 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 1. **[Emergency & Maintenance Toggles](.htaccess#L35)** — Instant 302 redirect-to-homepage killswitch and legacy `.shtml` redirects.
 2. **[Directory Index & Server Options](.htaccess#L64)** — `DirectoryIndex` maintenance fallback, `Options -Indexes`, `Options -MultiViews`, and `ServerSignature Off`.
 3. **[MIME Types & Encodings](.htaccess#L137)** — UTF-8 character sets, RFC-standard MIME types for fonts, scripts, manifests, and modern images (AVIF, WebP, JXL, HEIC/HEIF).
-4. **[Security Headers & CORS](.htaccess#L232)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, cross-domain policy restriction, font CDN CORS, and optional HSTS.
-5. **[Performance & Caching](.htaccess#L384)** — Brotli/Deflate compression, Far-Future Expires, Immutable Cache-Control, and ETag disabling.
-6. **[Security Filters & Access Restrictions](.htaccess#L681)**
+4. **[Security Headers & CORS](.htaccess#L236)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, cross-domain policy restriction, font CDN CORS, and optional HSTS.
+5. **[Performance & Caching](.htaccess#L388)** — Brotli/Deflate compression, Far-Future Expires, Immutable Cache-Control, and ETag disabling.
+6. **[Security Filters & Access Restrictions](.htaccess#L685)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit (Bypasses Deep Rewrite Scans for Existing Static Files)
    * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
@@ -53,8 +53,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1292)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1422)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1296)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1426)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
