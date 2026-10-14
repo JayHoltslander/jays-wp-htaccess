@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.3
+# Version:      2.10.4
 # Released:     2026-10-14
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -785,11 +785,13 @@ FileETag None
 	# RewriteRule ^wp-content/plugins/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
 
 	# 10. Block WordPress REST API User Enumeration Scans (/wp-json/wp/v2/users)
-	# Excludes /wp-json/wp/v2/users/me so authenticated user profile lookups succeed
+	# Excludes /wp-json/wp/v2/users/me, authenticated user sessions (Gutenberg author dropdowns), and context=edit requests
 	RewriteCond %{REQUEST_URI} !^/wp-json/wp/v2/users/me [NC]
+	RewriteCond %{QUERY_STRING} !rest_route=(/|%2f)wp(/|%2f)v2(/|%2f)users(/|%2f)me [NC]
+	RewriteCond %{HTTP_COOKIE} !wordpress_logged_in_ [NC]
+	RewriteCond %{QUERY_STRING} !context=edit [NC]
 	RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users(/|$) [NC,OR]
 	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)wp(/|%2f)v2(/|%2f)users(/|%2f|&|$) [NC]
-	RewriteCond %{QUERY_STRING} !context=edit [NC]
 	RewriteRule .* - [F,L]
 
 	# 11. Block Known Vulnerability Scanners & Exploit Tool User-Agents (wpscan, sqlmap, nikto, masscan, etc.)
