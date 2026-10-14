@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.1
-# Released:     2026-10-05
+# Version:      2.10.2
+# Released:     2026-10-14
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -730,7 +730,7 @@ FileETag None
 	RewriteRule .* - [F,L]
 
 	# 1. Block Probes for Non-WordPress Executable & Legacy Framework Extensions
-	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf)$ - [F,L,NC]
+	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, etc.)
 	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
@@ -753,17 +753,17 @@ FileETag None
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
-	# 5. Block Known Web Shells, Diagnostic Files & Framework RCE Probes (c99, terminal-xhr, inngest, phpinfo)
-	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|adminer.*\.php|phpmyadmin.*\.php) - [F,L,NC]
+	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
+	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php) - [F,L,NC]
 	RewriteRule (terminal-xhr\.php|api/fs/exec|read-document|api/templates/preview|api/designer/v1/file-content|proc/self/environ|api/inngest) - [F,L,NC]
-	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|server-status|server-info)\.php|\/phpinfo\.php)$ - [F,L,NC]
+	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|server-status|server-info|admin)\.php|\/phpinfo\.php)$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (OPTIONAL - Do NOT enable if using WPGraphQL)
 	# RewriteRule ^graphql/? - [F,L,NC]
 
-	# 6. Block Enterprise Appliances, Framework Profilers, VPNs, and Remote Desktop (telescope, profiler, actuator, ecp, RDWeb)
+	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote/jobs/ or /vpn/reviews/)
-	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|@vite/|trace\.axd) - [F,L,NC]
+	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|@vite/|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang) [NC]
