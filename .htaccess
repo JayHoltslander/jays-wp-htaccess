@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.4
-# Released:     2026-10-14
+# Version:      2.10.5
+# Released:     2026-10-16
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -17,7 +17,7 @@
 # 5. PERFORMANCE, COMPRESSION & CACHING
 # 6. SECURITY FILTERS & ACCESS RESTRICTIONS
 #    6.1 Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
-#    6.2 Static Asset Performance Short-Circuit (Bypass Deep Rewrite Scans)
+#    6.2 Static Asset Performance Short-Circuit & Fast 404 (Bypass Deep Rewrite Scans)
 #    6.3 Advanced Early-Drop Protection (Zero-PHP Overhead Scanner Mitigation)
 #    6.4 Block Access to Hidden Files & Directories (ACME / SSL Whitelisted)
 #    6.5 File Access Protections (Apache 2.4/2.2 Dual-Compatible: .ht*, wp-config, debug.log, xmlrpc)
@@ -708,15 +708,24 @@ FileETag None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# 6.2 STATIC ASSET PERFORMANCE SHORT-CIRCUIT (BYPASS DEEP REWRITE SCANS)
+# 6.2 STATIC ASSET PERFORMANCE SHORT-CIRCUIT & FAST 404 (BYPASS DEEP REWRITE SCANS)
 # ----------------------------------------------------------------------------------------------------------------------
 # If an actual static file exists on disk, stop rewrite evaluation immediately with [L].
 # In-memory regex check is evaluated first to avoid kernel filesystem stat() calls on dynamic page requests.
+#
+# Fast 404 for Missing JavaScript & CSS Source Maps:
+# Automated vulnerability scanners and browser DevTools probe for JavaScript and CSS source maps (.map). When plugins
+# or themes do not ship them, unhandled requests fall through to WordPress index.php, spawning dozens of heavy PHP/DB
+# workers and exhausting server memory. Drops missing source map requests immediately with a zero-PHP 404 response.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|jxl|js|json|map|mjs|mp4|ogg|otf|png|svgz?|ttf|usdz|vtt|wasm|webmanifest|webp|woff2?)$ [NC]
 	RewriteCond %{REQUEST_FILENAME} -f
 	RewriteRule ^ - [L]
+
+	# Fast 404 for missing JavaScript & CSS source maps (Prevents heavy WordPress 404 execution)
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule \.(js|mjs|css)\.map$ - [R=404,L,NC]
 </IfModule>
 
 
@@ -736,14 +745,16 @@ FileETag None
 	# 1. Block Probes for Non-WordPress Executable & Legacy Framework Extensions
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
-	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.npmrc.*|\.DS_Store|\.editorconfig|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
+	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.npmrc.*|\.DS_Store|\.editorconfig|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 
-	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys)
+	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
 	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
-	RewriteRule (firebase-adminsdk|service-account|serviceAccountKey|credentials|secrets|gcp-credentials|gcp-key|gcp-sa|google-credentials|google-key|firebase-key|keyfile|sa|application_default_credentials)\.(json|ya?ml)$ - [F,L,NC]
+	RewriteRule (firebase[-_]?(adminsdk|config|key)|service-account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key)|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
 	RewriteRule (server|localhost|privatekey|private-key|host|key|id_rsa|id_ecdsa|id_ed25519)\.(key|pem|pub)$ - [F,L,NC]
-	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile|docker-compose\.ya?ml)$ - [F,L,NC]
+	RewriteRule (terraform\.tfstate|rclone\.conf|Dockerfile)$ - [F,L,NC]
+	RewriteRule (^|/)(docker-compose|compose)([-_./0-9a-zA-Z]*)?\.ya?ml$ - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
 	RewriteRule (^|/)(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$ - [F,L,NC]
@@ -759,18 +770,26 @@ FileETag None
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php) - [F,L,NC]
-	RewriteRule (terminal-xhr\.php|api/fs/exec|read-document|api/templates/preview|api/designer/v1/file-content|proc/self/environ|api/inngest) - [F,L,NC]
+	RewriteRule (terminal-xhr\.php|api/fs/exec|read-document|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
+	RewriteRule (^|/)proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
 	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|server-status|server-info|admin)\.php|\/phpinfo\.php)$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (OPTIONAL - Do NOT enable if using WPGraphQL)
-	# RewriteRule ^graphql/? - [F,L,NC]
+	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
+	# RewriteRule (^|/)(api/|v[0-9]+/)?graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote/jobs/ or /vpn/reviews/)
-	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|@vite/|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html) - [F,L,NC]
+	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html) - [F,L,NC]
+	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang) [NC]
+	RewriteRule .* - [F,L]
+
+	# 7b. Block Encoded Path-Traversal and Obfuscated Slash Attacks (/%2f, ..%2f)
+	# Scanners use raw URL-encoded slashes to bypass path filters and trick reverse proxies into normalizing paths.
+	RewriteCond %{THE_REQUEST} (/\%2[fF]|\.\.\%2[fF]) [NC]
 	RewriteRule .* - [F,L]
 
 	# 8. Block Direct PHP Execution in Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
