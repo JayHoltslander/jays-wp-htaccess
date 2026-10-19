@@ -20,7 +20,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
 
 * **🛡️ Hardened Multi-Layer Security**
   * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
-  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), standalone database managers (`adminer`, `phpmyadmin`, `sql.php`), cluster/Kubernetes discovery APIs (`/api/v1/nodes`), Docker Compose specs (`compose.yaml`), cloud & AI secrets (`.s3cfg`, `.pgpass`, `secrets.env`), Linux `/proc/` filesystem probes, Vite/RSC dev server traversal (`@fs`, `@vite`, `__vite`), encoded path traversal (`/%2f`, `..%2f`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), documentation/readme fingerprinting files (`readme.html`, `license.txt`, `changelog.txt`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), SSH/SSL private keys, and non-WP executables (`.jsp`, `.asp`, `.exe`, `.zul`) at the Apache layer before PHP or database workers initialize.
+  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells (`c99`, `r57`, `alfa`, `b374k`), standalone database managers (`adminer`, `phpmyadmin`, `sql.php`), cluster/Kubernetes discovery APIs (`/api/v1/nodes`), Docker Compose specs (`compose.yaml`), cloud & AI secrets (`.s3cfg`, `.pgpass`, `secrets.env`), non-WordPress framework config/storage probes (`/config/*.json`, `/storage/logs/`), legacy CGI script directories (`/cgi-bin/`), Linux `/proc/` filesystem probes, Vite/RSC dev server traversal (`@fs`, `@vite`, `__vite`), encoded path traversal (`/%2f`, `..%2f`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), documentation/readme fingerprinting files (`readme.html`, `license.txt`, `changelog.txt`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), SSH/SSL private keys, and non-WP executables (`.jsp`, `.asp`, `.exe`, `.zul`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside `/wp-content/uploads/` and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
   * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
@@ -45,7 +45,7 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 6. **[Security Filters & Access Restrictions](.htaccess#L685)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map Probes)
-   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
+   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, Framework Probes, DB Dumps, Web Shells, Uploads PHP, REST API, Scanner UAs)
    * **6.4** Block Hidden Files & Directories (ACME / SSL Whitelisted)
    * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`, `wp-links-opml.php`)
    * **6.6** Core WordPress Directory Hardening (`install.php`, `wp-includes`)
@@ -53,8 +53,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1317)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1447)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1321)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1451)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 

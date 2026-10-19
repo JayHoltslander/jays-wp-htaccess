@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.5
-# Released:     2026-10-16
+# Version:      2.10.6
+# Released:     2026-10-19
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -759,6 +759,10 @@ FileETag None
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
 	RewriteRule (^|/)(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$ - [F,L,NC]
 
+	# 3c. Block Non-WordPress Framework Config & Storage Probes (Laravel/Symfony/Node logs and configurations)
+	# Safely drops framework config files, log dumps, and cache probes without blocking legitimate WordPress /storage/ or /config/ pages
+	RewriteRule ^/?(config|storage)/(.*\.(json|ya?ml|env|log|bak|sql|sqlite|ini|conf|php[0-9]?)|logs/|framework/) - [F,L,NC]
+
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
 	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp)$ - [F,L,NC]
@@ -780,7 +784,7 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote/jobs/ or /vpn/reviews/)
-	RewriteRule ^(dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html) - [F,L,NC]
+	RewriteRule ^(cgi-bin(/.*)?|dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../)
