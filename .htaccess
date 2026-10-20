@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.9
+# Version:      2.10.10
 # Released:     2026-10-20
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -809,7 +809,7 @@ FileETag None
 	# Drops double-encoded slashes (%252f), multi-dot traversal (..../), traversal patterns (..%2f, %2f.., %2f.),
 	# and any encoded slash (%2f) occurring within the request URI path (excluding query strings to preserve redirect_to & REST URLs).
 	RewriteCond %{THE_REQUEST} (\%252[fF]|\.\.\.+[/\%]|/\%2[fF]|\.\.\%2[fF]|\%2[fF]\.\.|\%2[fF]\.) [NC,OR]
-	RewriteCond %{THE_REQUEST} ^[A-Z]+ \s*[^? ]*\%2[fF] [NC]
+	RewriteCond %{THE_REQUEST} "^[A-Z]+[ ]+[^? ]*\%2[fF]" [NC]
 	RewriteRule .* - [F,L]
 
 	# 8. Block Direct PHP Execution in Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
