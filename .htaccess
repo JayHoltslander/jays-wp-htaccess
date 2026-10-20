@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.8
-# Released:     2026-10-19
+# Version:      2.10.9
+# Released:     2026-10-20
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -713,19 +713,20 @@ FileETag None
 # If an actual static file exists on disk, stop rewrite evaluation immediately with [L].
 # In-memory regex check is evaluated first to avoid kernel filesystem stat() calls on dynamic page requests.
 #
-# Fast 404 for Missing JavaScript & CSS Source Maps:
-# Automated vulnerability scanners and browser DevTools probe for JavaScript and CSS source maps (.map). When plugins
-# or themes do not ship them, unhandled requests fall through to WordPress index.php, spawning dozens of heavy PHP/DB
-# workers and exhausting server memory. Drops missing source map requests immediately with a zero-PHP 404 response.
+# Fast 404 for Missing JavaScript & CSS Source Maps and Root Icons:
+# Automated vulnerability scanners, browser DevTools, and mobile browsers probe for missing JavaScript & CSS
+# source maps (.map), /favicon.ico, and Apple touch icons (apple-touch-icon*.png). When plugins or themes do not ship
+# them, unhandled requests fall through to WordPress index.php, spawning dozens of heavy PHP/DB workers and
+# exhausting server memory. Drops missing source map and root icon requests immediately with a zero-PHP 404 response.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteCond %{REQUEST_URI} \.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|jxl|js|json|map|mjs|mp4|ogg|otf|png|svgz?|ttf|usdz|vtt|wasm|webmanifest|webp|woff2?)$ [NC]
 	RewriteCond %{REQUEST_FILENAME} -f
 	RewriteRule ^ - [L]
 
-	# Fast 404 for missing JavaScript & CSS source maps (Prevents heavy WordPress 404 execution)
+	# Fast 404 for missing source maps and root icons (Prevents heavy WordPress 404 execution)
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule \.(js|mjs|css)\.map$ - [R=404,L,NC]
+	RewriteRule (\.(js|mjs|css)\.map|favicon\.ico|apple-touch-icon.*\.png)$ - [R=404,L,NC]
 </IfModule>
 
 
@@ -746,7 +747,7 @@ FileETag None
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.npmrc.*|\.DS_Store|\.editorconfig|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.npmrc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
@@ -771,6 +772,7 @@ FileETag None
 	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 	RewriteRule ^wp-content/(updraft|ai1wm-backups|wp-snapshots|backups|backupbuddy_backups)/.*\.(zip|tar|gz|tgz|sql|wpress|enc)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
+	RewriteRule (^|/)_all_dbs(/|$) - [F,L,NC]
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
@@ -789,8 +791,8 @@ FileETag None
 	# RewriteRule (^|/)(api/|v[0-9]+/)?graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
-	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote/jobs/ or /vpn/reviews/)
-	RewriteRule ^(cgi-bin(/.*)?|dana-na|remote/(login|fgt_lang|hostcheck|dashboard)|logon/LogonPoint|RDWeb|vpn/index\.html|wsman|autodiscover|ews|ecp|solr/|console/login|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/v1/(nodes|pods)|api/session/properties|api/w/|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|api/sonicos(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
+	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console/(login|api/version)|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (OPTIONAL - Do NOT enable if using front-end membership plugins)
