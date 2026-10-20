@@ -37,6 +37,27 @@ Every single change or commit that modifies `.htaccess` **MUST** bump the versio
 
 ---
 
+## 🧪 Mandatory Pre-Commit Syntax Validation Protocol
+
+Before staging or committing any change to `.htaccess`, you **MUST** run the automated syntax test suite:
+
+```bash
+./scripts/test-syntax.sh
+```
+
+### Critical Verification Rules:
+1. **Never Rely on Static `httpd -t` Without `mod_rewrite` Loaded:**
+   - Default Apache installations (such as macOS `/etc/apache2/httpd.conf`) have `mod_rewrite` disabled by default. Running `httpd -t` against a default config will silently skip all `<IfModule mod_rewrite.c>` blocks and output a false-positive `Syntax OK`.
+   - Always run `./scripts/test-syntax.sh`, which explicitly loads `mod_rewrite`, sets up an authentic `<Directory>` context with `AllowOverride All`, and tests actual runtime directive evaluation.
+
+2. **Strict Quoting of Whitespace in Directives:**
+   - Apache `.htaccess` directives tokenize on unquoted whitespace before parsing regex patterns. Any `RewriteCond` or `RewriteRule` pattern containing literal spaces, escaped spaces `\s`, or character classes with spaces `[ ]` **MUST** be enclosed in double quotes (e.g., `RewriteCond %{THE_REQUEST} "^[A-Z]+[ ]+..." [NC]`). Failure to quote patterns with spaces causes Apache to misparse arguments and throw fatal `RewriteCond: bad flag delimiters` HTTP 500 errors.
+
+3. **Strict Flag Delimiters:**
+   - Never place spaces between flags inside brackets (e.g. `[NC,OR]`, never `[NC, OR]`). Every opening bracket `[` must have a matching closing bracket `]`.
+
+---
+
 ## 🔒 Git & Security Protocols
 
 1. **Commit Authorship:**
