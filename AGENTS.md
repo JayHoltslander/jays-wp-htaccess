@@ -71,6 +71,9 @@ Every change or commit **MUST** evaluate whether modifications to `README.md` ar
 3. **Usage Guidance & Configuration Toggles:**
    - If optional toggles, directive syntax, server requirements, or recommended configurations change, ensure that setup instructions and examples in `README.md` remain fully accurate and synchronized with `.htaccess`.
 
+4. **Credits & Attributions ("Credit Where Credit is Due"):**
+   - Always give credit where credit is due: When directives, regex patterns, firewall rules, or optimization techniques are adapted from, inspired by, or based upon external research, articles, tools, or open-source repositories (e.g. Perishable Press, HTML5 Boilerplate, Sucuri, HackRepair, etc.), ensure explicit attribution and links are included under **📜 Credits & Attributions** in `README.md` as well as within the relevant `.htaccess` section comments.
+
 ---
 
 ## 🔒 Git & Security Protocols
