@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.10
-# Released:     2026-10-20
+# Version:      2.10.11
+# Released:     2026-10-21
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -751,12 +751,12 @@ FileETag None
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
-	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
-	RewriteRule (firebase[-_]?(adminsdk|config|key|admin)|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
-	RewriteRule (server|localhost|privatekey|private-key|host|key|id_rsa|id_ecdsa|id_ed25519)\.(key|pem|pub)$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
+	RewriteRule (firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
+	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private-?key)(\.(key|pem|pub))?|(server|localhost|host|key)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform\.(tfstate|tfvars)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile)$ - [F,L,NC]
 	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless)\.ya?ml$ - [F,L,NC]
-	RewriteRule (^|/)(vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
 	RewriteRule (^|/)kubernetes\.io/serviceaccount/token - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
@@ -768,7 +768,7 @@ FileETag None
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
-	RewriteRule \.(sql|sqlite|db|dump|bak|backup|old|orig|swp)$ - [F,L,NC]
+	RewriteRule (\.(sql|sqlite|db|dump|bak|backup|old|orig|swp|save)|~)$ - [F,L,NC]
 	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 	RewriteRule ^wp-content/(updraft|ai1wm-backups|wp-snapshots|backups|backupbuddy_backups)/.*\.(zip|tar|gz|tgz|sql|wpress|enc)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
@@ -780,19 +780,19 @@ FileETag None
 	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
 	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php) - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
-	RewriteRule (terminal-xhr\.php|api/fs/exec|read-document|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
+	RewriteRule (terminal-xhr\.php|api/fs/(exec|read)|read-document|api/system/fileView|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
 	RewriteRule (^|/)proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
-	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|server-status|server-info|admin|test|file|1|222|a|aa|chosen|txets|adminfuns)\.php|(\/|^)phpinfo(\.php)?)$ - [F,L,NC]
+	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|1|222|a|aa|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|phpinfo(\.php)?))$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (OPTIONAL - Do NOT enable if using WPGraphQL)
 	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
-	# Over 1,270 unauthenticated introspection probes across 37 sites were observed in fleet logs.
+	# Telemetry observed over 58% of active sites receiving continuous automated GraphQL probes.
 	# Highly recommended to uncomment if your site does not utilize the WPGraphQL plugin or a headless frontend.
 	# RewriteRule (^|/)(api/|v[0-9]+/)?graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console/(login|api/version)|crowd/|CTCWebService|actuator|swagger-ui|api-docs|v2/api-docs|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console/(login|api/version)|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (OPTIONAL - Do NOT enable if using front-end membership plugins)
@@ -805,15 +805,15 @@ FileETag None
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]
 	RewriteRule .* - [F,L]
 
-	# 7b. Block Encoded Path-Traversal and Obfuscated Slash Attacks (%2f, %252f, ..../)
-	# Drops double-encoded slashes (%252f), multi-dot traversal (..../), traversal patterns (..%2f, %2f.., %2f.),
+	# 7b. Block Encoded Path-Traversal and Obfuscated Slash Attacks (%2f, %252f, %2e%2e, ..../)
+	# Drops double-encoded slashes (%252f), encoded dot traversal (%2e%2e), multi-dot traversal (..../), traversal patterns (..%2f, %2f.., %2f.),
 	# and any encoded slash (%2f) occurring within the request URI path (excluding query strings to preserve redirect_to & REST URLs).
-	RewriteCond %{THE_REQUEST} (\%252[fF]|\.\.\.+[/\%]|/\%2[fF]|\.\.\%2[fF]|\%2[fF]\.\.|\%2[fF]\.) [NC,OR]
+	RewriteCond %{THE_REQUEST} (\%252[fF]|\%2[eE]\%2[eE]|\.\.\.+[/\%]|/\%2[fF]|\.\.\%2[fF]|\%2[fF]\.\.|\%2[fF]\.) [NC,OR]
 	RewriteCond %{THE_REQUEST} "^[A-Z]+[ ]+[^? ]*\%2[fF]" [NC]
 	RewriteRule .* - [F,L]
 
-	# 8. Block Direct PHP Execution in Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
-	RewriteRule ^wp-content/(uploads|blogs\.dir|languages|upgrade)/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L]
+	# 8. Block Direct PHP Execution in wp-content Root, Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
+	RewriteRule ^wp-content/([^/]+|(uploads|blogs\.dir|languages|upgrade)/.*)(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L,NC]
 
 	# 9. Block Direct PHP Execution Inside Themes Directory (Template files should only be executed by WordPress core)
 	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
