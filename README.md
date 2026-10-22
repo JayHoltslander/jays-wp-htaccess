@@ -7,7 +7,9 @@
 
 A battle-tested, high-performance, and hardened `.htaccess` configuration engineered for production WordPress websites.
 
-Unlike generic boilerplate rules, the defenses in this repository are directly informed by **empirical log analysis and threat intelligence collected across hundreds of live production WordPress installations**. By analyzing real-world attack campaigns, scanner patterns, credential-stuffing botnets, and zero-day probes as they occur in the wild, this configuration drops malicious traffic at the Apache web server layer before PHP or MySQL workers ever boot. Built to maximize speed, minimize TTFB (Time to First Byte), and provide seamless compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies like Cloudflare.
+Unlike generic boilerplate rules, the defenses in this repository are directly informed by **empirical log analysis and threat intelligence collected across hundreds of live production WordPress installations**. By analyzing real-world attack campaigns, scanner patterns, credential-stuffing botnets, and zero-day probes as they occur in the wild, this configuration drops malicious traffic at the Apache web server layer before PHP or MySQL workers ever boot.
+
+Beyond security hardening, this configuration delivers **tangible performance boosts across every request**: it dramatically slashes **TTFB (Time to First Byte)** and server CPU load by preventing scanner traffic from exhausting PHP worker pools, short-circuits rewrite execution entirely for static files, and accelerates asset delivery with native **Brotli/Gzip compression** and **far-future immutable browser caching**. Engineered for deep compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies like Cloudflare.
 
 ---
 
