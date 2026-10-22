@@ -20,7 +20,7 @@ A production-tested, high-performance, and hardened `.htaccess` configuration fo
 
 * **🛡️ Hardened Multi-Layer Security**
   * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
-  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells & droppers (`c99`, `r57`, `alfa`, `b374k`, `wp-plain.php`, `ioxi-o.php`), standalone database managers (`adminer`, `phpmyadmin`, `sql.php`), CouchDB exposure probes (`/_all_dbs`), cluster/Kubernetes discovery APIs (`/api/v1/nodes`, in-pod `serviceaccount/token`), Docker Compose specs (`compose.yaml`), cloud, PaaS & AI deployment manifests (`serverless.yml`, `vercel.json`, `fly.toml`, `wrangler.toml`, `netlify.toml`, `terraform.tfvars`, Helm `values.yaml`, `.s3cfg`, `.pgpass`), build & frontend manifests (`dist/manifest.json`, `build/manifest.json`), editor sync credentials & backups (`.ftpconfig`, `.remote-sync.json`, `sftp-config.json`, `.save`, `~`), non-WordPress framework config/storage probes (`/config/*.json`, `/storage/logs/`), modern SSR & framework RCE exploits (Next.js `/_next`, Server Actions `__nextjs`, Nuxt `/_nuxt`, Metabase `api/session/properties`, Windmill `api/w/`), OpenAPI & Swagger specs (`/swagger`, `openapi.json`), enterprise/VPN portals & appliances (SonicWall `sonicui`, FortiProxy `fpui`, SSL-VPN, Ivanti / Pulse Secure `dana-cached`, `/Remote`, `/vpn/`, Exchange `owa`, Zimbra, SharePoint `_layouts`, SCADA/PLC `webvisu`, admin consoles `/console`), probe discovery endpoints (`/version`, `/api/status`, `/web_api/`, bare `/server-status`), Linux `/proc/` filesystem probes, Vite/RSC dev server traversal (`@fs`, `@vite`, `__vite`), obfuscated, encoded dot & double-encoded path traversal (`%252f`, `%2e%2e`, `admin%2F.env`, `....//`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), documentation/readme fingerprinting files (`readme.html`, `license.txt`, `changelog.txt`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), bare & suffixed SSH/SSL private keys (`id_rsa`, `id_dsa`, `id_ecdsa`, `id_ed25519`, `private-key`), and non-WP executables (`.jsp`, `.asp`, `.exe`, `.zul`) at the Apache layer before PHP or database workers initialize.
+  * **Zero-PHP Overhead Early-Drop Protection**: Kills known automated exploit tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`), web shells & droppers (`c99`, `r57`, `alfa`, `b374k`, `wp-plain.php`, `ioxi-o.php`), standalone database managers (`adminer`, `phpmyadmin`, `sql.php`), CouchDB exposure probes (`/_all_dbs`), cluster/Kubernetes discovery APIs (`/api/v1/nodes`, in-pod `serviceaccount/token`), Docker Compose specs (`compose.yaml`), cloud, PaaS & AI deployment manifests (`serverless.yml`, `vercel.json`, `fly.toml`, `wrangler.toml`, `netlify.toml`, `terraform.tfvars`, Helm `values.yaml`, `.s3cfg`, `.pgpass`), build & frontend manifests (`dist/manifest.json`, `build/manifest.json`), editor sync credentials & backups (`.ftpconfig`, `.remote-sync.json`, `sftp-config.json`, `.save`, `~`), non-WordPress framework config/storage probes (`/config/*.json`, `/storage/logs/`), modern SSR & framework RCE exploits (Next.js `/_next`, Server Actions `__nextjs`, Nuxt `/_nuxt`, Metabase `api/session/properties`, Windmill `api/w/`), OpenAPI & Swagger specs (`/swagger`, `openapi.json`), unauthenticated GraphQL schema introspection (`/graphql`, `/api/graphql`), generic SaaS/CMS credential-stuffing probes (`/admin/login`, `/signin`, `/signup`, `/dashboard/...`), enterprise/VPN portals & appliances (SonicWall `sonicui`, FortiProxy `fpui`, SSL-VPN, Ivanti / Pulse Secure `dana-cached`, `/Remote`, `/vpn/`, Exchange `owa`, Zimbra, SharePoint `_layouts`, SCADA/PLC `webvisu`, admin consoles `/console`), probe discovery endpoints (`/version`, `/api/status`, `/web_api/`, bare `/server-status`), Linux `/proc/` filesystem probes, Vite/RSC dev server traversal (`@fs`, `@vite`, `__vite`), obfuscated, encoded dot & double-encoded path traversal (`%252f`, `%2e%2e`, `admin%2F.env`, `....//`), backup plugin staging folders (`updraft`, `ai1wm-backups`, `wp-snapshots`), documentation/readme fingerprinting files (`readme.html`, `license.txt`, `changelog.txt`), IDE/CI metadata probes (`.vscode`, `.idea`, `.gitlab-ci`, `.github`), bare & suffixed SSH/SSL private keys (`id_rsa`, `id_dsa`, `id_ecdsa`, `id_ed25519`, `private-key`), and non-WP executables (`.jsp`, `.asp`, `.exe`, `.zul`) at the Apache layer before PHP or database workers initialize.
   * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside the root `/wp-content/` directory, `/wp-content/uploads/`, and `/wp-content/themes/`.
   * **User Enumeration Defense**: Blocks both author query scans (`?author=1`) and REST API user dumping (`/wp-json/wp/v2/users`).
   * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
@@ -53,8 +53,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1337)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1467)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1338)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1468)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
@@ -72,15 +72,22 @@ curl -O https://raw.githubusercontent.com/JayHoltslander/jays-wp-htaccess/master
 ```
 
 ### 2. Tailor to your environment
-Open `.htaccess` in your editor and review optional toggles:
+Open `.htaccess` in your editor and review optional toggles and special architecture considerations:
 * **SSL / HTTPS**: If not enforcing SSL at Cloudflare/CDN level, uncomment the **Force SSL** redirect block in Section 7.
 * **Domain Canonicalization**: Uncomment either **WWW to Naked** or **Naked to WWW** redirect depending on your domain preference.
 * **Jetpack / WP Mobile App**: If using Jetpack or mobile publishing, uncomment the allowed Automattic IP ranges in the `xmlrpc.php` block in Section 6.5.
-* **Non-WP Auth & GraphQL Probes**: If your site does not use WPGraphQL or front-end membership plugins, uncomment the GraphQL introspection (Section 6.3 Rule 5b) and generic CMS/framework auth probe rules (Section 6.3 Rule 6b).
+* **Headless WordPress (WPGraphQL)**: If using WPGraphQL or a decoupled frontend, comment out **Rule 5b** in Section 6.3 (`graphql`) to permit API queries.
+* **WooCommerce & Front-End Membership**: If using WooCommerce or membership plugins with custom front-end login, registration, or my-account pages (e.g., `/signin`, `/signup`, `/account/login`), comment out **Rule 6b** in Section 6.3.
 
 ---
 
 ## ⚠️ Important Notes & Troubleshooting
+
+> [!IMPORTANT]
+> **Maximum Security Default — Headless & E-Commerce / Membership Special Cases:**
+> This configuration operates on a **maximum security out-of-the-box** posture for standard WordPress installations. Because standard WordPress exclusively uses `/wp-login.php` and does not expose GraphQL, **Rule 5b** (GraphQL introspection) and **Rule 6b** (generic SaaS/CMS auth probes) are **enabled by default**.
+> * **Headless / Decoupled Sites:** If you use the WPGraphQL plugin (with Next.js, Astro, Gatsby, etc.), comment out **Rule 5b** in Section 6.3.
+> * **E-Commerce & Membership Sites:** If you use WooCommerce, MemberPress, Ultimate Member, or similar plugins that provide front-end customer login/registration pages at paths like `/account/login`, `/signin`, `/signup`, or `/reset-password`, comment out **Rule 6b** in Section 6.3.
 
 > [!CAUTION]
 > **Always maintain a backup before modifying `.htaccess`!**

@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.12
+# Version:      2.11.0
 # Released:     2026-10-22
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -784,22 +784,23 @@ FileETag None
 	RewriteRule (^|/)proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
 	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|1|222|a|aa|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|phpinfo(\.php)?))$ - [F,L,NC]
 
-	# 5b. Block GraphQL Introspection Probes (OPTIONAL - Do NOT enable if using WPGraphQL)
+	# 5b. Block GraphQL Introspection Probes (ENABLED BY DEFAULT)
 	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
 	# Telemetry observed over 58% of active sites receiving continuous automated GraphQL probes.
-	# Highly recommended to uncomment if your site does not utilize the WPGraphQL plugin or a headless frontend.
-	# RewriteRule (^|/)(api/|v[0-9]+/)?graphql/? - [F,L,NC]
+	# (!) HEADLESS / WPGRAPHQL NOTICE: If your site uses WPGraphQL or a decoupled frontend, comment out this rule.
+	RewriteRule (^|/)(api/|v[0-9]+/)?graphql/? - [F,L,NC]
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
 	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
-	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (OPTIONAL - Do NOT enable if using front-end membership plugins)
+	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
-	# Uncomment if your WordPress site uses standard /wp-login.php and does not have custom front-end login, registration, or client portal pages.
-	# RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
-	# RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|dashboard/(settings|analytics|api-keys|billing|members))/?$ - [F,L,NC]
+	# Standard WordPress exclusively uses /wp-login.php and redirects /wp-admin.
+	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
+	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|dashboard/(settings|analytics|api-keys|billing|members))/?$ - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../, abspath=)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]
