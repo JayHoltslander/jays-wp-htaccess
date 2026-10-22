@@ -58,6 +58,21 @@ Before staging or committing any change to `.htaccess`, you **MUST** run the aut
 
 ---
 
+## 📖 README & Documentation Synchronization Protocol
+
+Every change or commit **MUST** evaluate whether modifications to `README.md` are justified:
+
+1. **Feature & Protection Highlights:**
+   - When expanding Section 6.3 early-drop protections, security headers, Fast-404 handling, MIME types, or compression directives, verify if `README.md` (specifically the **⚡ Highlights & Key Features** bullet points) should be updated to mention newly covered categories, manifests, tools, or threat vectors.
+
+2. **Table of Contents Line Anchors:**
+   - If line additions, deletions, or structural changes in `.htaccess` shift the starting line number of any of the 8 major numbered sections, update the corresponding markdown anchor links under **📑 Table of Contents** in `README.md` (e.g. `[URL Canonicalization, HTTPS & Redirects](.htaccess#L1337)`).
+
+3. **Usage Guidance & Configuration Toggles:**
+   - If optional toggles, directive syntax, server requirements, or recommended configurations change, ensure that setup instructions and examples in `README.md` remain fully accurate and synchronized with `.htaccess`.
+
+---
+
 ## 🔒 Git & Security Protocols
 
 1. **Commit Authorship:**
