@@ -83,3 +83,40 @@ Every change or commit **MUST** evaluate whether modifications to `README.md` ar
 
 2. **Explicit Push Authorization:**
    - Never execute `git push` autonomously. Always commit locally, present the changes to the user, and wait for the user's explicit `"push to git"` confirmation before pushing to remote.
+
+## 🛡️ Issue Triage & Fleet Bot Intelligence Protocol
+
+### Standing Directive: Proactive Issue Monitoring
+* **Proactively Check Open Issues:** Regularly check for any filed issues in this repo that may have been submitted and need triaging (using GitHub tools or `list_issues`). Action on them if appropriate for this project.
+* **Prioritize Fleet Telemetry:** Issues titled `[Bot Intelligence] Proposed early-drop rules for active scanner patterns (YYYY-MM-DD)` originate from production fleet log telemetry across dozens of live WordPress sites. Treat these as high-priority real-world exploit observations.
+
+---
+
+### Intake & Action Workflow:
+When triaging open issues or incoming bot reports, follow this procedure:
+
+1. **Threat Classification:**
+   Classify each candidate path into the appropriate Section 6 submodule in `.htaccess`:
+   * **Rule 1:** Non-WordPress executable extensions (`.jsp`, `.asp`, `.do`, `.action`).
+   * **Rule 2:** Environment, config, and cloud metadata (`.env.*`, `.aws`, `.kube`, `.git`).
+   * **Rule 3:** Developer manifests, cloud credentials, tokens, lockfiles, and private keys (`id_rsa`, `private-key`, `firebase.json`, `dist/manifest.json`).
+   * **Rule 4:** Database dumps, backups, archives, and editor backups (`.sql`, `.bak`, `.save`, `~`).
+   * **Rule 5:** Web shells, diagnostic endpoints, arbitrary file reads (`api/fs/read`, `api/system/fileView`, `phpinfo`).
+   * **Rule 5b (Optional):** GraphQL unauthenticated introspection (`/graphql`, `/api/graphql`, `/v1/graphql`).
+   * **Rule 6:** Enterprise appliances, profilers, Swagger/OpenAPI, Next.js/Nuxt (`swagger`, `openapi.json`, `_next`).
+   * **Rule 6b (Optional):** Generic CMS / SaaS auth endpoints (`/console`, `/signin`, `/signup`, `/backoffice`).
+   * **Rule 7b:** Encoded slashes, double-encoded dots, and traversal (`%2e%2e%2f`, `%2F.env`).
+   * **Rule 8:** Malware staging and rogue `.php` files directly in `wp-content/` (`^wp-content/[^/]+\.php`).
+
+2. **False-Positive Safety Bounds:**
+   Before adopting any rule, verify it does **NOT** break legitimate WordPress functionality:
+   * **Core & Standard Routes:** Ensure standard routes are never matched (`/wp-admin/*`, `/wp-login.php`, `admin-ajax.php`, `wp-cron.php`, `xmlrpc.php`, `sitemap.xml`, `robots.txt`, `.well-known/*`).
+   * **WooCommerce & Popular Plugins:** Keep digital product downloads (`/downloads/*`, `/cart/*`, `/checkout/*`), payment webhooks (PayPal, Stripe IPN), and form plugins (Gravity Forms, WPForms) unblocked.
+   * **Optional / Toggleable Caveats:** If an endpoint might be legitimately used by specific plugins (e.g. `/graphql` by WPGraphQL or `/users/login` by front-end membership plugins), place it in optional/commented-out rules (Rule 5b or 6b) with clear inline caveats rather than blocking it globally by default.
+
+3. **Release & Issue Resolution:**
+   Every adopted change **MUST** execute the standard repository release cycle:
+   * **Patch Version Bump:** Increment the Patch version (`X.Y.Z+1`) in `.htaccess` and update the release date (`Released: YYYY-MM-DD`).
+   * **Syntax Suite:** Run `./scripts/test-syntax.sh` to ensure Apache 2.4/2.2 dual-compatibility, proper bracket matching, and double-quoting of any pattern containing whitespace or character classes.
+   * **TOC Sync:** Update `README.md` Table of Contents anchor line numbers if section starting lines shifted.
+   * **Issue Resolution:** Commit referencing the issue (e.g. `feat(early-drop): add bare private keys and openapi probes (closes #1)`), and reply on the GitHub issue detailing which patterns were adopted, any patterns intentionally excluded (with false-positive reasoning), and the resulting release version.
