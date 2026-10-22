@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.10.11
-# Released:     2026-10-21
+# Version:      2.10.12
+# Released:     2026-10-22
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -792,14 +792,14 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console/(login|api/version)|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (OPTIONAL - Do NOT enable if using front-end membership plugins)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
 	# Uncomment if your WordPress site uses standard /wp-login.php and does not have custom front-end login, registration, or client portal pages.
-	# RewriteRule ^(user|users|account|auth)/login/?$ - [F,L,NC]
-	# RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel)/?$ - [F,L,NC]
+	# RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
+	# RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|dashboard/(settings|analytics|api-keys|billing|members))/?$ - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../, abspath=)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]
