@@ -5,7 +5,9 @@
 [![Apache](https://img.shields.io/badge/Apache-2.2%20%7C%202.4%2B-d22128.svg?logo=apache&logoColor=white)](https://httpd.apache.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JayHoltslander/jays-wp-htaccess/pulls)
 
-A production-tested, high-performance, and hardened `.htaccess` configuration for WordPress websites. Designed to maximize speed, minimize TTFB (Time to First Byte), block automated bot scans before PHP boots, and provide seamless compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies like Cloudflare.
+A battle-tested, high-performance, and hardened `.htaccess` configuration engineered for production WordPress websites.
+
+Unlike generic boilerplate rules, the defenses in this repository are directly informed by **empirical log analysis and threat intelligence collected across hundreds of live production WordPress installations**. By analyzing real-world attack campaigns, scanner patterns, credential-stuffing botnets, and zero-day probes as they occur in the wild, this configuration drops malicious traffic at the Apache web server layer before PHP or MySQL workers ever boot. Built to maximize speed, minimize TTFB (Time to First Byte), and provide seamless compatibility across Apache 2.2/2.4+, LiteSpeed, and reverse proxies like Cloudflare.
 
 ---
 
