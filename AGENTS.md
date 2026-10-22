@@ -4,6 +4,14 @@ This document provides mandatory operational instructions for AI assistants (Ant
 
 ---
 
+## 🚨 MANDATORY SESSION STARTUP DIRECTIVE
+At the beginning of **every new conversation** or before starting any new work in this repository, the AI assistant **MUST immediately check the repository's open issues** (using `list_issues` or GitHub tools).
+- Check for open issues, scanner pattern reports, or triage requests.
+- Identify and summarize any open items that need action, reporting them to the user as step 1.
+- Prioritize real-world exploit observations and fleet telemetry reports (`[Bot Intelligence] Proposed early-drop rules for active scanner patterns...`).
+
+---
+
 ## 🚨 MANDATORY VERSIONING PROTOCOL
 Every single change or commit that modifies `.htaccess` **MUST** bump the version number and update the release date in the `.htaccess` header banner:
 
@@ -102,9 +110,9 @@ When triaging open issues or incoming bot reports, follow this procedure:
    * **Rule 3:** Developer manifests, cloud credentials, tokens, lockfiles, and private keys (`id_rsa`, `private-key`, `firebase.json`, `dist/manifest.json`).
    * **Rule 4:** Database dumps, backups, archives, and editor backups (`.sql`, `.bak`, `.save`, `~`).
    * **Rule 5:** Web shells, diagnostic endpoints, arbitrary file reads (`api/fs/read`, `api/system/fileView`, `phpinfo`).
-   * **Rule 5b (Optional):** GraphQL unauthenticated introspection (`/graphql`, `/api/graphql`, `/v1/graphql`).
-   * **Rule 6:** Enterprise appliances, profilers, Swagger/OpenAPI, Next.js/Nuxt (`swagger`, `openapi.json`, `_next`).
-   * **Rule 6b (Optional):** Generic CMS / SaaS auth endpoints (`/console`, `/signin`, `/signup`, `/backoffice`).
+   * **Rule 5b:** GraphQL unauthenticated introspection (`/graphql`, `/api/graphql`, `/v1/graphql` - enabled by default, commented out for WPGraphQL/headless).
+   * **Rule 6:** Enterprise appliances, profilers, Swagger/OpenAPI, Next.js/Nuxt (`swagger`, `openapi.json`, `_next`, `console(/.*)?`).
+   * **Rule 6b:** Generic CMS / SaaS auth endpoints (`admin/login`, `signin`, `signup`, `backoffice`, `dashboard/...` - enabled by default, commented out for WooCommerce/membership front-end login pages).
    * **Rule 7b:** Encoded slashes, double-encoded dots, and traversal (`%2e%2e%2f`, `%2F.env`).
    * **Rule 8:** Malware staging and rogue `.php` files directly in `wp-content/` (`^wp-content/[^/]+\.php`).
 
@@ -112,7 +120,7 @@ When triaging open issues or incoming bot reports, follow this procedure:
    Before adopting any rule, verify it does **NOT** break legitimate WordPress functionality:
    * **Core & Standard Routes:** Ensure standard routes are never matched (`/wp-admin/*`, `/wp-login.php`, `admin-ajax.php`, `wp-cron.php`, `xmlrpc.php`, `sitemap.xml`, `robots.txt`, `.well-known/*`).
    * **WooCommerce & Popular Plugins:** Keep digital product downloads (`/downloads/*`, `/cart/*`, `/checkout/*`), payment webhooks (PayPal, Stripe IPN), and form plugins (Gravity Forms, WPForms) unblocked.
-   * **Optional / Toggleable Caveats:** If an endpoint might be legitimately used by specific plugins (e.g. `/graphql` by WPGraphQL or `/users/login` by front-end membership plugins), place it in optional/commented-out rules (Rule 5b or 6b) with clear inline caveats rather than blocking it globally by default.
+   * **Architecture Caveats:** For endpoints that may conflict with special WordPress architectures (such as WPGraphQL for headless sites, or custom front-end account pages in membership plugins), clearly document them in `.htaccess` and `README.md` with instructions for site operators on how to comment them out.
 
 3. **Release & Issue Resolution:**
    Every adopted change **MUST** execute the standard repository release cycle:
