@@ -100,6 +100,11 @@ Every change or commit **MUST** evaluate whether modifications to `README.md` ar
 
 ---
 
+### 🧰 Repository Intelligence & Validation Tooling
+* **Syntax & Token Validation:** `./scripts/test-syntax.sh` — Validates static tokens, quoted whitespace, flag delimiters, and tests runtime Apache parsing with `mod_rewrite`.
+* **Threat Intelligence Miner:** `./scripts/mine-threat-intel.py` — Audits wordlists (SecLists, FuzzDB, or custom files) against Section 6.3 rules, identifies coverage gaps, and flags false-positive risks.
+* **Fleet Log Telemetry Analyzer:** `./scripts/analyze-fleet-logs.py` — Ingests raw server access logs across fleet WordPress sites, identifies 404 fall-throughs that bypass `.htaccess`, and outputs structured markdown tables.
+
 ### Intake & Action Workflow:
 When triaging open issues or incoming bot reports, follow this procedure:
 

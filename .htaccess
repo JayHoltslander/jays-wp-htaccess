@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.1
+# Version:      2.11.2
 # Released:     2026-10-22
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -751,13 +751,13 @@ FileETag None
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
-	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
 	RewriteRule (firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
 	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private-?key)(\.(key|pem|pub))?|(server|localhost|host|key)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform\.(tfstate|tfvars)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile)$ - [F,L,NC]
-	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless)\.ya?ml$ - [F,L,NC]
-	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(turbo|nx|lerna|rush|ngsw)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
-	RewriteRule (^|/)kubernetes\.io/serviceaccount/token - [F,L,NC]
+	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless|azure-pipelines)\.ya?ml$ - [F,L,NC]
+	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(turbo|nx|lerna|rush|ngsw)\.json|(local\.settings|bucket-policy)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(\.vault-token|kubernetes\.io/serviceaccount/token) - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
 	RewriteRule (^|/)(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$ - [F,L,NC]
@@ -770,6 +770,7 @@ FileETag None
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
 	RewriteRule (\.(sql|sqlite|db|dump|bak|backup|old|orig|swp|save)|~)$ - [F,L,NC]
 	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
+	RewriteRule (^|/)(www|public_html|html|htdocs|wordpress)[-_0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar|tar\.gz)$ - [F,L,NC]
 	RewriteRule ^wp-content/(updraft|ai1wm-backups|wp-snapshots|backups|backupbuddy_backups)/.*\.(zip|tar|gz|tgz|sql|wpress|enc)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
 	RewriteRule (^|/)_all_dbs(/|$) - [F,L,NC]
@@ -792,7 +793,7 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(\+CSCOE\+/|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
