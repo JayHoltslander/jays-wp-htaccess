@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.3
-# Released:     2026-10-22
+# Version:      2.11.4
+# Released:     2026-10-23
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -782,7 +782,7 @@ FileETag None
 	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php) - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
 	RewriteRule (terminal-xhr\.php|api/fs/(exec|read)|read-document|api/system/fileView|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
-	RewriteRule (^|/)proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
+	RewriteRule (^|/|%2[fF])proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
 	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|[0-9]|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?))$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (ENABLED BY DEFAULT)
@@ -793,15 +793,20 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
-	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
+
+	# 6a. Block Frontend Framework Source Maps & SSR Route Probes (Astro, Next.js, Nuxt)
+	RewriteRule \.(astro\.mjs\.map)$ - [F,L,NC]
+	RewriteRule (^|/)(_astro|pages/api)/.*\.map$ - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
 	# Standard WordPress exclusively uses /wp-login.php and redirects /wp-admin.
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
 	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
-	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|dashboard/(settings|analytics|api-keys|billing|members))/?$ - [F,L,NC]
+	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|tokens?|credentials|api-keys?|settings/api-keys|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations))/?$ - [F,L,NC]
 
 	# 6c. Block AI / Model Context Protocol (MCP) and Server-Sent Event (SSE) Discovery Probes
 	RewriteRule ^(mcp|sse)(/|$) - [F,L,NC]
@@ -815,6 +820,16 @@ FileETag None
 	# and any encoded slash (%2f) occurring within the request URI path (excluding query strings to preserve redirect_to & REST URLs).
 	RewriteCond %{THE_REQUEST} (\%252[fF]|\%2[eE]\%2[eE]|\.\.\.+[/\%]|/\%2[fF]|\.\.\%2[fF]|\%2[fF]\.\.|\%2[fF]\.) [NC,OR]
 	RewriteCond %{THE_REQUEST} "^[A-Z]+[ ]+[^? ]*\%2[fF]" [NC]
+	RewriteRule .* - [F,L]
+
+	# Block Path Traversals to Linux proc environment and sensitive system files
+	RewriteRule (\.\.%2[fF]|\.\./)+(proc/self|etc/passwd) - [F,L,NC]
+	RewriteRule (\.\.%2[fF]|\.\./)+(\.env|config\.json) - [F,L,NC]
+
+	# Block URL-Encoded Slash Bypasses (%2F) probing admin, dashboard, settings or config routes
+	RewriteRule ^%2[fF](admin|dashboard|settings|api) - [F,L,NC]
+	RewriteCond %{THE_REQUEST} "^[A-Z]{3,9}[ ]+/%252[fF]" [NC,OR]
+	RewriteCond %{REQUEST_URI} ^/%2[fF](admin|dashboard|settings|api) [NC]
 	RewriteRule .* - [F,L]
 
 	# 8. Block Direct PHP Execution in wp-content Root, Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
