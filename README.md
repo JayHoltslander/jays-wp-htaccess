@@ -38,6 +38,7 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
   * **Apache 2.4 & 2.2 Dual-Compatibility**: Safe on modern `mod_authz_core` (`Require all denied`) and legacy hosts without triggering 500 configuration errors.
   * **Let's Encrypt / ACME Whitelisted**: Preserves automated SSL renewals by explicitly excluding `/.well-known/acme-challenge/` from dotfile blocks.
   * **Cloudflare & Reverse Proxy `REAL_IP` Normalization**: Auto-detects `CF-Connecting-IP` without requiring manual file edits.
+  * **Empirical Threat Intelligence & Automated Tooling**: Backed by built-in Python auditing tools (`scripts/mine-threat-intel.py`) continuously cross-referencing SecLists and Nuclei CVE templates, automated fleet access log telemetry analyzers (`scripts/analyze-fleet-logs.py`), and a scheduled weekly GitHub Actions audit workflow.
 
 ---
 
@@ -116,6 +117,41 @@ Open `.htaccess` in your editor and review optional toggles and special architec
 
 ---
 
+## 🧰 Threat Intelligence & Validation Tooling
+
+This repository includes a suite of automated intelligence and testing utilities to ensure zero-overhead defense without false positives:
+
+### 1. Pre-Commit & CI Syntax Validator
+Tests `.htaccess` tokens, whitespace escaping, flag brackets, and performs authentic runtime Apache 2.4/2.2 parsing with `mod_rewrite` loaded:
+```bash
+./scripts/test-syntax.sh
+```
+
+### 2. Threat Intelligence Wordlist Miner
+Audits public fuzzing dictionaries (SecLists, FuzzDB, Bo0oM) against Section 6 early-drop rules, applying a strict WordPress false-positive filter to surface unhandled exploit candidates:
+```bash
+# Fetch and audit live SecLists quickhits & Bo0oM fuzzlists
+python3 scripts/mine-threat-intel.py --fetch-seclists
+
+# Audit a local wordlist file
+python3 scripts/mine-threat-intel.py --file wordlist.txt
+```
+
+### 3. Fleet Log Telemetry Analyzer
+Ingests raw web server access logs (Combined, Common, or Nginx format) across production WordPress installations to calculate scanner breadth, identify 404 fall-through requests that bypass `.htaccess`, and generate GitHub-ready markdown telemetry tables:
+```bash
+# Analyze production log files
+python3 scripts/analyze-fleet-logs.py /var/log/httpd/access.log
+
+# Stream compressed logs and output GitHub Markdown format
+zcat /var/log/httpd/access.log.*.gz | python3 scripts/analyze-fleet-logs.py --format markdown
+```
+
+### 4. Automated Weekly GitHub Actions Audit
+A scheduled GitHub Actions workflow ([`.github/workflows/threat-intel-audit.yml`](.github/workflows/threat-intel-audit.yml)) runs every Monday morning and on-demand via `workflow_dispatch`. It evaluates newly trending scan vectors from SecLists and outputs a visual dashboard directly to GitHub's **Job Summary**.
+
+---
+
 ## 📜 Credits & Attributions
 
 This project builds upon security research, server configuration standards, and optimization techniques from the open-source community:
@@ -128,6 +164,9 @@ This project builds upon security research, server configuration standards, and 
 * **[Crunchify](https://crunchify.com/)** — Browser caching and ETag optimization.
 * **[KeyCDN](https://www.keycdn.com/)** — Research on `Cache-Control: immutable` caching directives.
 * **[HackRepair.com](https://hackrepair.com/)** — Bad bot and malicious user-agent blacklisting research.
+* **[Daniel Miessler's SecLists](https://github.com/danielmiessler/SecLists)** — Security tester's companion for web discovery, fuzzing, and endpoint intelligence.
+* **[Bo0oM (Mikhail Egorov)](https://github.com/Bo0oM/fuzz.txt)** — High-frequency web root leak fuzzing and discovery lists.
+* **[ProjectDiscovery Nuclei](https://github.com/projectdiscovery/nuclei-templates)** — Community-driven vulnerability templates and exposed panel signatures.
 
 ---
 
