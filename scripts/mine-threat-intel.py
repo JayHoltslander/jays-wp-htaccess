@@ -58,7 +58,7 @@ def extract_section_6_rules(htaccess_path: Path):
             if "6.3 ADVANCED EARLY-DROP PROTECTION" in stripped:
                 in_section_63 = True
                 continue
-            if in_section_63 and "6.4 BLOCK ACCESS TO HIDDEN" in stripped:
+            if in_section_63 and "6.6 CORE WORDPRESS DIRECTORY HARDENING" in stripped:
                 break
 
             if not in_section_63 or not stripped:
