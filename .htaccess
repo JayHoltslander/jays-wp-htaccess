@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.0
+# Version:      2.11.1
 # Released:     2026-10-22
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -751,12 +751,12 @@ FileETag None
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
-	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts))$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
 	RewriteRule (firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
 	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private-?key)(\.(key|pem|pub))?|(server|localhost|host|key)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform\.(tfstate|tfvars)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile)$ - [F,L,NC]
 	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless)\.ya?ml$ - [F,L,NC]
-	RewriteRule (^|/)(vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(turbo|nx|lerna|rush|ngsw)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
 	RewriteRule (^|/)kubernetes\.io/serviceaccount/token - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
@@ -777,12 +777,12 @@ FileETag None
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
-	RewriteRule (eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
+	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
 	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php) - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
 	RewriteRule (terminal-xhr\.php|api/fs/(exec|read)|read-document|api/system/fileView|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
 	RewriteRule (^|/)proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
-	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|1|222|a|aa|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|phpinfo(\.php)?))$ - [F,L,NC]
+	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|1|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?))$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (ENABLED BY DEFAULT)
 	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
@@ -792,7 +792,7 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|trace\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite) - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
@@ -801,6 +801,9 @@ FileETag None
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
 	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
 	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|dashboard/(settings|analytics|api-keys|billing|members))/?$ - [F,L,NC]
+
+	# 6c. Block AI / Model Context Protocol (MCP) and Server-Sent Event (SSE) Discovery Probes
+	RewriteRule ^(mcp|sse)(/|$) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../, abspath=)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]
@@ -824,14 +827,16 @@ FileETag None
 	# execution. Only uncomment if you have thoroughly tested your site's checkout flows and AJAX integrations.
 	# RewriteRule ^wp-content/plugins/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
 
-	# 10. Block WordPress REST API User Enumeration Scans (/wp-json/wp/v2/users)
-	# Excludes /wp-json/wp/v2/users/me, authenticated user sessions (Gutenberg author dropdowns), and context=edit requests
-	RewriteCond %{REQUEST_URI} !^/wp-json/wp/v2/users/me [NC]
-	RewriteCond %{QUERY_STRING} !rest_route=(/|%2f)wp(/|%2f)v2(/|%2f)users(/|%2f)me [NC]
+	# 10. Block WordPress & Plugin REST API User / Member Enumeration Scans
+	# Excludes /users/me, authenticated user sessions (Gutenberg), Authorization headers, WooCommerce API keys, and context=edit requests
+	RewriteCond %{REQUEST_URI} !/users/me [NC]
+	RewriteCond %{QUERY_STRING} !rest_route=(/|%2f)(.*(/|%2f))?users(/|%2f)me [NC]
 	RewriteCond %{HTTP_COOKIE} !wordpress_logged_in_ [NC]
+	RewriteCond %{HTTP:Authorization} ^$
+	RewriteCond %{QUERY_STRING} !consumer_key= [NC]
 	RewriteCond %{QUERY_STRING} !context=edit [NC]
-	RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users(/|$) [NC,OR]
-	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)wp(/|%2f)v2(/|%2f)users(/|%2f|&|$) [NC]
+	RewriteCond %{REQUEST_URI} (^|/)wp-json/((wp/v2/users|users)(/|$)|(ldlms|users|crm-memberships|peprodev|dokan|wemail|buddypress|buddyboss|wc|wp-user-manager|ultimate-member|authorsy|decent-comments|profilepress|wp-abilities|kirki|login-register-forms|wordfence|wp-super-cache)/.*(users|customers|subscribers|members|authors|lost-password|forgot-password|reset)) [NC,OR]
+	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)((wp(/|%2f)v2(/|%2f)users|users)(/|%2f|&|$)|(ldlms|users|crm-memberships|peprodev|dokan|wemail|buddypress|buddyboss|wc|wp-user-manager|ultimate-member|authorsy|decent-comments|profilepress|wp-abilities|kirki|login-register-forms|wordfence|wp-super-cache)(/|%2f).*(users|customers|subscribers|members|authors|lost-password|forgot-password|reset)) [NC]
 	RewriteRule .* - [F,L]
 
 	# 11. Block Known Vulnerability Scanners & Exploit Tool User-Agents (wpscan, sqlmap, nikto, masscan, etc.)
