@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.4
-# Released:     2026-10-23
+# Version:      2.11.5
+# Released:     2026-10-26
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -756,15 +756,18 @@ FileETag None
 	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private-?key)(\.(key|pem|pub))?|(server|localhost|host|key)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform\.(tfstate|tfvars)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile|Capfile)$ - [F,L,NC]
 	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless|azure-pipelines)\.ya?ml$ - [F,L,NC]
-	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(turbo|nx|lerna|rush|ngsw)\.json|(local\.settings|bucket-policy)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(application|bootstrap)([-_0-9a-zA-Z]+)?\.(properties|ya?ml)|(turbo|nx|lerna|rush|ngsw)\.json|(local\.settings|bucket-policy)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(openai|azure-openai|bedrock|gemini|aws-bedrock)\.(json|config|env|ya?ml)$ - [F,L,NC]
+	RewriteRule (^|/)(amplifyconfiguration|secrets|credentials|auth)\.(json|toml|ya?ml)$ - [F,L,NC]
+	RewriteRule ^config\.js$ - [F,L,NC]
 	RewriteRule (^|/)(\.vault-token|kubernetes\.io/serviceaccount/token) - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
 	RewriteRule (^|/)(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$ - [F,L,NC]
 
-	# 3c. Block Non-WordPress Framework Config & Storage Probes (Laravel/Symfony/Node logs and configurations)
+	# 3c. Block Non-WordPress Framework Config & Storage Probes (Laravel/Symfony/Rails/Node logs, secrets and configurations)
 	# Safely drops framework config files, log dumps, and cache probes without blocking legitimate WordPress /storage/ or /config/ pages
-	RewriteRule ^/?(config|storage)/(.*\.(json|ya?ml|env|log|bak|sql|sqlite|ini|conf|php[0-9]?)|logs/|framework/) - [F,L,NC]
+	RewriteRule ^/?(config|storage)/(.*\.(json|ya?ml|env|log|bak|sql|sqlite|ini|conf|key|pem|php[0-9]?)|credentials(\.ya?ml(\.enc)?)?|master\.key|logs/|framework/) - [F,L,NC]
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
@@ -793,7 +796,7 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope/|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope(/|$)|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
 
 	# 6a. Block Frontend Framework Source Maps & SSR Route Probes (Astro, Next.js, Nuxt)
