@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.5
-# Released:     2026-10-26
+# Version:      2.11.6
+# Released:     2026-10-28
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -747,18 +747,21 @@ FileETag None
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.npmrc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.bash_history|web\.config.*)$ - [F,L,NC]
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
+	RewriteRule (^|/)(env|environment)\.(json|ya?ml|ini)$ - [F,L,NC]
+	RewriteRule ^app/etc/(env\.php|local\.xml)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
 	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
-	RewriteRule (firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
-	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private-?key)(\.(key|pem|pub))?|(server|localhost|host|key)\.(key|pem|pub))$ - [F,L,NC]
+	RewriteRule (client[-_]?secrets?|oauth[-_]?(client[-_]?)?secret|firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
+	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private[-_.]?key)(\.(key|pem|pub))?|(server|localhost|host|key|cert|ssl|tls|domain|privkey|service)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform\.(tfstate|tfvars)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile|Capfile)$ - [F,L,NC]
 	RewriteRule (^|/)((docker-compose|compose)([-_./0-9a-zA-Z]*)?|values|serverless|azure-pipelines)\.ya?ml$ - [F,L,NC]
-	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(application|bootstrap)([-_0-9a-zA-Z]+)?\.(properties|ya?ml)|(turbo|nx|lerna|rush|ngsw)\.json|(local\.settings|bucket-policy)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
+	RewriteRule (^|/)(appsettings(\.[-_0-9a-zA-Z]+)?\.json|(application|bootstrap|sentry)([-_0-9a-zA-Z]+)?\.(properties|ya?ml)|sentry\.properties|(turbo|nx|lerna|rush|ngsw)\.json|(local\.settings|bucket-policy)\.json|vercel\.json|railway\.(json|toml)|fly\.toml|wrangler\.toml|netlify\.toml|samconfig\.toml|supabase/config\.toml|Dockerrun\.aws\.json|sftp-config\.json|installed\.json|(admin|key|config)\.json)$ - [F,L,NC]
 	RewriteRule (^|/)(openai|azure-openai|bedrock|gemini|aws-bedrock)\.(json|config|env|ya?ml)$ - [F,L,NC]
-	RewriteRule (^|/)(amplifyconfiguration|secrets|credentials|auth)\.(json|toml|ya?ml)$ - [F,L,NC]
+	RewriteRule (^|/)(amplifyconfiguration|secrets|credentials|auth|mailer?|smtp|gitlab-runner)\.(json|toml|ya?ml)$ - [F,L,NC]
+	RewriteRule (^|/)gitlab-runner(/.*)?$ - [F,L,NC]
 	RewriteRule ^config\.js$ - [F,L,NC]
 	RewriteRule (^|/)(\.vault-token|kubernetes\.io/serviceaccount/token) - [F,L,NC]
 
@@ -809,10 +812,11 @@ FileETag None
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
 	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
 	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
-	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|tokens?|credentials|api-keys?|settings/api-keys|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations))/?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|settings/api-keys|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations))(/.*)?$ - [F,L,NC]
 
-	# 6c. Block AI / Model Context Protocol (MCP) and Server-Sent Event (SSE) Discovery Probes
+	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers & SSE Discovery Probes
 	RewriteRule ^(mcp|sse)(/|$) - [F,L,NC]
+	RewriteRule (^|/)\.well-known/ucp(/|$) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../, abspath=)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]
@@ -828,6 +832,8 @@ FileETag None
 	# Block Path Traversals to Linux proc environment and sensitive system files
 	RewriteRule (\.\.%2[fF]|\.\./)+(proc/self|etc/passwd) - [F,L,NC]
 	RewriteRule (\.\.%2[fF]|\.\./)+(\.env|config\.json) - [F,L,NC]
+	RewriteRule (^|/)etc/(passwd|shadow|hosts|group)$ - [F,L,NC]
+	RewriteRule (^|/)shadow$ - [F,L,NC]
 
 	# Block URL-Encoded Slash Bypasses (%2F) probing admin, dashboard, settings or config routes
 	RewriteRule ^%2[fF](admin|dashboard|settings|api) - [F,L,NC]
