@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.7
-# Released:     2026-10-29
+# Version:      2.11.8
+# Released:     2026-10-30
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -747,13 +747,14 @@ FileETag None
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.dev\.vars|\.amplifyrc|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 	RewriteRule (^|/)(env|environment)\.(json|ya?ml|ini)$ - [F,L,NC]
+	RewriteRule ^env$ - [F,L,NC]
 	RewriteRule ^app/etc/(env\.php|local\.xml)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
-	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(\.vite|dist/\.vite|dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
 	RewriteRule (client[-_]?secrets?|oauth[-_]?(client[-_]?)?secret|firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
 	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private[-_.]?key)(\.(key|pem|pub))?|(server|localhost|host|key|cert|ssl|tls|domain|privkey|service)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform[-_0-9a-zA-Z./]*\.(tfstate|tfvars(\.json)?)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile|Capfile)$ - [F,L,NC]
@@ -786,7 +787,10 @@ FileETag None
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
-	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp-conflg\.php|schallfuns\.php|postnews\.php|wp-wlx\.php) - [F,L,NC]
+	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php) - [F,L,NC]
+	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images)\.php$ - [F,L,NC]
+	RewriteRule ^index/function\.php$ - [F,L,NC]
+	RewriteRule ^wp-admin/css/(admin|colors/[^/]+/filemanager_nop)\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
 	RewriteRule ^wp-content/plugins/wp_[a-z0-9]+/(wp_[a-z0-9]+\.php)?$ - [F,L,NC]
 	RewriteRule (^|/)(getcmd|aaa[0-9]|aab[0-9])(\.php)?$ - [F,L,NC]
@@ -802,7 +806,8 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|Microsoft-Server-ActiveSync(/.*)?|solr/|console(/.*)?|crowd/|CTCWebService|actuator|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope(/|$)|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?|v1\.[0-9]+/containers(/.*)?|v2/(_catalog|tags/list)|___proxy_subdomain_(whm|cpanel)(/.*)?) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|Microsoft-Server-ActiveSync(/.*)?|solr/|console(/.*)?|crowd/|CTCWebService|actuator|_debugbar(/.*)?|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope(/|$)|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?|v1\.[0-9]+/containers(/.*)?|v2/(_catalog|tags/list)|___proxy_subdomain_(whm|cpanel)(/.*)?) - [F,L,NC]
+	RewriteRule (^|/)userfiles/x(/.*)?$ - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
 
 	# 6a. Block Frontend Framework Source Maps & SSR Route Probes (Astro, Next.js, Nuxt)
