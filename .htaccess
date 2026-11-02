@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.8
-# Released:     2026-10-30
+# Version:      2.11.9
+# Released:     2026-11-02
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -726,7 +726,7 @@ FileETag None
 
 	# Fast 404 for missing source maps and root icons (Prevents heavy WordPress 404 execution)
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule (\.(js|mjs|css)\.map|favicon\.ico|apple-touch-icon.*\.png)$ - [R=404,L,NC]
+	RewriteRule (\.map|favicon\.ico|apple-touch-icon.*\.png)$ - [R=404,L,NC]
 </IfModule>
 
 
@@ -787,10 +787,10 @@ FileETag None
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
-	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php) - [F,L,NC]
-	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images)\.php$ - [F,L,NC]
+	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php) - [F,L,NC]
+	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit)\.php$ - [F,L,NC]
 	RewriteRule ^index/function\.php$ - [F,L,NC]
-	RewriteRule ^wp-admin/css/(admin|colors/[^/]+/filemanager_nop)\.php$ - [F,L,NC]
+	RewriteRule ^wp-admin/(css/(admin|colors/[^/]+/filemanager_nop)|images/admin)\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
 	RewriteRule ^wp-content/plugins/wp_[a-z0-9]+/(wp_[a-z0-9]+\.php)?$ - [F,L,NC]
 	RewriteRule (^|/)(getcmd|aaa[0-9]|aab[0-9])(\.php)?$ - [F,L,NC]
@@ -820,7 +820,7 @@ FileETag None
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
 	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
 	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
-	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|settings/api-keys|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations))(/.*)?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|settings/(api-keys|developer|integrations|security|webhooks|billing|team)|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
 	RewriteRule ^(webmail|roundcube|mailbox|sogo)(/.*)?$ - [F,L,NC]
 
 	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers & SSE Discovery Probes
@@ -839,12 +839,12 @@ FileETag None
 	RewriteRule .* - [F,L]
 
 	# Block Path Traversals to Linux proc environment and sensitive system files
-	RewriteRule (\.\.%2[fF]|\.\./)+(proc/self|etc/passwd) - [F,L,NC]
-	RewriteRule (\.\.%2[fF]|\.\./)+(\.env|config\.json) - [F,L,NC]
+	RewriteRule (\.\.%2[fF]|\.\./|%2[eE]%2[eE](%2[fF]|/))+(proc/self|etc/passwd|\.env|config\.json) - [F,L,NC]
 	RewriteRule (^|/)etc/(passwd|shadow|hosts|group)$ - [F,L,NC]
 	RewriteRule (^|/)shadow$ - [F,L,NC]
 
-	# Block URL-Encoded Slash Bypasses (%2F) probing admin, dashboard, settings or config routes
+	# Block URL-Encoded Slash Bypasses (%2F) probing admin, dashboard, settings, config, or nested .env
+	RewriteRule (^|/)[-_0-9a-zA-Z]*%2[fF]\.env - [F,L,NC]
 	RewriteRule ^%2[fF](admin|dashboard|settings|api) - [F,L,NC]
 	RewriteCond %{THE_REQUEST} "^[A-Z]{3,9}[ ]+/%252[fF]" [NC,OR]
 	RewriteCond %{REQUEST_URI} ^/%2[fF](admin|dashboard|settings|api) [NC]
