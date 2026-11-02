@@ -71,7 +71,7 @@ Before staging or committing any change to `.htaccess`, you **MUST** run the aut
 Every change or commit **MUST** evaluate whether modifications to `README.md` are justified:
 
 1. **Feature & Protection Highlights:**
-   - When expanding Section 6.3 early-drop protections, security headers, Fast-404 handling, MIME types, or compression directives, verify if `README.md` (specifically the **⚡ Highlights & Key Features** bullet points) should be updated to mention newly covered categories, manifests, tools, or threat vectors.
+   - Keep the **⚡ Highlights & Key Features** bullet points organized by functional category rather than exhaustively cataloging every individual file, path, or webshell pattern. When adding protections for novel threats, update or refine the category description or add notable illustrative examples without bloating the list. Detailed exhaustive regex signatures belong in `.htaccess` and release commit notes, not the high-level README overview.
 
 2. **Table of Contents Line Anchors:**
    - If line additions, deletions, or structural changes in `.htaccess` shift the starting line number of any of the 8 major numbered sections, update the corresponding markdown anchor links under **📑 Table of Contents** in `README.md` (e.g. `[URL Canonicalization, HTTPS & Redirects](.htaccess#L1337)`).
