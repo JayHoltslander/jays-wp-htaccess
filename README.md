@@ -31,6 +31,7 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
   * **Zero-PHP Overhead Early-Drop Protection**: Terminates automated exploit scanners and non-WordPress probe traffic at the Apache web server layer with instant `403 Forbidden [F,L]` responses before PHP or database connections initialize:
     * **Automated Exploit Scanners & Tools**: Blocks known scanning engines and penetration tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`, `masscan`, `zgrab`).
     * **Emerging Protocols & AI Agents**: Drops unauthorized MCP, SSE, and agent discovery endpoints (`/mcp`, `/sse`, `/.well-known/ucp`).
+    * **AI Agent Instructions & LLM Context**: Prevents web exposure of leaked AI coding agent instructions, prompt context, and workspace rules (`AGENTS.md`, `CLAUDE.md`, `CURSOR.md`, `copilot-instructions.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `.roorules`, `.aider*`).
     * **Cloud, AI & Deployment Manifests**: Prevents exposure of LLM configs, cloud secrets, tokens, and build metadata (`openai.json`, `vertex.json`, `amplifyconfiguration.json`, `.dev.vars`, `serverless.yml`, `vercel.json`, `wrangler.toml`, `terraform.tfvars`, `docker-compose.yml`, `manifest.json`, `values.yaml`).
     * **Environment & Config Probes**: Stops direct and URL-encoded attempts to access `.env*`, `.git*`, `.aws*`, `.kube*`, shell histories (`.bash_history`, `.zsh_history`), system credential files (`/etc/passwd`, `/etc/shadow`), and alternative configs (`env.json`, `app/etc/env.php`, bare `/env`).
     * **Web Shells, Droppers & Diagnostics**: Drops backdoor scripts, root stagers, fake image/CSS PHP wrappers, framework profilers, and debug endpoints (`c99`, `r57`, `alfa`, `b374k`, `adminer`, `phpmyadmin`, `phpinfo`, `/_debugbar`, `_profiler`, `/telescope`).
@@ -61,16 +62,16 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 6. **[Security Filters & Access Restrictions](.htaccess#L685)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map / Root Icon Probes)
-   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, Framework Probes, DB Dumps, Web Shells, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
+   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, AI Agent Instructions & Rules, Framework Probes, DB Dumps, Web Shells, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
    * **6.4** Block Hidden Files & Directories (ACME / SSL Whitelisted)
-   * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`, `wp-links-opml.php`)
+   * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`, `wp-links-opml.php`, AI agent rules & context files)
    * **6.6** Core WordPress Directory Hardening (`install.php`, `wp-includes`)
    * **6.7** Image Hotlinking Defense (Optional)
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1395)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1525)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1411)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1541)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 

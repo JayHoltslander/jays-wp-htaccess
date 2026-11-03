@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.10
+# Version:      2.11.11
 # Released:     2026-11-03
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -747,7 +747,7 @@ FileETag None
 	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
-	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.dev\.vars|\.amplifyrc|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
+	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.dev\.vars|\.amplifyrc|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.cursor.*|\.windsurf.*|\.cline.*|\.roo.*|\.claude.*|\.gemini.*|\.aider.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 	RewriteRule (^|/)(env|environment)\.(json|ya?ml|ini)$ - [F,L,NC]
 	RewriteRule (^|/)(env|_environment)$ - [F,L,NC]
@@ -772,6 +772,10 @@ FileETag None
 	# 3c. Block Non-WordPress Framework Config & Storage Probes (Laravel/Symfony/Rails/Node logs, secrets and configurations)
 	# Safely drops framework config files, log dumps, and cache probes without blocking legitimate WordPress /storage/ or /config/ pages
 	RewriteRule ^/?(config|storage)/(.*\.(json|ya?ml|env|log|bak|sql|sqlite|ini|conf|key|pem|php[0-9]?)|credentials(\.ya?ml(\.enc)?)?|master\.key|logs/|framework/) - [F,L,NC]
+
+	# 3d. Block AI Coding Agent Instructions, Rules & LLM Prompts (AGENTS.md, CLAUDE.md, .cursorrules, etc.)
+	RewriteRule (^|/)\.?(cursor|windsurf|cline|roo)rules$ - [F,L,NC]
+	RewriteRule (^|/)(agents?|claude|cursor|copilot|copilot-instructions|chatgpt|gemini|windsurf|cline|roo|aider)(\.local)?\.(md|mdc|txt|json|ya?ml)$ - [F,L,NC]
 
 	# 4. Block Database Dumps, Backups, and Migration/Installer Scripts
 	# Targets database dumps, unencrypted debug logs, and full-site backups without blocking legitimate WooCommerce/EDD digital product downloads.
@@ -985,6 +989,18 @@ FileETag None
 
 # Prevent WordPress Version Exposure via Readme, License & Core Documentation Files
 <FilesMatch "(?i)^(readme|license|licence|changelog|changes|contributing|authors|credits|todo)\.(html|txt|md)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
+		Satisfy All
+	</IfModule>
+</FilesMatch>
+
+# Disable Direct Access to AI Agent Instructions, Rules & Context Files (AGENTS.md, CLAUDE.md, .cursorrules, etc.)
+<FilesMatch "(?i)^(\.?(cursor|windsurf|cline|roo)rules|\.aider.*|(agents?|claude|cursor|copilot|copilot-instructions|chatgpt|gemini|windsurf|cline|roo|aider)(\.local)?\.(md|mdc|txt|json|ya?ml))$">
 	<IfModule mod_authz_core.c>
 		Require all denied
 	</IfModule>
