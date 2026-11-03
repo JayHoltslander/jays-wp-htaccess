@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.12
+# Version:      2.11.13
 # Released:     2026-11-03
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -882,6 +882,8 @@ FileETag None
 	RewriteRule ^wp-content/([^/]+|(uploads|blogs\.dir|languages|upgrade)/.*)(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi|sh|bash|exe)$ - [F,L,NC]
 
 	# 9. Block Direct PHP, Shell & Executable Execution Inside Themes Directory (Template files should only be executed by WordPress core)
+	# Whitelist legitimate direct theme endpoints (e.g. dynamic vCard generators for digital/QR business cards)
+	RewriteCond %{REQUEST_URI} !/wp-content/themes/(.*/)?vcard\.php$ [NC]
 	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi|sh|bash|exe)$ - [F,L]
 
 	# 9b. Block Direct PHP Execution Inside Plugins Directory (OPTIONAL)

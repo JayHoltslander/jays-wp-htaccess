@@ -73,8 +73,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1435)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1565)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1437)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1567)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
