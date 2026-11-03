@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.9
-# Released:     2026-11-02
+# Version:      2.11.10
+# Released:     2026-11-03
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -750,7 +750,7 @@ FileETag None
 	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.dev\.vars|\.amplifyrc|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
 	RewriteRule (^|/)[-_0-9a-zA-Z]*\.env([-_./0-9a-zA-Z]*)?$ - [F,L,NC]
 	RewriteRule (^|/)(env|environment)\.(json|ya?ml|ini)$ - [F,L,NC]
-	RewriteRule ^env$ - [F,L,NC]
+	RewriteRule (^|/)(env|_environment)$ - [F,L,NC]
 	RewriteRule ^app/etc/(env\.php|local\.xml)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
@@ -788,8 +788,8 @@ FileETag None
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
 	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php) - [F,L,NC]
-	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit)\.php$ - [F,L,NC]
-	RewriteRule ^index/function\.php$ - [F,L,NC]
+	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit|rip|abc|404)\.php$ - [F,L,NC]
+	RewriteRule ^(index|function)/function\.php$ - [F,L,NC]
 	RewriteRule ^wp-admin/(css/(admin|colors/[^/]+/filemanager_nop)|images/admin)\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
 	RewriteRule ^wp-content/plugins/wp_[a-z0-9]+/(wp_[a-z0-9]+\.php)?$ - [F,L,NC]
@@ -810,9 +810,9 @@ FileETag None
 	RewriteRule (^|/)userfiles/x(/.*)?$ - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
 
-	# 6a. Block Frontend Framework Source Maps & SSR Route Probes (Astro, Next.js, Nuxt)
+	# 6a. Block Framework & Core Source Maps and SSR Route Probes (Astro, Next.js, Nuxt, wp-includes)
 	RewriteRule \.(astro\.mjs\.map)$ - [F,L,NC]
-	RewriteRule (^|/)(_astro|pages/api)/.*\.map$ - [F,L,NC]
+	RewriteRule (^|/)(_astro|pages/api|wp-includes/js/dist)/.*\.map$ - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
@@ -880,6 +880,15 @@ FileETag None
 	RewriteCond %{HTTP:Authorization} ^$
 	RewriteCond %{REQUEST_URI} (^|/)wp-json/(wpsesmailer|wp-ses|woocommerce-ses|wc-ses|smtp-mailer|fluentsmtp|easy-wp-smtp|bws-smtp|aws-ses-wp-mail|amazonses|gravitysmtp|post-smtp|wp-mail-smtp)/ [NC,OR]
 	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)(wpsesmailer|wp-ses|woocommerce-ses|wc-ses|smtp-mailer|fluentsmtp|easy-wp-smtp|bws-smtp|aws-ses-wp-mail|amazonses|gravitysmtp|post-smtp|wp-mail-smtp)(/|%2f) [NC]
+	RewriteRule .* - [F,L]
+
+	# 10c. Block Unauthenticated WordPress REST API Batch Execution (wp2shell CVE-2026-63030 Defense)
+	# Automated scanners exploit unauthenticated batch requests (/wp-json/batch/v1) for route-confusion and RCE.
+	# Excludes logged-in editors/admins (wordpress_logged_in_ cookie) and REST clients sending Authorization headers.
+	RewriteCond %{HTTP_COOKIE} !wordpress_logged_in_ [NC]
+	RewriteCond %{HTTP:Authorization} ^$
+	RewriteCond %{REQUEST_URI} (^|/)wp-json/batch/v[0-9]+(/|$) [NC,OR]
+	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)batch/v[0-9]+(/|&|$) [NC]
 	RewriteRule .* - [F,L]
 
 	# 11. Block Known Vulnerability Scanners & Exploit Tool User-Agents (wpscan, sqlmap, nikto, masscan, etc.)
