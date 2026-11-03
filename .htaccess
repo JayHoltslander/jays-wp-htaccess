@@ -1,7 +1,7 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.11
+# Version:      2.11.12
 # Released:     2026-11-03
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
@@ -150,10 +150,13 @@ AddDefaultCharset utf-8
 	AddCharset utf-8 .atom \
 	                 .css \
 	                 .geojson \
+	                 .ics \
 	                 .js \
 	                 .json \
 	                 .jsonld \
 	                 .manifest \
+	                 .md \
+	                 .markdown \
 	                 .mjs \
 	                 .rdf \
 	                 .rss \
@@ -164,6 +167,7 @@ AddDefaultCharset utf-8
 
 	# Data Interchange Formats
 	AddType application/atom+xml                        atom
+	AddType application/geo+json                        geojson
 	AddType application/json                            json map topojson
 	AddType application/ld+json                         jsonld
 	AddType application/rss+xml                         rss
@@ -212,6 +216,8 @@ AddDefaultCharset utf-8
 	AddType model/vnd.usdz+zip                          usdz
 
 	# Miscellaneous Document & Caption Types
+	AddType text/calendar                               ics
+	AddType text/markdown                               markdown md
 	AddType text/vcard                                  vcard vcf
 	AddType text/vtt                                    vtt
 
@@ -360,6 +366,21 @@ AddDefaultCharset utf-8
 		Header always set Cross-Origin-Resource-Policy "cross-origin"
 	</FilesMatch>
 </IfModule>
+
+# ----------------------------------------------------------------------------------------------------------------------
+# CROSS-ORIGIN RESOURCE TIMING (TIMING-ALLOW-ORIGIN - OPTIONAL)
+# ----------------------------------------------------------------------------------------------------------------------
+# Allows cross-origin access to detailed resource timing information (DNS, TCP, TTFB) for frontend RUM, APM, and
+# Real User Monitoring tools (e.g. Core Web Vitals, Datadog, Sentry, New Relic) when assets are loaded across domains or CDNs.
+# See:
+# * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Timing-Allow-Origin
+# * https://www.w3.org/TR/resource-timing/
+#
+#<IfModule mod_headers.c>
+#	<FilesMatch "\.(avifs?|bmp|css|cur|eot|gif|heic|heif|ico|jpe?g|js|jxl|mjs|otf|png|svgz?|tt[cf]|webp|woff2?)$">
+#		Header set Timing-Allow-Origin "*"
+#	</FilesMatch>
+#</IfModule>
 
 # ----------------------------------------------------------------------------------------------------------------------
 # UPGRADE INSECURE RESOURCE REQUESTS (CONTENT SECURITY POLICY)
@@ -515,11 +536,14 @@ AddDefaultCharset utf-8
 	ExpiresByType application/atom+xml                  "access plus 1 hour"
 	ExpiresByType application/rdf+xml                   "access plus 1 hour"
 	ExpiresByType application/rss+xml                   "access plus 1 hour"
+	ExpiresByType application/geo+json                  "access plus 0 seconds"
 	ExpiresByType application/json                      "access plus 0 seconds"
 	ExpiresByType application/ld+json                   "access plus 0 seconds"
 	ExpiresByType application/schema+json               "access plus 0 seconds"
 	ExpiresByType application/vnd.geo+json              "access plus 0 seconds"
 	ExpiresByType application/xml                       "access plus 0 seconds"
+	ExpiresByType text/calendar                         "access plus 0 seconds"
+	ExpiresByType text/markdown                         "access plus 0 seconds"
 	ExpiresByType text/xml                              "access plus 0 seconds"
 
 	# Favicons and Cursors (1 Week)
@@ -744,7 +768,7 @@ FileETag None
 	RewriteRule .* - [F,L]
 
 	# 1. Block Probes for Non-WordPress Executable & Legacy Framework Extensions
-	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul)$ - [F,L,NC]
+	RewriteRule \.(jsp|asp|aspx|action|do|cgi|cfm|pl|dll|exe|nsf|zul|sh|bash)$ - [F,L,NC]
 
 	# 2. Block Environment, Config, and Cloud Metadata Probes (Catches .env*, .git*, .aws*, .kube*, .s3cfg, .pgpass, etc.)
 	RewriteRule (^|/)(\.env.*|\.git.*|\.gitconfig.*|\.github.*|\.gitlab-ci.*|\.gitlab-runner.*|\.circleci.*|\.svn.*|\.dockercfg.*|\.aws.*|\.kube.*|\.s3cfg.*|\.pgpass.*|\.cache(/.*)?|\.config(/.*)?|\.dev\.vars|\.amplifyrc|\.?npmrc.*|\.sentryclirc.*|\.DS_Store|\.editorconfig|\.ftpconfig|\.remote-sync\.json|\.vscode.*|\.idea.*|\.cursor.*|\.windsurf.*|\.cline.*|\.roo.*|\.claude.*|\.gemini.*|\.aider.*|\.ssh.*|\.(bash|zsh)_history|web\.config.*)$ - [F,L,NC]
@@ -854,11 +878,11 @@ FileETag None
 	RewriteCond %{REQUEST_URI} ^/%2[fF](admin|dashboard|settings|api) [NC]
 	RewriteRule .* - [F,L]
 
-	# 8. Block Direct PHP Execution in wp-content Root, Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
-	RewriteRule ^wp-content/([^/]+|(uploads|blogs\.dir|languages|upgrade)/.*)(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi)$ - [F,L,NC]
+	# 8. Block Direct PHP, Shell & Executable Execution in wp-content Root, Uploads, Languages & Upgrade Dirs (Malware Staging Defense)
+	RewriteRule ^wp-content/([^/]+|(uploads|blogs\.dir|languages|upgrade)/.*)(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi|sh|bash|exe)$ - [F,L,NC]
 
-	# 9. Block Direct PHP Execution Inside Themes Directory (Template files should only be executed by WordPress core)
-	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar)$ - [F,L]
+	# 9. Block Direct PHP, Shell & Executable Execution Inside Themes Directory (Template files should only be executed by WordPress core)
+	RewriteRule ^wp-content/themes/.*(?i)\.(php[0-9]?|pht|phtml?|phps|phar|pl|py|cgi|sh|bash|exe)$ - [F,L]
 
 	# 9b. Block Direct PHP Execution Inside Plugins Directory (OPTIONAL)
 	# (!) CAUTION: Many plugins (e.g. WooCommerce payment webhooks, PayPal IPN, captcha generators) require direct PHP
@@ -1546,6 +1570,7 @@ FileETag None
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 	RewriteEngine On
+	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 	RewriteBase /
 	RewriteRule ^index\.php$ - [L]
 	RewriteCond %{REQUEST_FILENAME} !-f

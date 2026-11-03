@@ -37,8 +37,8 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
     * **Web Shells, Droppers & Diagnostics**: Drops backdoor scripts, root stagers, fake image/CSS PHP wrappers, framework profilers, and debug endpoints (`c99`, `r57`, `alfa`, `b374k`, `adminer`, `phpmyadmin`, `phpinfo`, `/_debugbar`, `_profiler`, `/telescope`).
     * **SaaS & Enterprise Portals**: Intercepts scans for non-WordPress auth interfaces, admin consoles, and enterprise VPN portals (`/admin/login`, `/signin`, `/webmail`, `/roundcube`, `/billing`, `/webhooks`, `/integrations`, Cisco ASA, Citrix, Pulse Secure, Exchange ActiveSync, Docker daemon/registry APIs).
     * **Path Traversal & Obfuscation**: Filters dot-dot traversal, multi-dot traversal, URL-encoded slashes (`%2F`), and double-encoded traversal sequences (`%252f`, `%2e%2e`).
-  * **Backdoor Execution Neutralization**: Prevents direct PHP execution inside the root `/wp-content/` directory, `/wp-content/uploads/`, and `/wp-content/themes/`.
-  * **User & Credential Enumeration Defense**: Blocks author query scans (`?author=1`), core REST API user dumping (`/wp-json/wp/v2/users`), unauthenticated plugin REST API member/user enumeration (WooCommerce, LearnDash, Dokan, BuddyPress, BuddyBoss, WP User Manager, Ultimate Member, etc.), unauthenticated WordPress SMTP/mailer REST API credential harvesting (WP Mail SMTP, FluentSMTP, Post SMTP, Gravity SMTP, Easy WP SMTP, AWS SES), and unauthenticated WordPress REST API batch execution (wp2shell CVE-2026-63030) while preserving authenticated sessions, Gutenberg, and API authorization keys.
+  * **Backdoor Execution Neutralization**: Prevents direct PHP, shell script (`.sh`, `.bash`), and binary (`.exe`) execution inside the root `/wp-content/` directory, `/wp-content/uploads/`, and `/wp-content/themes/`.
+  * **User & Credential Enumeration Defense & REST API Auth**: Blocks author query scans (`?author=1`), core REST API user dumping (`/wp-json/wp/v2/users`), unauthenticated plugin REST API member/user enumeration (WooCommerce, LearnDash, Dokan, BuddyPress, BuddyBoss, WP User Manager, Ultimate Member, etc.), unauthenticated WordPress SMTP/mailer REST API credential harvesting (WP Mail SMTP, FluentSMTP, Post SMTP, Gravity SMTP, Easy WP SMTP, AWS SES), and unauthenticated WordPress REST API batch execution (wp2shell CVE-2026-63030) while preserving authenticated sessions, Gutenberg, API authorization keys, and PHP-FPM `Authorization` header passthrough.
   * **SQLi & RFI Query Filtering**: Drops database injection payloads (`UNION SELECT`, `BENCHMARK`, `SLEEP`, null bytes `%00`, directory traversal).
   * **Automated No-Referrer Comment Spam Killer**: Blocks headless spam bots submitting direct POSTs to `wp-comments-post.php`.
   * **Legacy Attack Surface Reduction**: Blocks XML-RPC brute-force amplification (`xmlrpc.php`), trackback spam (`wp-trackback.php`), and legacy blogroll exports (`wp-links-opml.php`).
@@ -56,10 +56,10 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 
 1. **[Emergency & Maintenance Toggles](.htaccess#L35)** — Instant 302 redirect-to-homepage killswitch and legacy `.shtml` redirects.
 2. **[Directory Index & Server Options](.htaccess#L64)** — `DirectoryIndex` maintenance fallback, `Options -Indexes`, `Options -MultiViews`, and `ServerSignature Off`.
-3. **[MIME Types & Encodings](.htaccess#L137)** — UTF-8 character sets, RFC-standard MIME types for fonts, scripts, manifests, and modern images (AVIF, WebP, JXL, HEIC/HEIF).
-4. **[Security Headers & CORS](.htaccess#L236)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, cross-domain policy restriction, font CDN CORS, and optional HSTS.
-5. **[Performance & Caching](.htaccess#L388)** — Brotli/Deflate compression, Far-Future Expires, Immutable Cache-Control, and ETag disabling.
-6. **[Security Filters & Access Restrictions](.htaccess#L685)**
+3. **[MIME Types & Encodings](.htaccess#L137)** — UTF-8 character sets, RFC-standard MIME types for fonts, scripts, manifests, markdown, and modern images (AVIF, WebP, JXL, HEIC/HEIF).
+4. **[Security Headers & CORS](.htaccess#L242)** — Clickjacking, MIME sniffing, COOP, Referrer-Policy, Permissions-Policy, cross-domain policy restriction, font CDN CORS, Resource Timing (TAO), and optional HSTS.
+5. **[Performance & Caching](.htaccess#L409)** — Brotli/Deflate compression, Far-Future Expires, Immutable Cache-Control, and ETag disabling.
+6. **[Security Filters & Access Restrictions](.htaccess#L709)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map / Root Icon Probes)
    * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, AI Agent Instructions & Rules, Framework Probes, DB Dumps, Web Shells, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
@@ -70,8 +70,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1411)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1541)** — Standard WordPress rewrite rules (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1435)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1565)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
@@ -164,7 +164,8 @@ A scheduled GitHub Actions workflow ([`.github/workflows/threat-intel-audit.yml`
 
 This project builds upon security research, server configuration standards, and optimization techniques from the open-source community:
 
-* **[HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-apache)** — Standards for MIME types, character encodings, and HTTP caching.
+* **[HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-apache)** — Standards for MIME types, character encodings, cross-origin resource timing, and HTTP caching.
+* **[Imran Ahmed (SecureWP Defense Suite)](https://github.com/imranbru99/Ultimate-Secure-WordPress-.htaccess-Advanced-Firewall-Anti-Hack-Protection)** — WordPress REST API authorization passthrough and upload execution lockdown patterns.
 * **[Perishable Press (Jeff Starr)](https://perishablepress.com/)** — [8G Firewall v1.5](https://perishablepress.com/8g-firewall/), nG blacklist concepts, bot query mitigation, and custom error handling.
 * **[WordPress Codex & Security Team](https://wordpress.org/documentation/article/hardening-wordpress/)** — Core `wp-includes` and security hardening guidelines.
 * **[Sucuri Research](https://blog.sucuri.net/)** — Research on XML-RPC amplification attacks and WordPress vulnerability patterns.
