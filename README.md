@@ -33,11 +33,11 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
   * **8G Firewall v1.5 Integration**: Native, lightweight server-level Web Application Firewall (WAF) by [Perishable Press](https://perishablepress.com/8g-firewall/) protecting against malicious query strings, exploit URIs, bad user-agents, malicious referrers, attack cookies, and unwanted request methods.
   * **Zero-PHP Overhead Early-Drop Protection**: Terminates automated exploit scanners and non-WordPress probe traffic at the Apache web server layer with instant `403 Forbidden [F,L]` responses before PHP or database connections initialize:
     * **Automated Exploit Scanners & Tools**: Blocks known scanning engines and penetration tools (`wpscan`, `sqlmap`, `nikto`, `gobuster`, `masscan`, `zgrab`).
-    * **Emerging Protocols & AI Agents**: Drops unauthorized MCP, SSE, and agent discovery endpoints (`/mcp`, `/sse`, `/.well-known/ucp`).
+    * **Emerging Protocols & AI Agents**: Drops unauthorized MCP, SSE, TDM reservation protocol, and crawler manifest probes (`/mcp`, `/sse`, `/.well-known/ucp`, `/.well-known/tdmrep.json`, `llms.txt`, `ai.txt`).
     * **AI Agent Instructions & LLM Context**: Prevents web exposure of leaked AI coding agent instructions, prompt context, and workspace rules (`AGENTS.md`, `CLAUDE.md`, `CURSOR.md`, `copilot-instructions.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `.roorules`, `.aider*`).
     * **Cloud, AI & Deployment Manifests**: Prevents exposure of LLM configs, cloud secrets, tokens, and build metadata (`openai.json`, `vertex.json`, `amplifyconfiguration.json`, `.dev.vars`, `serverless.yml`, `vercel.json`, `wrangler.toml`, `terraform.tfvars`, `docker-compose.yml`, `manifest.json`, `values.yaml`).
     * **Environment & Config Probes**: Stops direct and URL-encoded attempts to access `.env*`, `.git*`, `.aws*`, `.kube*`, shell histories (`.bash_history`, `.zsh_history`), system credential files (`/etc/passwd`, `/etc/shadow`), and alternative configs (`env.json`, `app/etc/env.php`, bare `/env`).
-    * **Web Shells, Droppers & Diagnostics**: Drops backdoor scripts, root stagers, fake image/CSS PHP wrappers, framework profilers, and debug endpoints (`c99`, `r57`, `alfa`, `b374k`, `adminer`, `phpmyadmin`, `phpinfo`, `/_debugbar`, `_profiler`, `/telescope`).
+    * **Web Shells, Droppers & Diagnostics**: Drops backdoor scripts, terminal backdoors, root droppers, fake image/CSS PHP wrappers, framework profilers, and debug endpoints (`term.php`, `hplfuns.php`, `c99`, `r57`, `alfa`, `b374k`, `adminer`, `phpmyadmin`, `phpinfo`, `/_debugbar`, `_profiler`, `/telescope`).
     * **SaaS & Enterprise Portals**: Intercepts scans for non-WordPress auth interfaces, admin consoles, and enterprise VPN portals (`/admin/login`, `/signin`, `/webmail`, `/roundcube`, `/billing`, `/webhooks`, `/integrations`, Cisco ASA, Citrix, Pulse Secure, Exchange ActiveSync, Docker daemon/registry APIs).
     * **Path Traversal & Obfuscation**: Filters dot-dot traversal, multi-dot traversal, URL-encoded slashes (`%2F`), and double-encoded traversal sequences (`%252f`, `%2e%2e`).
   * **Backdoor Execution Neutralization**: Prevents direct PHP, shell script (`.sh`, `.bash`), and binary (`.exe`) execution inside the root `/wp-content/` directory, `/wp-content/uploads/`, and `/wp-content/themes/`.
@@ -73,8 +73,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1437)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1567)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1444)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1574)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 
