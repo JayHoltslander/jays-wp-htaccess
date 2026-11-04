@@ -855,12 +855,12 @@ FileETag None
 	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|settings/(api-keys|developer|integrations|security|webhooks|billing|team)|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
 	RewriteRule ^(webmail|roundcube|mailbox|sogo)(/.*)?$ - [F,L,NC]
 
-	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers, Manifest Scrapes & SSE Probes
-	# Catches automated scrapers probing for non-existent AI manifests, text sitemaps, and TDM protocol discovery before WordPress runs 404s.
-	# (!) If you legitimately publish an llms.txt, ai.txt, or TDM reservation protocol file, comment out these rules.
+	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers & SSE Discovery Probes
+	# Blocks developer MCP endpoints and unauthorized server-sent event probes.
+	# NOTE: Legitimate AI crawler manifests and SEO discovery files (e.g. llms.txt, ai.txt, .well-known/tdmrep.json, sitemaps)
+	# are explicitly PERMITTED to support search engines, AI crawler discovery (GEO), and SEO plugins (Yoast, RankMath, etc.).
 	RewriteRule ^(mcp|sse)(/|$) - [F,L,NC]
-	RewriteRule (^|/)\.well-known/(ucp|tdmrep\.json)(/|$) - [F,L,NC]
-	RewriteRule ^(llms|ai|sitemap)\.txt$ - [F,L,NC]
+	RewriteRule (^|/)\.well-known/ucp(/|$) - [F,L,NC]
 
 	# 7. Block Malicious Query String Injections & Directory Traversal Exploits (eval, base64, <script, ../, abspath=)
 	RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|<script|GLOBALS\[|_REQUEST\[|\.\./|\.\.%2f|fgt_lang|abspath=) [NC]

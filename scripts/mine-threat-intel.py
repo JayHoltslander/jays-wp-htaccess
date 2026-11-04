@@ -34,6 +34,7 @@ WP_SAFE_TOKENS = {
     "wp-content", "wp-includes", "wp-json", "index.php", "readme.html",
     "license.txt", "robots.txt", "sitemap.xml", "sitemap_index.xml",
     "favicon.ico", "apple-touch-icon.png", ".well-known",
+    "llms.txt", "llms-full.txt", "ai.txt", "sitemap.txt",
     "feed", "comments", "author", "category", "tag", "search", "page",
     "cart", "checkout", "my-account", "shop", "product", "products",
     "sample-page", "privacy-policy", "terms-of-service", "contact",
@@ -195,7 +196,7 @@ def main():
     else:
         print("💡 No input specified. Running with sample high-frequency probe dictionary...")
         sample_probes = [
-            "/mcp", "/sse", "/.well-known/tdmrep.json", "/llms.txt", "/term.php",
+            "/mcp", "/sse", "/term.php",
             "/appsettings.json", "/aws-exports.js", "/turbo.json",
             "/.env", "/wp-config.php.bak", "/server-status", "/phpinfo.php",
             "/h2-console", "/jolokia", "/actuator/health", "/heapdump",
