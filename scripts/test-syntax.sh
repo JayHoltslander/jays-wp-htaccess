@@ -176,4 +176,77 @@ else
 fi
 
 echo ""
+echo "🔍 Step 3: Validating Section 6.3 early-drop rules against WordPress core routes..."
+
+python3 - << 'EOF'
+import sys
+import re
+
+with open(".htaccess", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# Core WordPress routes and entrypoints that MUST NEVER be dropped by early-drop rules
+CRITICAL_ROUTES = [
+    "index.php",
+    "wp-admin",
+    "wp-admin/",
+    "wp-admin/index.php",
+    "wp-admin/admin-ajax.php",
+    "wp-admin/post.php",
+    "wp-login.php",
+    "wp-cron.php",
+    "xmlrpc.php",
+    "robots.txt",
+    "sitemap.xml",
+    "sample-page",
+]
+
+in_section_63 = False
+rules = []
+for idx, line in enumerate(content.splitlines(), 1):
+    stripped = line.strip()
+    if "6.3 ADVANCED EARLY-DROP PROTECTION" in stripped:
+        in_section_63 = True
+        continue
+    if in_section_63 and "6.4 BLOCK ACCESS TO HIDDEN FILES" in stripped:
+        break
+    if not in_section_63 or not stripped or stripped.startswith("#"):
+        continue
+    if stripped.startswith("RewriteRule"):
+        parts = stripped.split()
+        if len(parts) >= 4 and parts[2] == "-" and "F" in parts[3]:
+            pat = parts[1].strip("\"")
+            if pat in (".*", ".?"):
+                continue
+            flags = parts[3].strip("[]")
+            is_nc = "NC" in flags
+            re_pat = pat
+            if "(?i)" in re_pat:
+                re_pat = re_pat.replace("(?i)", "")
+                is_nc = True
+            re_flags = re.IGNORECASE if is_nc else 0
+            try:
+                compiled = re.compile(re_pat, re_flags)
+                rules.append((idx, pat, compiled))
+            except re.error as e:
+                print(f"❌ Regex compile error on line {idx} '{pat}': {e}")
+                sys.exit(1)
+
+errors = []
+for route in CRITICAL_ROUTES:
+    clean = route.lstrip("/")
+    for line_num, pat, comp in rules:
+        if comp.search(clean):
+            errors.append(f"Line {line_num}: Core route '{route}' falsely matched by RewriteRule: {pat}")
+
+if errors:
+    print(f"❌ Found {len(errors)} false-positive collision(s) with core WordPress routes:")
+    for err in errors:
+        print(f"  • {err}")
+    sys.exit(1)
+else:
+    print("✅ False-positive analysis passed cleanly (zero collisions with core WordPress routes).")
+EOF
+
+echo ""
 echo "🎉 All .htaccess syntax checks passed successfully!"
