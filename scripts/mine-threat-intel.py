@@ -196,11 +196,13 @@ def main():
     else:
         print("💡 No input specified. Running with sample high-frequency probe dictionary...")
         sample_probes = [
-            "/mcp", "/sse", "/term.php",
+            "/mcp", "/sse", "/term.php", "/tinyfilemanager.php", "/makeasmtp.php", "/dex.php",
+            "/env.js", "/auth", "/debug", "/settings",
             "/appsettings.json", "/aws-exports.js", "/turbo.json",
             "/.env", "/wp-config.php.bak", "/server-status", "/phpinfo.php",
             "/h2-console", "/jolokia", "/actuator/health", "/heapdump",
             "/.next/routes-manifest.json", "/install/index.php", "/www.zip",
+            "/wp-includes/js/underscore.min.js.map",
             "/local.settings.json", "/.vault-token", "/swagger.json",
             "/wp-json/wc/v3/customers", "/wp-json/ldlms/v2/users",
             "/about", "/contact-us", "/wp-login.php", "/cart",

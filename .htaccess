@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.14
-# Released:     2026-11-04
+# Version:      2.11.15
+# Released:     2026-11-05
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -778,7 +778,7 @@ FileETag None
 	RewriteRule ^app/etc/(env\.php|local\.xml)$ - [F,L,NC]
 
 	# 3. Block Developer Manifests, Lockfiles & Cloud Credentials (composer.json, .pem, .key, GCP/AWS/Firebase keys, Docker Compose v2)
-	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(\.vite|dist/\.vite|dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env-config|runtime-config)\.js)$ - [F,L,NC]
+	RewriteRule (^|/)(package\.json|package-lock\.json|composer\.json|composer\.lock|yarn\.lock|pnpm-lock\.yaml|bun\.lockb|tsconfig\.json|(\.vite|dist/\.vite|dist|build)/manifest\.json|(build|routes|prerender)-manifest\.json|webpack\.config\.(js|ts)|vite\.config\.(js|ts)|aws-exports\.js|(env|runtime|app)\.config\.(js|ts)|(env|env-config|runtime-config)\.js)$ - [F,L,NC]
 	RewriteRule (client[-_]?secrets?|oauth[-_]?(client[-_]?)?secret|firebase([-_]?(adminsdk|config|key|admin))?|service[-_]?account|serviceAccountKey|credentials|secrets|gcp[-_]?(credentials|key|sa|service[-_0-9a-zA-Z]*)|google[-_]?(credentials|key|services)|gc-service|push_config|keyfile|sa|application_default_credentials)\.(json|ya?ml|js)$ - [F,L,NC]
 	RewriteRule (^|/)((id_rsa|id_dsa|id_ecdsa|id_ed25519|private[-_.]?key)(\.(key|pem|pub))?|(server|localhost|host|key|cert|ssl|tls|domain|privkey|service)\.(key|pem|pub))$ - [F,L,NC]
 	RewriteRule (terraform[-_0-9a-zA-Z./]*\.(tfstate|tfvars(\.json)?)|[-_0-9a-zA-Z]*\.auto\.tfvars|rclone\.conf|Dockerfile|Capfile)$ - [F,L,NC]
@@ -813,13 +813,13 @@ FileETag None
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
-	# Optional: Block Abbreviated Staging & Backup Subdirectory Probes (/new, /bc)
+	# Optional: Block Abbreviated Staging & Backup Subdirectory Probes (/new, /bc, /bk)
 	# (!) CAUTION: Do NOT uncomment if your site legitimately uses '/new' (e.g. "What's New", "New Products") or '/bc' (British Columbia / regional slug).
-	# RewriteRule ^(new|bc)(/.*)?$ - [F,L,NC]
+	# RewriteRule ^(new|bc|bk)(/.*)?$ - [F,L,NC]
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
-	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|hplfuns\.php|worksec\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php) - [F,L,NC]
+	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|tinyfilemanager.*\.php|makeasmtp\.php|dex\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|hplfuns\.php|worksec\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php) - [F,L,NC]
 	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit|rip|abc|404|term|hplfuns|motu|kir|php8|worksec)\.php$ - [F,L,NC]
 	RewriteRule ^(index|function)/function\.php$ - [F,L,NC]
 	RewriteRule ^wp-admin/(css/(admin|colors/[^/]+/filemanager_nop)|images/admin)\.php$ - [F,L,NC]
@@ -844,15 +844,15 @@ FileETag None
 
 	# 6a. Block Framework & Core Source Maps and SSR Route Probes (Astro, Next.js, Nuxt, wp-includes)
 	RewriteRule \.(astro\.mjs\.map)$ - [F,L,NC]
-	RewriteRule (^|/)(_astro|pages/api|wp-includes/js/dist)/.*\.map$ - [F,L,NC]
+	RewriteRule (^|/)(_astro|pages/api|wp-includes/js)/.*\.map$ - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
 	# Standard WordPress exclusively uses /wp-login.php and redirects /wp-admin.
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
-	RewriteRule ^(user|users|account|admin|auth)/login/?$ - [F,L,NC]
+	RewriteRule ^(user|users|account|admin)/login/?$ - [F,L,NC]
 	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
-	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|settings/(api-keys|developer|integrations|security|webhooks|billing|team)|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|auth|debug|settings|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
 	RewriteRule ^(webmail|roundcube|mailbox|sogo)(/.*)?$ - [F,L,NC]
 
 	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers & SSE Discovery Probes
