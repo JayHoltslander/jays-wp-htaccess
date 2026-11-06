@@ -193,12 +193,16 @@ CRITICAL_ROUTES = [
     "wp-admin/index.php",
     "wp-admin/admin-ajax.php",
     "wp-admin/post.php",
+    "wp-admin/users.php",
+    "wp-admin/network/settings.php",
     "wp-login.php",
     "wp-cron.php",
     "xmlrpc.php",
     "robots.txt",
     "sitemap.xml",
     "sample-page",
+    "contact-us",
+    "apple-app-site-association",
 ]
 
 in_section_63 = False

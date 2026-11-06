@@ -65,7 +65,7 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 6. **[Security Filters & Access Restrictions](.htaccess#L709)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
    * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map / Root Icon Probes)
-   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, AI Agent Instructions & Rules, Framework Probes, DB Dumps, Web Shells, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
+   * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, AI Agent Instructions & Rules, Framework Probes, DB Dumps, Web Shells, Core & Plugin Source Maps, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
    * **6.4** Block Hidden Files & Directories (ACME / SSL Whitelisted)
    * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`, `wp-links-opml.php`, AI agent rules & context files)
    * **6.6** Core WordPress Directory Hardening (`install.php`, `wp-includes`)
@@ -73,8 +73,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1444)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1574)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1450)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1580)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 

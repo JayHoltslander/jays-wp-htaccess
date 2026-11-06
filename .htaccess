@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.16
-# Released:     2026-11-05
+# Version:      2.11.17
+# Released:     2026-11-06
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -813,14 +813,16 @@ FileETag None
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
-	# Optional: Block Abbreviated Staging & Backup Subdirectory Probes (/new, /bc, /bk)
-	# (!) CAUTION: Do NOT uncomment if your site legitimately uses '/new' (e.g. "What's New", "New Products") or '/bc' (British Columbia / regional slug).
-	# RewriteRule ^(new|bc|bk)(/.*)?$ - [F,L,NC]
+	# Optional: Block Staged Roots & Secondary Subdirectory Probes (/wp, /wordpress, /bk, /main, /new, /bc)
+	# Automated scanners probe for secondary WordPress installs (/wp, /wordpress), staged backups (/bk), or older roots (/main, /new).
+	# (!) CAUTION: Do NOT uncomment if your WordPress core files reside in a subdirectory (e.g. /wp/ or /wordpress/), or if your
+	# site legitimately uses '/main', '/new' ("What's New", "New Products"), or '/bc' (British Columbia / regional slug).
+	# RewriteRule ^(wordpress|wp|bk|main|new|bc)(/.*)?$ - [F,L,NC]
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
-	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|tinyfilemanager.*\.php|makeasmtp\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|hplfuns\.php|worksec\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php) - [F,L,NC]
-	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit|rip|abc|404|term|hplfuns|motu|kir|php8|worksec|dex)\.php$ - [F,L,NC]
+	RewriteRule (wp-plain\.php|ioxi-o\.php|wp_filemanager\.php|tinyfilemanager.*\.php|makeasmtp\.php|this_is_a_new_hello_world\.php|init-notica\.php|BDKR28WP\.php|3PJcpMFsD8B\.php|myglu\.php|lanbai\.php|ebkid\.php|opsh\.php|wp-logis\.php|wp-trbacks\.php|class-walker-footer-dev\.php|wp_blog_footer\.php|wp_blog_foo\.php|wp-conflg\.php|schallfuns\.php|hplfuns\.php|worksec\.php|postnews\.php|wp-wlx\.php|wp-gans\.php|ms-edit\.php|lowfile\.php|fling\.php|bytkl\.php|Component\.php|xwpg\.php|atomlib\.php|wp-info\.php) - [F,L,NC]
+	RewriteRule ^(simple|sm|wp|debug|themes|go|about|f35|file5|b8|buy|fff|css|images|cc|edit|rip|abc|403|404|term|hplfuns|motu|kir|php8|worksec|dex|atomlib|wp-info|content|user|settings)\.php$ - [F,L,NC]
 	RewriteRule ^(index|function)/function\.php$ - [F,L,NC]
 	RewriteRule ^wp-admin/(css/(admin|colors/[^/]+/filemanager_nop)|images/admin)\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
@@ -838,13 +840,13 @@ FileETag None
 
 	# 6. Block Enterprise Appliances, Framework Profilers, Cluster APIs, VPNs, and Remote Portals
 	# Scoped specifically to exploit endpoints to avoid blocking legitimate page slugs (e.g. /remote-jobs/ or /vpn-reviews/)
-	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|Microsoft-Server-ActiveSync(/.*)?|solr/|console(/.*)?|crowd/|CTCWebService|actuator|_debugbar(/.*)?|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope(/|$)|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?|v1\.[0-9]+/containers(/.*)?|v2/(_catalog|tags/list)|___proxy_subdomain_(whm|cpanel)(/.*)?) - [F,L,NC]
+	RewriteRule ^(\+CSCOE\+/|Citrix(/.*)?|showLogin\.cc|WebInterface(/|$)|CFIDE(/|$)|confluence(/|$)|geoserver(/|$)|dniapi(/|$)|(sugar|magento)_version\.json|ise/img/|media/system/|(install|setup)/index\.php|h2-console(/.*)?|jolokia(/.*)?|heapdump|cgi-bin(/.*)?|dana-(na|cached)(/|$)|remote(/|$)|logon/LogonPoint|RDWeb|vpn(/|$)|wsman|autodiscover|ews|ecp|Microsoft-Server-ActiveSync(/.*)?|solr/|console(/.*)?|crowd/|CTCWebService|actuator|_debugbar(/.*)?|swagger(-ui)?(\.html?|\.json|/|$)|openapi\.(json|ya?ml)|(v[0-9]+/)?api-docs(\.json|/|$)|telescope(/|$)|debug/default|_profiler|_ignition|_environment|_image|_nuxt|_next(/.*)?|__nextjs.*|_astro(/.*)?|trace\.axd|elmah\.axd|smartconsole|sessions/new|users/sign_in|system/login|ui/(jobs|login)|dashboard/auth|api/(config|status|server/version|v1/(nodes|pods)|session/properties|w/|sonicos(/.*)?)|webui(/.*)?|web_api/|version(/|$)|saml2|nwa/|ghost/|zipkin/|cxcum/|hmc/hybris|webalizer/|dfshealth\.html|common_page/login\.html|sonicui(/.*)?|_layouts(/.*)?|owa(/.*)?|zimbraAdmin(/.*)?|sslvpnLogin(\.html)?|auth1?\.html|(plc/|webvisu/)?webvisu(\.htm)?|Portal/Portal\.mwsl|fpui(/.*)?|virtualems(/.*)?|v1\.[0-9]+/containers(/.*)?|v2/(_catalog|tags/list)|___proxy_subdomain_(whm|cpanel)(/.*)?) - [F,L,NC]
 	RewriteRule (^|/)userfiles/x(/.*)?$ - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
 
-	# 6a. Block Framework & Core Source Maps and SSR Route Probes (Astro, Next.js, Nuxt, wp-includes)
-	RewriteRule \.(astro\.mjs\.map)$ - [F,L,NC]
-	RewriteRule (^|/)(_astro|pages/api|wp-includes/js)/.*\.map$ - [F,L,NC]
+	# 6a. Block Framework, Core Admin & Third-Party Plugin Source Maps (Astro, Next.js, Nuxt, wp-admin, wp-includes, plugins)
+	RewriteRule \.(astro\.mjs|min\.(js|css))\.map$ - [F,L,NC]
+	RewriteRule (^|/)(_astro|pages/api|wp-admin|wp-includes/js|wp-content/plugins)/.*\.map$ - [F,L,NC]
 
 	# 6b. Block Non-WordPress Generic CMS & Framework Auth Probes (ENABLED BY DEFAULT)
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
@@ -854,6 +856,10 @@ FileETag None
 	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
 	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|auth|debug|settings|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
 	RewriteRule ^(webmail|roundcube|mailbox|sogo)(/.*)?$ - [F,L,NC]
+
+	# Optional: Block Generic SaaS Portal & E-Commerce Probes (Non-eCommerce Sites Only)
+	# (!) E-COMMERCE / WOOCOMMERCE CAUTION: Do NOT uncomment if your site uses WooCommerce (/checkout, /account) or has a /pricing page.
+	# RewriteRule ^(account|checkout|pricing)(/.*)?$ - [F,L,NC]
 
 	# 6c. Block AI / Model Context Protocol (MCP), Emerging Protocol Crawlers & SSE Discovery Probes
 	# Blocks developer MCP endpoints and unauthorized server-sent event probes.

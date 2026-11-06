@@ -37,8 +37,8 @@ WP_SAFE_TOKENS = {
     "llms.txt", "llms-full.txt", "ai.txt", "sitemap.txt",
     "feed", "comments", "author", "category", "tag", "search", "page",
     "cart", "checkout", "my-account", "shop", "product", "products",
-    "sample-page", "privacy-policy", "terms-of-service", "contact",
-    "about", "services", "pricing", "blog", "news", "portfolio",
+    "sample-page", "privacy-policy", "terms-of-service", "contact", "contact-us",
+    "about", "services", "pricing", "blog", "news", "portfolio", "apple-app-site-association",
 }
 
 def extract_section_6_rules(htaccess_path: Path):
