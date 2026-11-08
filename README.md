@@ -38,7 +38,7 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
     * **Cloud, AI & Deployment Manifests**: Prevents exposure of LLM configs, cloud secrets, tokens, and build metadata (`openai.json`, `vertex.json`, `amplifyconfiguration.json`, `.dev.vars`, `serverless.yml`, `vercel.json`, `wrangler.toml`, `terraform.tfvars`, `docker-compose.yml`, `manifest.json`, `values.yaml`).
     * **Environment & Config Probes**: Stops direct and URL-encoded attempts to access `.env*`, `.git*`, `.aws*`, `.kube*`, shell histories (`.bash_history`, `.zsh_history`), system credential files (`/etc/passwd`, `/etc/shadow`), and alternative configs (`env.json`, `app/etc/env.php`, bare `/env`).
     * **Web Shells, Droppers & Diagnostics**: Drops backdoor scripts, terminal backdoors, root droppers, fake image/CSS PHP wrappers, framework profilers, and debug endpoints (`term.php`, `hplfuns.php`, `c99`, `r57`, `alfa`, `b374k`, `adminer`, `phpmyadmin`, `phpinfo`, `/_debugbar`, `_profiler`, `/telescope`).
-    * **SaaS & Enterprise Portals**: Intercepts scans for non-WordPress auth interfaces, admin consoles, and enterprise VPN portals (`/admin/login`, `/signin`, `/webmail`, `/roundcube`, `/billing`, `/webhooks`, `/integrations`, Cisco ASA, Citrix, Pulse Secure, Exchange ActiveSync, Docker daemon/registry APIs).
+    * **SaaS & Enterprise Portals**: Intercepts scans for non-WordPress auth interfaces, admin consoles, PAM vaults (CyberArk, Secret Server), network monitoring suites (Nagios, Cacti, Pandora FMS, PRTG), and enterprise VPN/VDI gateways (`/admin/login`, `/signin`, `/webmail`, `/roundcube`, Cisco AnyConnect, VMware Horizon, Parallels RAS, F5 APM, MobileIron, Pulse Secure, Docker APIs).
     * **Path Traversal & Obfuscation**: Filters dot-dot traversal, multi-dot traversal, URL-encoded slashes (`%2F`), and double-encoded traversal sequences (`%252f`, `%2e%2e`).
   * **Backdoor Execution Neutralization**: Prevents direct PHP, shell script (`.sh`, `.bash`), and binary (`.exe`) execution inside the root `/wp-content/` directory, `/wp-content/uploads/`, and `/wp-content/themes/`.
   * **User & Credential Enumeration Defense & REST API Auth**: Blocks author query scans (`?author=1`), core REST API user dumping (`/wp-json/wp/v2/users`), unauthenticated plugin REST API member/user enumeration (WooCommerce, LearnDash, Dokan, BuddyPress, BuddyBoss, WP User Manager, Ultimate Member, etc.), unauthenticated WordPress SMTP/mailer REST API credential harvesting (WP Mail SMTP, FluentSMTP, Post SMTP, Gravity SMTP, Easy WP SMTP, AWS SES), and unauthenticated WordPress REST API batch execution (wp2shell CVE-2026-63030) while preserving authenticated sessions, Gutenberg, API authorization keys, and PHP-FPM `Authorization` header passthrough.
@@ -73,8 +73,8 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
    * **6.8** Bot, Enumeration & Spam Query Filtering (SQLi, Comment Spam, Author Scans)
    * **6.9** 8G Firewall v1.5 (Perishable Press Server-Level WAF)
    * **6.10** Rate Limiting (`mod_ratelimit`) & IP Access Control Examples
-7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1456)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
-8. **[WordPress Front Controller](.htaccess#L1586)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
+7. **[URL Canonicalization, HTTPS & Redirects](.htaccess#L1463)** — Force SSL, WWW vs Naked domain canonicalization, direct IP redirects, and staging robots.txt.
+8. **[WordPress Front Controller](.htaccess#L1593)** — Standard WordPress rewrite rules with PHP-FPM Authorization header preservation (placed at the very end to ensure all security/optimization rules run first).
 
 ---
 

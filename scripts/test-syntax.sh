@@ -202,6 +202,10 @@ CRITICAL_ROUTES = [
     "sitemap.xml",
     "sample-page",
     "contact-us",
+    "privacy-policy",
+    "cart",
+    "checkout",
+    "my-account",
     "apple-app-site-association",
 ]
 
