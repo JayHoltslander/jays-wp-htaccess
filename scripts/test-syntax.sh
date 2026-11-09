@@ -191,6 +191,7 @@ CRITICAL_ROUTES = [
     "wp-admin",
     "wp-admin/",
     "wp-admin/index.php",
+    "wp-admin/admin.php",
     "wp-admin/admin-ajax.php",
     "wp-admin/post.php",
     "wp-admin/users.php",

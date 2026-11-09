@@ -24,7 +24,7 @@ Asset delivery is further accelerated with native **Brotli and Gzip compression*
 
 * **🚀 Maximum Performance & Caching**
   * **Next-Gen Compression**: Native support for **Brotli** (`mod_brotli`) and **Gzip** (`mod_deflate`).
-  * **Static Asset Short-Circuit & Fast 404**: Bypasses rewrite processing entirely for existing static assets (`.css`, `.js`, `.woff2`, images) and immediately drops missing source map requests (`.map`, `.js.map`, `.css.map`) and missing root icons (`favicon.ico`, `apple-touch-icon*.png`) with a zero-PHP 404, preventing PHP worker exhaustion from vulnerability scanners.
+  * **Static Asset Short-Circuit & Fast 404**: Bypasses rewrite processing entirely for existing static assets (`.css`, `.js`, `.woff2`, images) and immediately drops missing source map requests (`.map`, `.js.map`, `.css.map`), missing root icons (`favicon.ico`, `apple-touch-icon*.png`), and missing crawler manifests (`meta.json`) with a zero-PHP 404, preventing PHP worker exhaustion from vulnerability scanners and external crawlers.
   * **Far-Future Expires Headers**: Aggressive, standards-compliant browser caching for media, scripts, styles, and fonts.
   * **Next-Gen Image & MIME Support**: Ready for **AVIF**, **WebP**, **JXL**, **WebAssembly** (`application/wasm`), **USDZ** (iOS AR), and modern RFC standard MIME types (`text/javascript`, `font/woff2`).
   * **HTTP/2 & HTTP/3 Friendly**: Protocol-aware TCP Keep-Alive scoping.
@@ -64,7 +64,7 @@ The [`.htaccess`](.htaccess) file is cleanly organized into 8 distinct sections:
 5. **[Performance & Caching](.htaccess#L409)** — Brotli/Deflate compression, Far-Future Expires, Immutable Cache-Control, and ETag disabling.
 6. **[Security Filters & Access Restrictions](.htaccess#L709)**
    * **6.1** Reverse Proxy & Cloudflare Normalization (REAL_IP & HTTPS)
-   * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map / Root Icon Probes)
+   * **6.2** Static Asset Performance Short-Circuit & Fast 404 (Bypasses Deep Rewrite Scans for Existing Static Files & Drops Missing .map, Root Icon, and Crawler Manifest Probes)
    * **6.3** Advanced Early-Drop Protection (Methods, Executables, Dotfiles, Manifests, AI Agent Instructions & Rules, Framework Probes, DB Dumps, Web Shells, Autodiscover Fast 404, Core & Plugin Source Maps, AI/MCP Probes, Uploads PHP, REST API Plugin Enumeration, REST Batch Fuzzing, Scanner UAs)
    * **6.4** Block Hidden Files & Directories (ACME / SSL Whitelisted)
    * **6.5** File Access Protections (Apache 2.4/2.2 Dual Syntax for `.ht*`, `wp-config.php`, `debug.log`, `xmlrpc.php`, `wp-trackback.php`, `wp-links-opml.php`, AI agent rules & context files)

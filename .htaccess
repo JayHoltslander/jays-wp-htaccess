@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.19
-# Released:     2026-11-08
+# Version:      2.11.20
+# Released:     2026-11-09
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -748,9 +748,9 @@ FileETag None
 	RewriteCond %{REQUEST_FILENAME} -f
 	RewriteRule ^ - [L]
 
-	# Fast 404 for missing source maps and root icons (Prevents heavy WordPress 404 execution)
+	# Fast 404 for missing source maps, root icons & crawler manifests (Prevents heavy WordPress 404 execution)
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule (\.map|favicon\.ico|apple-touch-icon.*\.png)$ - [R=404,L,NC]
+	RewriteRule (\.map|favicon\.ico|apple-touch-icon.*\.png|meta\.json)$ - [R=404,L,NC]
 </IfModule>
 
 
@@ -787,7 +787,7 @@ FileETag None
 	RewriteRule (^|/)(openai|azure-openai|bedrock|gemini|aws-bedrock|vertex|vertex-ai|vertex-ai-credentials)\.(json|config|env|ya?ml)$ - [F,L,NC]
 	RewriteRule (^|/)(amplifyconfiguration|secrets|credentials|auth|mailer?|smtp|gitlab-runner)\.(json|toml|ya?ml)$ - [F,L,NC]
 	RewriteRule (^|/)gitlab-runner(/.*)?$ - [F,L,NC]
-	RewriteRule ^config\.js$ - [F,L,NC]
+	RewriteRule ^(config/)?(config|app)\.js$ - [F,L,NC]
 	RewriteRule (^|/)(\.vault-token|kubernetes\.io/serviceaccount/token) - [F,L,NC]
 
 	# 3b. Block Core Documentation, Readme & License Probes (readme.html, license.txt, changelog.txt, etc.)
@@ -831,7 +831,7 @@ FileETag None
 	RewriteRule (^|/)(getcmd|aaa[0-9]|aab[0-9])(\.php)?$ - [F,L,NC]
 	RewriteRule (terminal-xhr\.php|api/fs/(exec|read)|read-document|api/system/fileView|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
 	RewriteRule (^|/|%2[fF])proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
-	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|[0-9]|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?))$ - [F,L,NC]
+	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|[0-9]|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php(/.*)?$|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?))$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (ENABLED BY DEFAULT)
 	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
