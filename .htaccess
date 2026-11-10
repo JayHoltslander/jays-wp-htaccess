@@ -1,8 +1,8 @@
 # BEGIN Jays WordPress .htaccess
 # ======================================================================================================================
 # JAY'S WORDPRESS .HTACCESS
-# Version:      2.11.20
-# Released:     2026-11-09
+# Version:      2.11.21
+# Released:     2026-11-10
 # Repository:   https://github.com/JayHoltslander/jays-wp-htaccess
 #
 # A production-tested .htaccess template for WordPress websites designed to maximize performance,
@@ -807,17 +807,21 @@ FileETag None
 	RewriteRule (^|/)debug\.log$ - [F,L,NC]
 	RewriteRule (^|[-_./])(backup|dump|database|db|export|snapshot|all-in-one-wp-migration|site-backup)[-_./0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 	RewriteRule (^|/)((www|public_html|html|htdocs|wordpress)|(19|20)[0-9]{2}|[0-9])[-_0-9a-zA-Z]*\.(tar|gz|tgz|zip|rar|tar\.gz)$ - [F,L,NC]
+	RewriteRule ^(admin|adminbackup|admif|arch|archive|backup|bkp|db|ftp|git|main|master|mysql|new|old|orig|origin|php|private|restore|scripts|site|source|sql|src|system|temp|tmp|upl|upload|uploads|user|web|wp|www|x)\.(zip|rar|tar\.gz|tgz|gz)$ - [F,L,NC]
 	RewriteRule ^wp-content/(updraft|ai1wm-backups|wp-snapshots|backups|backupbuddy_backups)/.*\.(zip|tar|gz|tgz|sql|wpress|enc)$ - [F,L,NC]
 	RewriteRule (installer.*\.php|dup-installer|import-backup.*\.php) - [F,L,NC]
 	RewriteRule (^|/)_all_dbs(/|$) - [F,L,NC]
 	# Optional: Block all downloadable archives (Do NOT enable if legitimately selling digital products via WooCommerce/EDD)
 	# RewriteRule \.(tar|gz|tgz|zip|rar)$ - [F,L,NC]
 
-	# Optional: Block Staged Roots & Secondary Subdirectory Probes (/wp, /wordpress, /bk, /main, /new, /bc)
-	# Automated scanners probe for secondary WordPress installs (/wp, /wordpress), staged backups (/bk), or older roots (/main, /new).
+	# Optional: Block Staged Roots & Secondary Subdirectory Probes (/wp, /wordpress, /bk, /main, /new, /bc, /cms, /tmp, /temp)
+	# Automated scanners probe for secondary WordPress installs (/wp, /wordpress), staged backups (/bk), or older/temp roots.
 	# (!) CAUTION: Do NOT uncomment if your WordPress core files reside in a subdirectory (e.g. /wp/ or /wordpress/), or if your
-	# site legitimately uses '/main', '/new' ("What's New", "New Products"), or '/bc' (British Columbia / regional slug).
-	# RewriteRule ^(wordpress|wp|bk|main|new|bc)(/.*)?$ - [F,L,NC]
+	# site legitimately uses '/main', '/new' ("What's New", "New Products"), '/bc' (British Columbia), '/cms', '/tmp', or '/temp'.
+	# Note: Guarding with !-f / !-d does NOT protect database-backed WordPress page slugs, so this block remains optional.
+	# RewriteCond %{REQUEST_FILENAME} !-f
+	# RewriteCond %{REQUEST_FILENAME} !-d
+	# RewriteRule ^(wordpress|wp|bk|main|new|bc|cms|tmp|temp)(/.*)?$ - [F,L,NC]
 
 	# 5. Block Known Web Shells, Diagnostic Files, DB Managers & Framework RCE Probes (c99, terminal-xhr, adminer, phpinfo)
 	RewriteRule (abcd\.php|goods\.php|wp-good\.php|classwithtostring\.php|eval-stdin\.php|alfa.*\.php|wso.*\.php|c99.*\.php|r57.*\.php|b374k.*\.php|shell\.php|cmd\.php|_?adminer.*\.php|sql\.php|editor\.php|phpmyadmin|sphider|sslmgr|database/manager|tiki-login|login_up\.php|alfacgiapi) - [F,L,NC]
@@ -827,11 +831,21 @@ FileETag None
 	RewriteRule ^(index|function)/function\.php$ - [F,L,NC]
 	RewriteRule ^wp-admin/(css/(admin|colors/[^/]+/filemanager_nop)|images/admin)\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/(canto/includes/lib/sizes|brandfolder/callback|fix/(up|000)|pwnd/(pwnd|as))\.php - [F,L,NC]
+	RewriteRule ^wp-content/plugins/wp-special-textboxes/stb-uploader\.php$ - [F,L,NC]
 	RewriteRule ^wp-content/plugins/wp_[a-z0-9]+/(wp_[a-z0-9]+\.php)?$ - [F,L,NC]
 	RewriteRule (^|/)(getcmd|aaa[0-9]|aab[0-9])(\.php)?$ - [F,L,NC]
 	RewriteRule (terminal-xhr\.php|api/fs/(exec|read)|read-document|api/system/fileView|api/templates/preview|api/designer/v1/file-content|api/inngest) - [F,L,NC]
 	RewriteRule (^|/|%2[fF])proc/(self|[0-9]+)/(environ|cmdline|cgroup|status|mounts|fd) - [F,L,NC]
-	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|[0-9]|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php(/.*)?$|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?))$ - [F,L,NC]
+	RewriteRule (^(pi|i|p|php|pinfo|php-info|phpinfo|info|phpversion|admin|test|file|[0-9]|222|a|aa|as|an|ws|sf|inputs|chosen|txets|adminfuns)\.php(/.*)?$|(^|/)(server-(status|info)(\.php)?|(old_)?_?phpinfo(\.php)?|php_info\.php))$ - [F,L,NC]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^[0-9]+\.php(/.*)?$ - [F,L,NC]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(login|install|default|log|license|help|lala|temp|ad|adm|hell|htdocs|java|connect|logon|sane|pmd_online|db_pma|db_cts|_query|help-e|desktop\.ini|wp-conde|wp-cron-sample|wp-logos|seo_script|cod|yt2|App)\.php$ - [F,L,NC]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule .+/wp-login\.php$ - [F,L,NC]
+	RewriteRule ^(inc/module/vod|transfer/zz_bbin)\.php$ - [F,L,NC]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule (^|/)scripts/setup\.php$ - [F,L,NC]
 
 	# 5b. Block GraphQL Introspection Probes (ENABLED BY DEFAULT)
 	# Catches root (/graphql), versioned (/v1/graphql), and API-prefixed (/api/graphql) endpoints.
@@ -854,8 +868,18 @@ FileETag None
 	RewriteRule ^sensorlist\.htm$ - [F,L,NC]
 	RewriteRule ^(ext-js/app/common/zld_product_spec\.js|install/kaseyalatestversion\.xml|server\.login\.xsi)$ - [F,L,NC]
 	RewriteRule ^(jmx-console|phppgadmin|pentaho|libs/granite|irj|atg/bcc|bin/login/XWiki|cvsroot)(/.*)?$ - [F,L,NC]
+	RewriteRule ^(global-protect|administrator|jm-ajax/upload_file|webdav|phpmyadm|phpwebalbum|phpsqliteadmin|pmysqladmin)(/.*)?$ - [F,L,NC]
+	RewriteRule ^(host-)?manager/(html|status)$ - [F,L,NC]
+	RewriteRule ^scriptText/?$ - [F,L,NC]
+	RewriteRule ^(vuln\.htm|static/admin/javascript/hetong\.js)$ - [F,L,NC]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^includ/?$ - [F,L,NC]
 	RewriteRule (^|/)userfiles/x(/.*)?$ - [F,L,NC]
 	RewriteRule (^|/)(@fs|@vite|__vite|_astro) - [F,L,NC]
+
+	# Optional: Block Jenkins Script Console /script Probe (Verify no legitimate /script WordPress page exists first)
+	# RewriteRule ^script/?$ - [F,L,NC]
 
 	# 6a. Block Framework, Core Admin & Third-Party Plugin Source Maps (Astro, Next.js, Nuxt, wp-admin, wp-includes, plugins)
 	RewriteRule \.(astro\.mjs|min\.(js|css))\.map$ - [F,L,NC]
@@ -865,9 +889,9 @@ FileETag None
 	# Catches automated bot credential-stuffing and discovery against Drupal (/user/login), cPanel (/panel), and generic SaaS auth paths.
 	# Standard WordPress exclusively uses /wp-login.php and redirects /wp-admin.
 	# (!) E-COMMERCE / MEMBERSHIP NOTICE: If using WooCommerce or front-end membership plugins with custom login/account slugs, comment out these rules.
-	RewriteRule ^(user|users|account|admin|iam)/login/?$ - [F,L,NC]
+	RewriteRule ^(user|users|account|admin|iam)/login(\.php|/)?$ - [F,L,NC]
 	RewriteRule ^admin/(settings|users)/?$ - [F,L,NC]
-	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|auth|debug|settings|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
+	RewriteRule ^(signin|sign-in|signup|reset-password|forgot-password|resetpass|backoffice|panel|onboarding|secrets?|tokens?|credentials|api-keys?|auth|debug|settings|dashboard/(settings|analytics|api-keys|billing|members|admin|webhooks|integrations)|billing|webhooks|integrations|playground|internal|organization|invite)(/.*)?$ - [F,L,NC]
 	RewriteRule ^(webmail|roundcube|mailbox|sogo)(/.*)?$ - [F,L,NC]
 
 	# Optional: Block Generic SaaS Portal & E-Commerce Probes (Non-eCommerce Sites Only)
@@ -946,6 +970,10 @@ FileETag None
 	RewriteCond %{REQUEST_URI} (^|/)wp-json/batch/v[0-9]+(/|$) [NC,OR]
 	RewriteCond %{QUERY_STRING} rest_route=(/|%2f)batch/v[0-9]+(/|&|$) [NC]
 	RewriteRule .* - [F,L]
+
+	# Optional: Block Rank Math SEO REST Reconnaissance (Non-RankMath Sites Only)
+	# (!) SEO PLUGIN NOTICE: Do NOT uncomment if your site uses the Rank Math SEO plugin.
+	# RewriteRule ^wp-json/rankmath/v1/getHead(/|$) - [F,L,NC]
 
 	# 11. Block Known Vulnerability Scanners & Exploit Tool User-Agents (wpscan, sqlmap, nikto, masscan, etc.)
 	RewriteCond %{HTTP_USER_AGENT} (acunetix|dirbuster|gobuster|havij|masscan|nessus|nikto|nmap|openvas|shodan|sqlmap|wpscan|zgrab) [NC]
@@ -1098,14 +1126,14 @@ FileETag None
 # 6.6 CORE WORDPRESS DIRECTORY HARDENING
 # ----------------------------------------------------------------------------------------------------------------------
 
-# Block Direct Access to WordPress Installer (wp-admin/install.php)
+# Block Direct Access to WordPress Installer (wp-admin/install.php & subdirectory probes)
 # Once WordPress is installed, install.php is never legitimately needed.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteRule ^wp-admin/install\.php$ - [F,L,NC]
+	RewriteRule (^|/)wp-admin/install\.php$ - [F,L,NC]
 </IfModule>
 
-# Restrict Direct Access to WP-Includes PHP Files
+# Restrict Direct Access to WP-Includes & Non-Existent Core PHP Probes
 # See: https://wordpress.org/documentation/article/hardening-wordpress/#securing-wp-includes
 <IfModule mod_rewrite.c>
 	RewriteEngine On
@@ -1115,6 +1143,9 @@ FileETag None
 	RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
 	RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
 	RewriteRule ^wp-includes/theme-compat/ - [F,L]
+	# Drop phantom/non-existent PHP probes inside wp-admin and wp-includes (e.g. /wp-admin/maint/index.php, /wp-includes/js/jquery/suggest.php)
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(wp-admin|wp-includes)/.*\.php$ - [F,L,NC]
 </IfModule>
 
 
