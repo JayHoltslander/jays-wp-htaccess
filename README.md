@@ -8,7 +8,7 @@
 [![Standards: H5BP](https://img.shields.io/badge/Standards-HTML5%20Boilerplate-green.svg)](https://github.com/h5bp/server-configs-apache)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JayHoltslander/jays-wp-htaccess/pulls)
 
-A battle-tested, high-performance, and hardened `.htaccess` configuration engineered for production WordPress websites. Unites modern **HTML5 Boilerplate (H5BP)** performance and caching standards, the **Perishable Press 8G Firewall**, and empirical **live fleet threat intelligence** into a single drop-in file.
+Instantly make your WordPress site and its webserver more resilient against malicious traffic while simultaneously improving its performance with this battle-tested, high-performance, and hardened `.htaccess` configuration engineered for production WordPress websites. Unites modern **HTML5 Boilerplate (H5BP)** performance and caching standards, the **Perishable Press 8G Firewall**, and empirical **live fleet threat intelligence** into a single drop-in file.
 
 Unlike generic boilerplate rules, the defenses in this repository are directly informed by **empirical log analysis and threat intelligence collected across hundreds of live production WordPress installations**.
 
